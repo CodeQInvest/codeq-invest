@@ -29,6 +29,8 @@
     <property name="prefix" value="/WEB-INF/templates/"/>
     <property name="suffix" value=".html"/>
     <property name="templateMode" value="HTML5"/>
+    <!-- for development: switch off the cache to enable auto-reload -->
+    <property name="cacheable" value="false"/>
   </bean>
 
   <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
