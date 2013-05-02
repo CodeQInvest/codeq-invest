@@ -56,6 +56,7 @@
     <fest.assert.version>1.4</fest.assert.version>
     <httpclient.version>4.2.4</httpclient.version>
     <fluentlenium.version>0.7.8</fluentlenium.version>
+    <thucydides.version>0.9.116</thucydides.version>
   </properties>
 
   <dependencyManagement>
@@ -187,6 +188,24 @@
         <version>${fluentlenium.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>net.thucydides</groupId>
+        <artifactId>thucydides-core</artifactId>
+        <version>${thucydides.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.thucydides</groupId>
+        <artifactId>thucydides-junit</artifactId>
+        <version>${thucydides.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.thucydides</groupId>
+        <artifactId>thucydides-jbehave-plugin</artifactId>
+        <version>${thucydides.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -223,6 +242,16 @@
           <artifactId>maven-jetty-plugin</artifactId>
           <version>6.1.26</version>
         </plugin>
+        <plugin>
+          <groupId>net.thucydides.maven.plugins</groupId>
+          <artifactId>maven-thucydides-plugin</artifactId>
+          <version>${thucydides.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.2</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -242,6 +271,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
+            <exclude>**/*TestSuite*</exclude>
             <exclude>**/*IntegrationTest*</exclude>
           </excludes>
         </configuration>
@@ -251,6 +281,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <includes>
+            <include>**/*TestSuite*</include>
             <include>**/*IntegrationTest*</include>
           </includes>
         </configuration>
