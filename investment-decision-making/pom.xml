@@ -14,7 +14,11 @@
   <packaging>jar</packaging>
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.codeqinvest</groupId>
+      <artifactId>quality-assessment</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.codeqinvest</groupId>
       <artifactId>code-changes-analyzer</artifactId>
