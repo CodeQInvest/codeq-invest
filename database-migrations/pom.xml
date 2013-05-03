@@ -12,4 +12,13 @@
   <artifactId>database-migrations</artifactId>
   <name>CodeQ Invest :: Database Migrations</name>
   <packaging>jar</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.googlecode.flyway</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
