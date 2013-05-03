@@ -32,6 +32,7 @@
     <module>web-ui</module>
     <module>quality-assessment</module>
     <module>investment-decision-making</module>
+    <module>metrics-collector</module>
     <module>code-changes-analyzer</module>
     <module>acceptance-tests</module>
   </modules>
