@@ -58,6 +58,7 @@
     <thymeleaf.version>2.0.16</thymeleaf.version>
     <thymeleaf.extras.tiles.version>2.0.0</thymeleaf.extras.tiles.version>
     <jstl.version>1.2</jstl.version>
+    <dbcp.version>1.4</dbcp.version>
 
     <junit.version>4.11</junit.version>
     <mockito.version>1.9.5</mockito.version>
@@ -112,7 +113,6 @@
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <version>${hsql.version}</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- LOGGING -->
@@ -197,6 +197,13 @@
         <groupId>org.thymeleaf.extras</groupId>
         <artifactId>thymeleaf-extras-tiles2</artifactId>
         <version>${thymeleaf.extras.tiles.version}</version>
+      </dependency>
+
+      <!-- for database connection pooling -->
+      <dependency>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>${dbcp.version}</version>
       </dependency>
 
       <!-- database migration handling -->
@@ -293,7 +300,7 @@
         <plugin>
           <groupId>org.apache.tomcat.maven</groupId>
           <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.0</version>
+          <version>2.1</version>
         </plugin>
         <plugin>
           <groupId>org.mortbay.jetty</groupId>
