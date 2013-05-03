@@ -24,6 +24,11 @@
       <artifactId>investment-decision-making</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.codeqinvest</groupId>
+      <artifactId>database-migrations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
@@ -56,6 +61,10 @@
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.flyway</groupId>
+      <artifactId>flyway-core</artifactId>
     </dependency>
 
     <dependency>
