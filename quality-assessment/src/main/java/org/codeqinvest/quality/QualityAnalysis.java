@@ -18,33 +18,53 @@
  */
 package org.codeqinvest.quality;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.util.List;
 
 /**
- * This class is only a dummy to test the integration with Flyway.
- * It will be removed later.
+ * TODO javadoc
  *
  * @author fmueller
  */
+@Getter
+@EqualsAndHashCode
+@ToString
 @Entity
-@Data
-class DummyEntity {
+@Table(name = "QUALITY_ANALYSIS")
+public class QualityAnalysis implements Serializable {
 
   @Id
   @GeneratedValue
   private Long id;
 
-  private String name;
+  @NonNull
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "PROFILE_ID", nullable = false, updatable = false)
+  private QualityProfile profile;
 
-  protected DummyEntity() {
-    // nop
+  @NonNull
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "ANALYSIS_ID", nullable = false)
+  private List<QualityViolation> violations;
+
+  protected QualityAnalysis() {
   }
 
-  public DummyEntity(String name) {
-    this.name = name;
+  public QualityAnalysis(QualityProfile profile, List<QualityViolation> violations) {
+    this.profile = profile;
+    this.violations = violations;
   }
 }

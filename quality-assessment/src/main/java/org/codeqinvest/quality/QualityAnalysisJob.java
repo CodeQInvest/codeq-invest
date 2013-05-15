@@ -18,10 +18,20 @@
  */
 package org.codeqinvest.quality;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.scheduling.support.CronTrigger;
 
 /**
+ * TODO javadoc
+ *
  * @author fmueller
  */
-interface DummyEntityRepository extends JpaRepository<DummyEntity, Long> {
+public class QualityAnalysisJob {
+
+  private final QualityAnalysis analysis;
+  private final CronTrigger cronTrigger;
+
+  public QualityAnalysisJob(QualityAnalysis analysis, CronTrigger cronTrigger) {
+    this.analysis = analysis;
+    this.cronTrigger = cronTrigger;
+  }
 }
