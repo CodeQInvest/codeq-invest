@@ -73,4 +73,8 @@ public class SonarConnectionSettings {
         ? new Host(url, username, password)
         : new Host(url);
   }
+
+  public boolean hasProject() {
+    return project != null;
+  }
 }
