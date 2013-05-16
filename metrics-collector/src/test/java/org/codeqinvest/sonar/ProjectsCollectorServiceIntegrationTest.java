@@ -28,18 +28,17 @@ import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/module-context.xml")
-public class SonarConnectionCheckerServiceIntegrationTest {
+public class ProjectsCollectorServiceIntegrationTest {
 
   @Autowired
-  private SonarConnectionCheckerService connectionCheckerService;
+  private ProjectsCollectorService projectsCollectorService;
 
   @Test
-  public void nemoSonarDemoServerShouldBeReachable() {
-    assertThat(connectionCheckerService.isReachable(new SonarConnectionSettings("http://nemo.sonarsource.org"))).isTrue();
-  }
-
-  @Test
-  public void whenServerIsNotSonarItShouldBeUnreachable() {
-    assertThat(connectionCheckerService.isReachable(new SonarConnectionSettings("http://google.com"))).isFalse();
+  public void shouldListAllProjectsOfNemoSonarDemoServer() {
+    /*
+     * TODO this is an ugly test: it can be easily broken by an update of the Sonar demo server
+     * => replace this by usage of own sonar server for int test (puppet script + vagrant)
+     */
+    assertThat(projectsCollectorService.collectAllProjectIdentifiers(new SonarConnectionSettings("http://nemo.sonarsource.org"))).hasSize(204);
   }
 }

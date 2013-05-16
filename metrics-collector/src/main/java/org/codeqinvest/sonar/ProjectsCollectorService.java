@@ -18,32 +18,32 @@
  */
 package org.codeqinvest.sonar;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpGet;
+import org.sonar.wsclient.Sonar;
 import org.sonar.wsclient.connectors.HttpClient4Connector;
+import org.sonar.wsclient.services.Resource;
+import org.sonar.wsclient.services.ResourceQuery;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * TODO javadoc
+ * This service collects all projects that are
+ * managed by a given sonar server instance.
  *
  * @author fmueller
  */
-@Slf4j
 @Service
-public class SonarConnectionCheckerService {
+public class ProjectsCollectorService {
 
-  private static final int OK = 200;
-
-  public boolean isReachable(SonarConnectionSettings connectionSettings) {
-    HttpClient4Connector connector = new HttpClient4Connector(connectionSettings.asHostObject());
-    try {
-      return connector.getHttpClient()
-          .execute(new HttpGet(connectionSettings.getUrl() + "/api/metrics")).getStatusLine().getStatusCode() == OK;
-    } catch (IOException e) {
-      SonarConnectionCheckerService.log.info("Sonar is not reachable during connection check.", e);
-      return false;
+  public Collection<String> collectAllProjectIdentifiers(SonarConnectionSettings connectionSettings) {
+    Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
+    List<Resource> projectResources = sonar.findAll(new ResourceQuery());
+    List<String> projectIdentifiers = new ArrayList<String>(projectResources.size());
+    for (Resource resource : projectResources) {
+      projectIdentifiers.add(resource.getKey());
     }
+    return projectIdentifiers;
   }
 }

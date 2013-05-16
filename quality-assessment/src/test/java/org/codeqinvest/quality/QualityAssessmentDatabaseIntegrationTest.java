@@ -20,7 +20,8 @@ package org.codeqinvest.quality;
 
 import org.codeqinvest.project.Project;
 import org.codeqinvest.project.ScmSettings;
-import org.codeqinvest.project.SonarSettings;
+import org.codeqinvest.sonar.SonarConnectionSettings;
+import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,9 +64,9 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     profile.addRequirement(firstRequirement);
     profile.addRequirement(secondRequirement);
 
-    SonarSettings sonarSettings = new SonarSettings("http://localhost", "myProject::123");
+    SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings("http://localhost", "myProject::123");
     ScmSettings scmSettings = new ScmSettings(0, "http://svn.localhost");
-    project = new Project("myProject", "0 0 * * *", sonarSettings, scmSettings);
+    project = new Project("myProject", "0 0 * * *", sonarConnectionSettings, scmSettings);
   }
 
   @Test

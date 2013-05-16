@@ -22,6 +22,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.codeqinvest.quality.QualityAnalysis;
+import org.codeqinvest.sonar.SonarConnectionSettings;
+import org.codeqinvest.sonar.SonarConnectionSettings;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -57,7 +59,7 @@ public class Project implements Serializable {
   private String cronExpression;
 
   @Embedded
-  private SonarSettings sonarSettings;
+  private SonarConnectionSettings sonarConnectionSettings;
 
   @Embedded
   private ScmSettings scmSettings;
@@ -68,10 +70,10 @@ public class Project implements Serializable {
   protected Project() {
   }
 
-  public Project(String name, String cronExpression, SonarSettings sonarSettings, ScmSettings scmSettings) {
+  public Project(String name, String cronExpression, SonarConnectionSettings sonarConnectionSettings, ScmSettings scmSettings) {
     this.name = name;
     this.cronExpression = cronExpression;
-    this.sonarSettings = sonarSettings;
+    this.sonarConnectionSettings = sonarConnectionSettings;
     this.scmSettings = scmSettings;
   }
 }

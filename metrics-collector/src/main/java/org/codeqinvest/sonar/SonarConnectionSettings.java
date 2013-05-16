@@ -16,11 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.project;
+package org.codeqinvest.sonar;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.sonar.wsclient.Host;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -35,7 +36,7 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 @ToString
 @Embeddable
-public class SonarSettings {
+public class SonarConnectionSettings {
 
   @Column(name = "SONAR_URL", nullable = false)
   private String url;
@@ -49,17 +50,27 @@ public class SonarSettings {
   @Column(name = "SONAR_PASSWORD")
   private String password;
 
-  protected SonarSettings() {
+  protected SonarConnectionSettings() {
   }
 
-  public SonarSettings(String url, String project) {
+  public SonarConnectionSettings(String url) {
+    this(url, null, null, null);
+  }
+
+  public SonarConnectionSettings(String url, String project) {
     this(url, project, null, null);
   }
 
-  public SonarSettings(String url, String project, String username, String password) {
+  public SonarConnectionSettings(String url, String project, String username, String password) {
     this.url = url;
     this.project = project;
     this.username = username;
     this.password = password;
+  }
+
+  public Host asHostObject() {
+    return username != null
+        ? new Host(url, username, password)
+        : new Host(url);
   }
 }
