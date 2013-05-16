@@ -16,22 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.quality;
+package org.codeqinvest.quality.analysis;
 
-import org.springframework.scheduling.support.CronTrigger;
+import org.codeqinvest.project.Project;
+import org.codeqinvest.quality.QualityAnalysis;
+import org.springframework.stereotype.Service;
 
 /**
- * TODO javadoc
+ * This is the main service of the quality assessment module. It
+ * offers functionalities to analyze a given project. For that,
+ * it collects all the necessary data from Sonar and the
+ * corresponding source code management system. Before it performs
+ * these steps, it checks for the availability of these third-party
+ * systems.
  *
  * @author fmueller
  */
-public class QualityAnalysisJob {
+@Service
+public class QualityAnalyzerService {
 
-  private final QualityAnalysis analysis;
-  private final CronTrigger cronTrigger;
-
-  public QualityAnalysisJob(QualityAnalysis analysis, CronTrigger cronTrigger) {
-    this.analysis = analysis;
-    this.cronTrigger = cronTrigger;
+  public QualityAnalysis analyzeProject(Project project) {
+    return null;
   }
 }

@@ -18,6 +18,9 @@
  */
 package org.codeqinvest.quality;
 
+import org.codeqinvest.project.Project;
+import org.codeqinvest.project.ScmSettings;
+import org.codeqinvest.project.SonarSettings;
 import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +53,7 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
   private QualityProfile profile;
   private QualityRequirement firstRequirement;
   private QualityRequirement secondRequirement;
+  private Project project;
 
   @Before
   public void createExampleEntities() {
@@ -58,6 +62,19 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", "ec", "<", 15);
     profile.addRequirement(firstRequirement);
     profile.addRequirement(secondRequirement);
+
+    SonarSettings sonarSettings = new SonarSettings("http://localhost", "myProject::123");
+    ScmSettings scmSettings = new ScmSettings(0, "http://svn.localhost");
+    project = new Project("myProject", "0 0 * * *", sonarSettings, scmSettings);
+  }
+
+  @Test
+  public void persistAndLoadProjectEntity() {
+    entityManager.persist(project);
+    Project projectFromDb = entityManager.find(Project.class, project.getId());
+    assertThat(projectFromDb)
+        .as("The loaded project object from the database should be equal to the one from the memory.")
+        .isEqualTo(project);
   }
 
   @Test
@@ -74,6 +91,7 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     Artefact artefact = new Artefact("MyFile", "0123456");
 
     entityManager.persist(profile);
+    entityManager.persist(project);
     entityManager.persist(artefact);
 
     QualityViolation firstViolation = new QualityViolation(artefact, secondRequirement);
@@ -83,7 +101,7 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     violations.add(firstViolation);
     violations.add(secondViolation);
 
-    QualityAnalysis analysis = new QualityAnalysis(profile, violations);
+    QualityAnalysis analysis = new QualityAnalysis(project, violations);
     entityManager.persist(analysis);
 
     QualityAnalysis analysisFromDb = entityManager.find(QualityAnalysis.class, analysis.getId());

@@ -16,20 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.quality;
+package org.codeqinvest.project;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
-import org.codeqinvest.project.Project;
+import org.codeqinvest.quality.QualityAnalysis;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -44,28 +43,35 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "QUALITY_ANALYSIS")
-public class QualityAnalysis implements Serializable {
+@Table(name = "PROJECT")
+public class Project implements Serializable {
 
   @Id
   @GeneratedValue
   private Long id;
 
-  @NonNull
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "PROJECT_ID", nullable = false, updatable = false)
-  private Project project;
+  @Column(nullable = false)
+  private String name;
 
-  @NonNull
-  @OneToMany(cascade = CascadeType.ALL)
-  @JoinColumn(name = "ANALYSIS_ID", nullable = false)
-  private List<QualityViolation> violations;
+  @Column(nullable = false, length = 100)
+  private String cronExpression;
 
-  protected QualityAnalysis() {
+  @Embedded
+  private SonarSettings sonarSettings;
+
+  @Embedded
+  private ScmSettings scmSettings;
+
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+  private List<QualityAnalysis> analyzes;
+
+  protected Project() {
   }
 
-  public QualityAnalysis(Project project, List<QualityViolation> violations) {
-    this.project = project;
-    this.violations = violations;
+  public Project(String name, String cronExpression, SonarSettings sonarSettings, ScmSettings scmSettings) {
+    this.name = name;
+    this.cronExpression = cronExpression;
+    this.sonarSettings = sonarSettings;
+    this.scmSettings = scmSettings;
   }
 }
