@@ -60,7 +60,7 @@ public class QualityRequirement implements Serializable {
   private int nonRemediationCosts;
 
   @Column(nullable = false)
-  private long weightingMetricValue;
+  private double weightingMetricValue;
 
   @Column(nullable = false, length = 50)
   private String weightingMetricIdentifier;
@@ -72,7 +72,7 @@ public class QualityRequirement implements Serializable {
   }
 
   public QualityRequirement(QualityProfile profile, int remediationCosts, int nonRemediationCosts,
-                            int weightingMetricValue, String weightingMetricIdentifier, QualityCriteria criteria) {
+                            double weightingMetricValue, String weightingMetricIdentifier, QualityCriteria criteria) {
     this.profile = profile;
     this.remediationCosts = remediationCosts;
     this.nonRemediationCosts = nonRemediationCosts;
