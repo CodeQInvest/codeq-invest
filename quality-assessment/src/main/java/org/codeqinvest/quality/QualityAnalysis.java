@@ -20,7 +20,6 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 import org.codeqinvest.project.Project;
 
@@ -51,12 +50,10 @@ public class QualityAnalysis implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @NonNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "PROJECT_ID", nullable = false, updatable = false)
   private Project project;
 
-  @NonNull
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "ANALYSIS_ID", nullable = false)
   private List<QualityViolation> violations;

@@ -20,7 +20,6 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -44,11 +43,9 @@ public class Artefact implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @NonNull
   @Column(nullable = false)
   private String name;
 
-  @NonNull
   @Column(nullable = false, length = 50)
   private String sonarIdentifier;
 

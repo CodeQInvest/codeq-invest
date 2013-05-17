@@ -20,7 +20,6 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
@@ -48,12 +47,10 @@ public class QualityViolation implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @NonNull
   @ManyToOne(optional = false, cascade = CascadeType.ALL)
   @JoinColumn(name = "REQUIREMENT_ID", nullable = false, updatable = false)
   private QualityRequirement requirement;
 
-  @NonNull
   @ManyToOne(optional = false, cascade = CascadeType.ALL)
   @JoinColumn(name = "VIOLATION_ID", nullable = false, updatable = false)
   private Artefact artefact;

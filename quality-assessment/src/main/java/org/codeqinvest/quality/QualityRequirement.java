@@ -20,7 +20,6 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -62,15 +61,12 @@ public class QualityRequirement implements Serializable {
   @Column(nullable = false)
   private long weightingMetricValue;
 
-  @NonNull
   @Column(nullable = false, length = 50)
   private String weightingMetricIdentifier;
 
-  @NonNull
   @Column(nullable = false, length = 50)
   private String metricIdentifier;
 
-  @NonNull
   @Column(nullable = false, length = 2)
   private String operator;
 
