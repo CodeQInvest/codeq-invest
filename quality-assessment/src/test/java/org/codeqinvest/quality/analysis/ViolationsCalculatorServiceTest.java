@@ -62,7 +62,7 @@ public class ViolationsCalculatorServiceTest {
     profile.addRequirement(secondRequirement);
 
     SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings(defaultSonarHost, "myProject::123");
-    ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings(0, "http://svn.localhost");
+    ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings("http://svn.localhost");
     project = new Project("myProject", "0 0 * * *", profile, sonarConnectionSettings, scmConnectionSettings);
 
     connectionCheckerService = mock(SonarConnectionCheckerService.class);
