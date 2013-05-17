@@ -22,17 +22,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.codeqinvest.quality.QualityAnalysis;
-import org.codeqinvest.sonar.SonarConnectionSettings;
+import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -58,6 +51,10 @@ public class Project implements Serializable {
   @Column(nullable = false, length = 100)
   private String cronExpression;
 
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "PROFILE_ID", nullable = false)
+  private QualityProfile profile;
+
   @Embedded
   private SonarConnectionSettings sonarConnectionSettings;
 
@@ -70,9 +67,11 @@ public class Project implements Serializable {
   protected Project() {
   }
 
-  public Project(String name, String cronExpression, SonarConnectionSettings sonarConnectionSettings, ScmSettings scmSettings) {
+  public Project(String name, String cronExpression, QualityProfile profile,
+                 SonarConnectionSettings sonarConnectionSettings, ScmSettings scmSettings) {
     this.name = name;
     this.cronExpression = cronExpression;
+    this.profile = profile;
     this.sonarConnectionSettings = sonarConnectionSettings;
     this.scmSettings = scmSettings;
   }
