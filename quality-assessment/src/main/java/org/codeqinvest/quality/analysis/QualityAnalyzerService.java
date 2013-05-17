@@ -20,6 +20,9 @@ package org.codeqinvest.quality.analysis;
 
 import org.codeqinvest.project.Project;
 import org.codeqinvest.quality.QualityAnalysis;
+import org.codeqinvest.sonar.ResourcesCollectorService;
+import org.codeqinvest.sonar.SonarConnectionCheckerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,7 +38,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class QualityAnalyzerService {
 
-  public QualityAnalysis analyzeProject(Project project) {
+  private final SonarConnectionCheckerService sonarConnectionCheckerService;
+  private final ResourcesCollectorService resourcesCollectorService;
+
+  @Autowired
+  public QualityAnalyzerService(SonarConnectionCheckerService sonarConnectionCheckerService,
+                                ResourcesCollectorService resourcesCollectorService) {
+    this.sonarConnectionCheckerService = sonarConnectionCheckerService;
+    this.resourcesCollectorService = resourcesCollectorService;
+  }
+
+  public QualityAnalysis analyzeProject(Project project) throws ConnectionException {
+    if (!sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
+      throw new ConnectionException();
+    }
     return null;
   }
 }
