@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.project;
+package org.codeqinvest.codechanges;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,7 +35,7 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 @ToString
 @Embeddable
-public class ScmSettings {
+public class ScmConnectionSettings {
 
   @Column(name = "SCM_TYPE", nullable = false)
   private int type;
@@ -49,17 +49,21 @@ public class ScmSettings {
   @Column(name = "SCM_PASSWORD")
   private String password;
 
-  protected ScmSettings() {
+  protected ScmConnectionSettings() {
   }
 
-  public ScmSettings(int type, String url) {
-    this(type, url, null, null);
+  public ScmConnectionSettings(String url) {
+    this(url, null, null);
   }
 
-  public ScmSettings(int type, String url, String username, String password) {
-    this.type = type;
+  public ScmConnectionSettings(String url, String username, String password) {
+    this.type = 0; // for SVN
     this.url = url;
     this.username = username;
     this.password = password;
+  }
+
+  public boolean hasUsername() {
+    return username != null;
   }
 }

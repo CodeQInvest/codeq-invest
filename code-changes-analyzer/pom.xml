@@ -13,6 +13,13 @@
   <name>CodeQ Invest :: Code Changes Analyzer</name>
   <packaging>jar</packaging>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>

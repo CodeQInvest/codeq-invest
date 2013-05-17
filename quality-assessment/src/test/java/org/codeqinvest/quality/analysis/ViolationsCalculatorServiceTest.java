@@ -18,8 +18,8 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import org.codeqinvest.codechanges.ScmConnectionSettings;
 import org.codeqinvest.project.Project;
-import org.codeqinvest.project.ScmSettings;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityCriteria;
 import org.codeqinvest.quality.QualityProfile;
@@ -62,8 +62,8 @@ public class ViolationsCalculatorServiceTest {
     profile.addRequirement(secondRequirement);
 
     SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings(defaultSonarHost, "myProject::123");
-    ScmSettings scmSettings = new ScmSettings(0, "http://svn.localhost");
-    project = new Project("myProject", "0 0 * * *", profile, sonarConnectionSettings, scmSettings);
+    ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings(0, "http://svn.localhost");
+    project = new Project("myProject", "0 0 * * *", profile, sonarConnectionSettings, scmConnectionSettings);
 
     connectionCheckerService = mock(SonarConnectionCheckerService.class);
     when(connectionCheckerService.isReachable(any(SonarConnectionSettings.class))).thenReturn(true);

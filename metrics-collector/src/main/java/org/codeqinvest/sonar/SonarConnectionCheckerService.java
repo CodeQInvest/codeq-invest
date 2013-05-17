@@ -42,7 +42,7 @@ public class SonarConnectionCheckerService {
       return connector.getHttpClient()
           .execute(new HttpGet(connectionSettings.getUrl() + "/api/metrics")).getStatusLine().getStatusCode() == OK;
     } catch (IOException e) {
-      SonarConnectionCheckerService.log.info("Sonar is not reachable during connection check.", e);
+      log.info("Sonar is not reachable during connection check.", e);
       return false;
     }
   }
