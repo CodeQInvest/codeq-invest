@@ -21,7 +21,7 @@ package org.codeqinvest.project;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.codeqinvest.codechanges.ScmConnectionSettings;
+import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.quality.QualityAnalysis;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.sonar.SonarConnectionSettings;

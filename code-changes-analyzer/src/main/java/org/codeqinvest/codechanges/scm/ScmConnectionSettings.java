@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges;
+package org.codeqinvest.codechanges.scm;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

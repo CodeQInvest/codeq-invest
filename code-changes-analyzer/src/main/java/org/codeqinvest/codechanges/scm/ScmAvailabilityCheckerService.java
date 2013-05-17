@@ -23,7 +23,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.codeqinvest.codechanges.ScmConnectionSettings;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

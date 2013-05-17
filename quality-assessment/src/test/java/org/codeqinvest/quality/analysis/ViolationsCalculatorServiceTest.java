@@ -18,7 +18,7 @@
  */
 package org.codeqinvest.quality.analysis;
 
-import org.codeqinvest.codechanges.ScmConnectionSettings;
+import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.project.Project;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityCriteria;
