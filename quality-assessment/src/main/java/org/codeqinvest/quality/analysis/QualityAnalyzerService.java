@@ -18,10 +18,9 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.project.Project;
 import org.codeqinvest.quality.QualityAnalysis;
-import org.codeqinvest.sonar.ResourcesCollectorService;
-import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,23 +34,22 @@ import org.springframework.stereotype.Service;
  *
  * @author fmueller
  */
+@Slf4j
 @Service
 public class QualityAnalyzerService {
 
-  private final SonarConnectionCheckerService sonarConnectionCheckerService;
-  private final ResourcesCollectorService resourcesCollectorService;
+  private final ViolationsCalculatorService violationsCalculatorService;
+  private final ChangeProbabilityCalculatorService changeProbabilityCalculatorService;
 
   @Autowired
-  public QualityAnalyzerService(SonarConnectionCheckerService sonarConnectionCheckerService,
-                                ResourcesCollectorService resourcesCollectorService) {
-    this.sonarConnectionCheckerService = sonarConnectionCheckerService;
-    this.resourcesCollectorService = resourcesCollectorService;
+  public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService,
+                                ChangeProbabilityCalculatorService changeProbabilityCalculatorService) {
+    this.violationsCalculatorService = violationsCalculatorService;
+    this.changeProbabilityCalculatorService = changeProbabilityCalculatorService;
   }
 
-  public QualityAnalysis analyzeProject(Project project) throws ConnectionException {
-    if (!sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
-      throw new ConnectionException();
-    }
+  public QualityAnalysis analyzeProject(Project project) {
+    // TODO implement
     return null;
   }
 }

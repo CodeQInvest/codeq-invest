@@ -18,24 +18,26 @@
  */
 package org.codeqinvest.quality.analysis;
 
-import org.codeqinvest.project.Project;
 import org.codeqinvest.sonar.ResourcesCollectorService;
-import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.codeqinvest.sonar.SonarConnectionSettings;
-import org.junit.Test;
+import org.sonar.wsclient.services.Resource;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Collection;
+import java.util.LinkedList;
 
-public class QualityAnalyzerServiceTest {
+class FakeResourcesCollectorService extends ResourcesCollectorService {
 
-  @Test(expected = ConnectionException.class)
-  public void shouldFailWithConnectionExceptionWhenSonarProjectIsNotReachable() throws ConnectionException {
-    SonarConnectionCheckerService sonarConnectionCheckerService = mock(SonarConnectionCheckerService.class);
-    when(sonarConnectionCheckerService.isReachable(any(SonarConnectionSettings.class))).thenReturn(false);
+  private final Collection<Resource> resources = new LinkedList<Resource>();
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(sonarConnectionCheckerService, new ResourcesCollectorService());
-    qualityAnalyzerService.analyzeProject(mock(Project.class));
+  public void addResource(String key) {
+    Resource resource = new Resource();
+    resource.setKey(key);
+    resource.setLongName(key);
+    resources.add(resource);
+  }
+
+  @Override
+  public Collection<Resource> collectAllResourcesForProject(SonarConnectionSettings connectionSettings) {
+    return resources;
   }
 }

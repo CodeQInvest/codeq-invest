@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,7 +39,7 @@ import java.io.Serializable;
  * @author fmueller
  */
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "profile")
 @ToString(exclude = "profile")
 @Entity
 @Table(name = "QUALITY_REQUIREMENT")
@@ -64,27 +65,23 @@ public class QualityRequirement implements Serializable {
   @Column(nullable = false, length = 50)
   private String weightingMetricIdentifier;
 
-  @Column(nullable = false, length = 50)
-  private String metricIdentifier;
-
-  @Column(nullable = false, length = 2)
-  private String operator;
-
-  @Column(nullable = false)
-  private long threshold;
+  @Embedded
+  private QualityCriteria criteria;
 
   protected QualityRequirement() {
   }
 
   public QualityRequirement(QualityProfile profile, int remediationCosts, int nonRemediationCosts,
-                            int weightingMetricValue, String weightingMetricIdentifier, String metricIdentifier, String operator, int threshold) {
+                            int weightingMetricValue, String weightingMetricIdentifier, QualityCriteria criteria) {
     this.profile = profile;
     this.remediationCosts = remediationCosts;
     this.nonRemediationCosts = nonRemediationCosts;
     this.weightingMetricValue = weightingMetricValue;
     this.weightingMetricIdentifier = weightingMetricIdentifier;
-    this.metricIdentifier = metricIdentifier;
-    this.operator = operator;
-    this.threshold = threshold;
+    this.criteria = criteria;
+  }
+
+  public boolean isViolated(double metricValue) {
+    return criteria.isViolated(metricValue);
   }
 }

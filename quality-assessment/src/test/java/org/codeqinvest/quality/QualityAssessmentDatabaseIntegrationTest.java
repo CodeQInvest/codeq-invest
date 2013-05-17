@@ -58,8 +58,8 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
   @Before
   public void createExampleEntities() {
     profile = new QualityProfile();
-    firstRequirement = new QualityRequirement(profile, 100, 200, 10, "nloc", "cc", ">", 10);
-    secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", "ec", "<", 15);
+    firstRequirement = new QualityRequirement(profile, 100, 200, 10, "nloc", new QualityCriteria("cc", ">", 10));
+    secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", new QualityCriteria("ec", "<", 15));
     profile.addRequirement(firstRequirement);
     profile.addRequirement(secondRequirement);
 
@@ -85,6 +85,8 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     assertThat(profileFromDb)
         .as("The loaded quality profile object from the database should be equal to the one from the memory.")
         .isEqualTo(profile);
+    assertThat(profile.getRequirements().contains(firstRequirement)).isTrue();
+    assertThat(profile.getRequirements().contains(secondRequirement)).isTrue();
   }
 
   @Test

@@ -16,22 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.sonar;
+package org.codeqinvest.quality.analysis;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
- * This exception indicates that resource could not be find by
- * a service that triggers Sonar.
+ * TODO javadoc
  *
  * @author fmueller
- * @see MetricCollectorService
  */
-public class ResourceNotFoundException extends Exception {
-
-  public ResourceNotFoundException() {
-    super();
-  }
-
-  public ResourceNotFoundException(String message) {
-    super(message);
-  }
+@Slf4j
+@Service
+class ChangeProbabilityCalculatorService {
 }

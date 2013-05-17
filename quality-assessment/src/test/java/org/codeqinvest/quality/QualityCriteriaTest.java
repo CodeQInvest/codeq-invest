@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.quality.analysis;
+package org.codeqinvest.quality;
 
-/**
- * This exception represents any problems with the
- * connection to a third-party system that is necessary
- * for a successful quality analysis run.
- *
- * @author fmueller
- * @see QualityAnalyzerService
- */
-public class ConnectionException extends Exception {
+import org.junit.Test;
+
+public class QualityCriteriaTest {
+
+  @Test(expected = IllegalArgumentException.class)
+  public void creationOfCriteriaShouldFailForNotAllowedOperator() {
+    new QualityCriteria("some_metric", "not_allowed_operator", 0);
+  }
 }
