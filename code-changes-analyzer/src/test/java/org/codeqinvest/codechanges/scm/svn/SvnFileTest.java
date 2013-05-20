@@ -16,22 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm;
+package org.codeqinvest.codechanges.scm.svn;
 
-/**
- * Implementations of this interface verify
- * the availability of a given scm server.
- *
- * @author fmueller
- */
-public interface ScmAvailabilityCheckerService {
+import org.junit.Test;
 
-  /**
-   * Checks the availibility of the scm server that is
-   * provided by {@code connectionSettings}.
-   *
-   * @return {@code true} if the scm server is available,
-   *         otherwise {@code false}
-   */
-  boolean isAvailable(ScmConnectionSettings connectionSettings);
+import static org.fest.assertions.Assertions.assertThat;
+
+public class SvnFileTest {
+
+  @Test
+  public void countLinesWithSuppliedSeparator() {
+    assertThat(new SvnFile("1a2a3", "a").countLines()).isEqualTo(3);
+  }
+
+  @Test
+  public void shouldNotFailOnEmptyText() {
+    assertThat(new SvnFile("", "a").countLines()).isEqualTo(0);
+  }
+
+  @Test
+  public void countLineCorrectlyWhenSeparatorConsistsOfManyCharacters() {
+    assertThat(new SvnFile("111abc222abc333", "abc").countLines()).isEqualTo(3);
+  }
 }

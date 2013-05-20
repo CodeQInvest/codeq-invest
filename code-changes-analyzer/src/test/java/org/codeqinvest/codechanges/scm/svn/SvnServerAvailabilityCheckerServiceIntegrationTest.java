@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm;
+package org.codeqinvest.codechanges.scm.svn;
 
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.junit.Test;
@@ -29,10 +29,10 @@ import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/module-context.xml")
-public class ScmAvailabilityCheckerServiceIntegrationTest {
+public class SvnServerAvailabilityCheckerServiceIntegrationTest {
 
   @Autowired
-  private ScmAvailabilityCheckerService connectionCheckerService;
+  private SvnServerAvailabilityCheckerService connectionCheckerService;
 
   @Test
   public void apacheSvnServerShouldBeReachable() {

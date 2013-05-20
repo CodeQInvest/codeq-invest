@@ -19,19 +19,16 @@
 package org.codeqinvest.codechanges.scm;
 
 /**
- * Implementations of this interface verify
- * the availability of a given scm server.
+ * This exception indicates that an encoding error occurred
+ * during code churn calculation. This means that the supplied
+ * encoding by an instance of {@link ScmConnectionEncodingException}
+ * did not work properly.
  *
  * @author fmueller
  */
-public interface ScmAvailabilityCheckerService {
+public class ScmConnectionEncodingException extends Exception {
 
-  /**
-   * Checks the availibility of the scm server that is
-   * provided by {@code connectionSettings}.
-   *
-   * @return {@code true} if the scm server is available,
-   *         otherwise {@code false}
-   */
-  boolean isAvailable(ScmConnectionSettings connectionSettings);
+  public ScmConnectionEncodingException(Exception e) {
+    super(e);
+  }
 }

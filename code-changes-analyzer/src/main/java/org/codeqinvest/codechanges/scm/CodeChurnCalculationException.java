@@ -19,19 +19,14 @@
 package org.codeqinvest.codechanges.scm;
 
 /**
- * Implementations of this interface verify
- * the availability of a given scm server.
+ * This exception indicates that an error occurred during code
+ * churn calculation or during the communication with the scm system.
  *
  * @author fmueller
  */
-public interface ScmAvailabilityCheckerService {
+public class CodeChurnCalculationException extends Exception {
 
-  /**
-   * Checks the availibility of the scm server that is
-   * provided by {@code connectionSettings}.
-   *
-   * @return {@code true} if the scm server is available,
-   *         otherwise {@code false}
-   */
-  boolean isAvailable(ScmConnectionSettings connectionSettings);
+  public CodeChurnCalculationException(Exception e) {
+    super(e);
+  }
 }

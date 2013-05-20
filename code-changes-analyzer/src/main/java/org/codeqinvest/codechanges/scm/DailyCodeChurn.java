@@ -18,20 +18,19 @@
  */
 package org.codeqinvest.codechanges.scm;
 
+import lombok.Data;
+import org.joda.time.LocalDate;
+
+import java.util.List;
+
 /**
- * Implementations of this interface verify
- * the availability of a given scm server.
+ * Encapsulates al code churn proportions of one day.
  *
  * @author fmueller
  */
-public interface ScmAvailabilityCheckerService {
+@Data
+public class DailyCodeChurn {
 
-  /**
-   * Checks the availibility of the scm server that is
-   * provided by {@code connectionSettings}.
-   *
-   * @return {@code true} if the scm server is available,
-   *         otherwise {@code false}
-   */
-  boolean isAvailable(ScmConnectionSettings connectionSettings);
+  private final LocalDate day;
+  private final List<Double> codeChurnProportions;
 }

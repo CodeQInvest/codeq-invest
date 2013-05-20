@@ -33,7 +33,7 @@ import javax.persistence.Embeddable;
  */
 @Getter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "password")
 @Embeddable
 public class ScmConnectionSettings {
 
@@ -49,6 +49,9 @@ public class ScmConnectionSettings {
   @Column(name = "SCM_PASSWORD")
   private String password;
 
+  @Column(name = "SCM_FILE_ENCODING", nullable = false)
+  private String encoding;
+
   protected ScmConnectionSettings() {
   }
 
@@ -57,10 +60,15 @@ public class ScmConnectionSettings {
   }
 
   public ScmConnectionSettings(String url, String username, String password) {
+    this(url, username, password, "UTF-8");
+  }
+
+  public ScmConnectionSettings(String url, String username, String password, String encoding) {
     this.type = 0; // for SVN
     this.url = url;
     this.username = username;
     this.password = password;
+    this.encoding = encoding;
   }
 
   public boolean hasUsername() {

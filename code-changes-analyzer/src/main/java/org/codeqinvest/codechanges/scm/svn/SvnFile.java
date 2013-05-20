@@ -16,22 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm;
+package org.codeqinvest.codechanges.scm.svn;
 
 /**
- * Implementations of this interface verify
- * the availability of a given scm server.
+ * Value object that encapsulates the file content
+ * with the corresponding line separator. The line
+ * separator is based on the eol style of the svn
+ * server.
  *
  * @author fmueller
  */
-public interface ScmAvailabilityCheckerService {
+final class SvnFile {
+
+  private final String content;
+  private final String lineSeparator;
+
+  SvnFile(String content, String lineSeparator) {
+    this.content = content;
+    this.lineSeparator = lineSeparator;
+  }
 
   /**
-   * Checks the availibility of the scm server that is
-   * provided by {@code connectionSettings}.
+   * Counts the lines of the file content.
+   * For that, the line separator is used.
    *
-   * @return {@code true} if the scm server is available,
-   *         otherwise {@code false}
+   * @return the number of lines of this file
    */
-  boolean isAvailable(ScmConnectionSettings connectionSettings);
+  public int countLines() {
+    if (content.isEmpty()) {
+      return 0;
+    }
+    return content.split(lineSeparator).length;
+  }
 }
