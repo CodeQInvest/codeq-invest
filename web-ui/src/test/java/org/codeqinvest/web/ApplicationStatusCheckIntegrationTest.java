@@ -39,7 +39,7 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 public class ApplicationStatusCheckIntegrationTest extends FluentTest {
 
-  private final String overviewUrl = System.getenv("system.host");
+  private final String overviewUrl = System.getProperty("system.host");
 
   @Test
   public void isProperlyDeployed() throws IOException {
