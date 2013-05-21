@@ -19,7 +19,7 @@
 package org.codeqinvest.quality.analysis;
 
 import lombok.extern.slf4j.Slf4j;
-import org.codeqinvest.project.Project;
+import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityAnalysis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,13 +39,10 @@ import org.springframework.stereotype.Service;
 public class QualityAnalyzerService {
 
   private final ViolationsCalculatorService violationsCalculatorService;
-  private final ChangeProbabilityCalculatorService changeProbabilityCalculatorService;
 
   @Autowired
-  public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService,
-                                ChangeProbabilityCalculatorService changeProbabilityCalculatorService) {
+  public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService) {
     this.violationsCalculatorService = violationsCalculatorService;
-    this.changeProbabilityCalculatorService = changeProbabilityCalculatorService;
   }
 
   public QualityAnalysis analyzeProject(Project project) {

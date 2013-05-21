@@ -26,6 +26,10 @@ package org.codeqinvest.codechanges.scm;
  */
 public class CodeChurnCalculationException extends Exception {
 
+  public CodeChurnCalculationException() {
+    super();
+  }
+
   public CodeChurnCalculationException(Exception e) {
     super(e);
   }

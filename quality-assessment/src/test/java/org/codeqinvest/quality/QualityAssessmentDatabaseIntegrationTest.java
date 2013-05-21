@@ -19,7 +19,6 @@
 package org.codeqinvest.quality;
 
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.codeqinvest.project.Project;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;

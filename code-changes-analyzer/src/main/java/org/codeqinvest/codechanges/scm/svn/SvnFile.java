@@ -42,7 +42,7 @@ final class SvnFile {
    *
    * @return the number of lines of this file
    */
-  public int countLines() {
+  int countLines() {
     if (content.isEmpty()) {
       return 0;
     }

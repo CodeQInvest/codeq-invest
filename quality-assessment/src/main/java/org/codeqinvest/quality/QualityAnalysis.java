@@ -21,7 +21,6 @@ package org.codeqinvest.quality;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.codeqinvest.project.Project;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

@@ -20,7 +20,7 @@ package org.codeqinvest.quality.analysis;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.codeqinvest.project.Project;
+import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.quality.QualityViolation;
@@ -63,7 +63,7 @@ class ViolationsCalculatorService {
     this.metricCollectorService = metricCollectorService;
   }
 
-  public ViolationsAnalysisResult calculateAllViolation(Project project) {
+  ViolationsAnalysisResult calculateAllViolation(Project project) {
     if (!sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
       return ViolationsAnalysisResult.createFailedAnalysis(Collections.<QualityViolation>emptyList(),
           "sonar project is not reachable with supplied connection settings: " + project.getSonarConnectionSettings().toString());
@@ -100,7 +100,7 @@ class ViolationsCalculatorService {
       }
     }
 
-    log.info("Successfully analysed project {} and found {} quality violations in {} artefact",
+    log.info("Successfully analysed project {} and found {} quality violations in {} artefacts",
         project.getName(), violations.size(), artefactsThatHaveAtLeastOneViolation.size());
     return ViolationsAnalysisResult.createSuccessfulAnalysis(violations);
   }

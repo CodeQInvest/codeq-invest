@@ -36,7 +36,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-class ViolationsAnalysisResult {
+final class ViolationsAnalysisResult {
 
   private final boolean successful;
   private final List<QualityViolation> violations;
@@ -48,11 +48,11 @@ class ViolationsAnalysisResult {
     this.failureReason = failureReason;
   }
 
-  public static ViolationsAnalysisResult createSuccessfulAnalysis(List<QualityViolation> violations) {
+  static ViolationsAnalysisResult createSuccessfulAnalysis(List<QualityViolation> violations) {
     return new ViolationsAnalysisResult(true, violations, Optional.<String>absent());
   }
 
-  public static ViolationsAnalysisResult createFailedAnalysis(List<QualityViolation> violations, String failureReason) {
+  static ViolationsAnalysisResult createFailedAnalysis(List<QualityViolation> violations, String failureReason) {
     return new ViolationsAnalysisResult(false, violations, Optional.of(failureReason));
   }
 }

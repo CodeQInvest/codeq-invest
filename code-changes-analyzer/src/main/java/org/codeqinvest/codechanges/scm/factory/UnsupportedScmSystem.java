@@ -16,17 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.quality.analysis;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+package org.codeqinvest.codechanges.scm.factory;
 
 /**
- * TODO javadoc
- *
  * @author fmueller
  */
-@Slf4j
-@Service
-class ChangeProbabilityCalculatorService {
+public class UnsupportedScmSystem extends RuntimeException {
 }
