@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>code-changes-analyzer</artifactId>
-  <name>CodeQ Invest :: Code Changes Analyzer</name>
+  <name>Code Changes Analyzer</name>
   <packaging>jar</packaging>
 
   <dependencies>

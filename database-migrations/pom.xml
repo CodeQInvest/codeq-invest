@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>database-migrations</artifactId>
-  <name>CodeQ Invest :: Database Migrations</name>
+  <name>Database Migrations</name>
   <packaging>jar</packaging>
 
   <build>

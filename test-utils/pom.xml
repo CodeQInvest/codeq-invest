@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>test-utils</artifactId>
-  <name>CodeQ Invest :: Test Utils</name>
+  <name>Test Utils</name>
   <packaging>jar</packaging>
 
   <dependencies>

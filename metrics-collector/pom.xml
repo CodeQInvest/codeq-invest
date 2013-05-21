@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>metrics-collector</artifactId>
-  <name>CodeQ Invest :: Metrics Collector</name>
+  <name>Metrics Collector</name>
   <packaging>jar</packaging>
 
   <dependencies>

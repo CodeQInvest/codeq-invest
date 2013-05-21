@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>quality-assessment</artifactId>
-  <name>CodeQ Invest :: Quality Assessment</name>
+  <name>Quality Assessment</name>
   <packaging>jar</packaging>
 
   <dependencies>

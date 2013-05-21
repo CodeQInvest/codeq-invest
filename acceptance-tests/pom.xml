@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>acceptance-tests</artifactId>
-  <name>CodeQ Invest :: Accepteance Tests</name>
+  <name>Acceptance Tests</name>
   <packaging>jar</packaging>
 
   <properties>

@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>investment-decision-making</artifactId>
-  <name>CodeQ Invest :: Investment Decision Making</name>
+  <name>Investment Decision Making</name>
   <packaging>jar</packaging>
 
   <dependencies>

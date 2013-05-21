@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>web-ui</artifactId>
-  <name>CodeQ Invest :: Web User Interface</name>
+  <name>Web User Interface</name>
   <packaging>war</packaging>
 
   <dependencies>
