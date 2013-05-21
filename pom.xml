@@ -44,6 +44,9 @@
     <encoding>UTF-8</encoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <servlet.port>8080</servlet.port>
+    <cargo.logging>medium</cargo.logging>
+
     <sonar.version>3.5.1</sonar.version>
     <spring.version>3.2.2.RELEASE</spring.version>
     <spring-data-jpa.version>1.3.0.RELEASE</spring-data-jpa.version>
@@ -409,6 +412,40 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <configuration>
+          <deployables>
+            <deployable>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>web-ui</artifactId>
+              <type>war</type>
+              <properties>
+                <context></context>
+              </properties>
+            </deployable>
+          </deployables>
+          <container>
+            <containerId>tomcat7x</containerId>
+            <zipUrlInstaller>
+              <url>http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.39/bin/apache-tomcat-7.0.39.zip</url>
+            </zipUrlInstaller>
+            <log>${project.build.directory}/cargo.log</log>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <properties>
+              <cargo.servlet.port>${servlet.port}</cargo.servlet.port>
+              <cargo.logging>${cargo.logging}</cargo.logging>
+              <cargo.jvmargs>
+                ${jacoco.agent.argLine}
+                -Dexternalconfig=${externalconfig}
+              </cargo.jvmargs>
+            </properties>
+          </configuration>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
