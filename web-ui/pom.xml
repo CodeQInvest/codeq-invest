@@ -15,6 +15,7 @@
 
   <properties>
     <servlet.port>8080</servlet.port>
+    <system.host>http://localhost:${servlet.port}</system.host>
     <cargo.logging>medium</cargo.logging>
   </properties>
 
@@ -130,6 +131,15 @@
         <artifactId>maven-license-plugin</artifactId>
         <configuration>
           <header>../etc/license-header</header>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <environmentVariables>
+            <system.host>${system.host}</system.host>
+          </environmentVariables>
         </configuration>
       </plugin>
       <plugin>
