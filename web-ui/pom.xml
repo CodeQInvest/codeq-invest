@@ -86,7 +86,7 @@
 
   <profiles>
     <profile>
-      <id>int-tests</id>
+      <id>run-web-app</id>
       <build>
         <plugins>
           <plugin>
@@ -96,28 +96,11 @@
               <configuration>
                 <properties>
                   <cargo.jvmargs>
-                    ${jacoco.agent.argLine}
                     -Dexternalconfig=${externalconfig}
                   </cargo.jvmargs>
                 </properties>
               </configuration>
             </configuration>
-            <executions>
-              <execution>
-                <id>start-cargo</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop-cargo</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>
@@ -169,11 +152,28 @@
               <cargo.servlet.port>${servlet.port}</cargo.servlet.port>
               <cargo.logging>${cargo.logging}</cargo.logging>
               <cargo.jvmargs>
+                ${jacoco.agent.argLine}
                 -Dexternalconfig=${externalconfig}
               </cargo.jvmargs>
             </properties>
           </configuration>
         </configuration>
+        <executions>
+          <execution>
+            <id>start-cargo</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-cargo</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
