@@ -13,6 +13,11 @@
   <name>Web User Interface</name>
   <packaging>war</packaging>
 
+  <properties>
+    <servlet.port>8080</servlet.port>
+    <cargo.logging>medium</cargo.logging>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.codeqinvest</groupId>
@@ -70,13 +75,53 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.fluentlenium</groupId>
       <artifactId>fluentlenium-festassert</artifactId>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>int-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <configuration>
+              <configuration>
+                <properties>
+                  <cargo.jvmargs>
+                    ${jacoco.agent.argLine}
+                    -Dexternalconfig=${externalconfig}
+                  </cargo.jvmargs>
+                </properties>
+              </configuration>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-cargo</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-cargo</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
@@ -88,38 +133,37 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
         <configuration>
-          <contextPath>/</contextPath>
-          <scanIntervalSeconds>5</scanIntervalSeconds>
+          <deployables>
+            <deployable>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <type>war</type>
+              <properties>
+                <context></context>
+              </properties>
+            </deployable>
+          </deployables>
+          <container>
+            <containerId>tomcat7x</containerId>
+            <zipUrlInstaller>
+              <url>http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.16/bin/apache-tomcat-7.0.16.zip</url>
+            </zipUrlInstaller>
+            <log>${project.build.directory}/cargo.log</log>
+          </container>
+          <configuration>
+            <type>standalone</type>
+            <properties>
+              <cargo.servlet.port>${servlet.port}</cargo.servlet.port>
+              <cargo.logging>${cargo.logging}</cargo.logging>
+              <cargo.jvmargs>
+                -Dexternalconfig=${externalconfig}
+              </cargo.jvmargs>
+            </properties>
+          </configuration>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <configuration>
-          <path>/</path>
-        </configuration>
-        <executions>
-          <execution>
-            <id>start-tomcat</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <fork>true</fork>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-tomcat</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>shutdown</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

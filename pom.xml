@@ -320,16 +320,6 @@
           <version>1.9.0</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>maven-jetty-plugin</artifactId>
-          <version>6.1.26</version>
-        </plugin>
-        <plugin>
           <groupId>net.thucydides.maven.plugins</groupId>
           <artifactId>maven-thucydides-plugin</artifactId>
           <version>${thucydides.version}</version>
@@ -343,6 +333,16 @@
           <groupId>com.googlecode.flyway</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
           <version>2.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.cargo</groupId>
+          <artifactId>cargo-maven2-plugin</artifactId>
+          <version>1.4.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.6.2.201302030002</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -372,6 +372,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
+          <argLine>${jacoco.agent.argLine}</argLine>
+          <!-- to fool Sonar: by using the same output as surefire plugin, integration tests are also counted -->
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <includes>
             <include>**/*TestSuite*</include>
             <include>**/*IntegrationTest*</include>
@@ -382,6 +385,27 @@
             <goals>
               <goal>integration-test</goal>
               <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>org/codeqinvest/**</include>
+          </includes>
+          <propertyName>jacoco.agent.argLine</propertyName>
+          <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+          <append>true</append>
+        </configuration>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>prepare-agent</goal>
             </goals>
           </execution>
         </executions>
