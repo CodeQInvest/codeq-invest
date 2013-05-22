@@ -22,8 +22,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.codeqinvest.quality.QualityAnalysis;
-import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 
 import javax.persistence.*;
@@ -62,6 +60,9 @@ public class Project implements Serializable {
   @Embedded
   private ScmConnectionSettings scmSettings;
 
+  @Embedded
+  private CodeChangeSettings codeChangeSettings;
+
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
   private List<QualityAnalysis> analyzes;
 
@@ -69,11 +70,13 @@ public class Project implements Serializable {
   }
 
   public Project(String name, String cronExpression, QualityProfile profile,
-                 SonarConnectionSettings sonarConnectionSettings, ScmConnectionSettings scmSettings) {
+                 SonarConnectionSettings sonarConnectionSettings, ScmConnectionSettings scmSettings,
+                 CodeChangeSettings codeChangeSettings) {
     this.name = name;
     this.cronExpression = cronExpression;
     this.profile = profile;
     this.sonarConnectionSettings = sonarConnectionSettings;
     this.scmSettings = scmSettings;
+    this.codeChangeSettings = codeChangeSettings;
   }
 }

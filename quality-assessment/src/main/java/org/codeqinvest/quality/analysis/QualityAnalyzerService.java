@@ -39,10 +39,13 @@ import org.springframework.stereotype.Service;
 public class QualityAnalyzerService {
 
   private final ViolationsCalculatorService violationsCalculatorService;
+  private final CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory;
 
   @Autowired
-  public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService) {
+  public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService,
+                                CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory) {
     this.violationsCalculatorService = violationsCalculatorService;
+    this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
   }
 
   public QualityAnalysis analyzeProject(Project project) {

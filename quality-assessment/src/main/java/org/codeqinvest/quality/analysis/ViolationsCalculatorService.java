@@ -20,8 +20,8 @@ package org.codeqinvest.quality.analysis;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.Artefact;
+import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.sonar.MetricCollectorService;

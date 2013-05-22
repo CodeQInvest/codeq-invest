@@ -64,7 +64,7 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
 
     SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings("http://localhost", "myProject::123");
     ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings("http://svn.localhost");
-    project = new Project("myProject", "0 0 * * *", profile, sonarConnectionSettings, scmConnectionSettings);
+    project = new Project("myProject", "0 0 * * *", profile, sonarConnectionSettings, scmConnectionSettings, CodeChangeSettings.defaultSetting(1));
   }
 
   @Test

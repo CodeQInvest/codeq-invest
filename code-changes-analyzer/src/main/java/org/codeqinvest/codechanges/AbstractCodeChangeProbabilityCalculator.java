@@ -46,6 +46,10 @@ abstract class AbstractCodeChangeProbabilityCalculator implements CodeChangeProb
     this.days = days;
   }
 
+  public final int getDays() {
+    return days;
+  }
+
   /**
    * {@inheritDoc}
    */
