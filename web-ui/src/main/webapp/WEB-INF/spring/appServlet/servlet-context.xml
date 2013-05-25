@@ -12,6 +12,12 @@
   <!-- Enables the Spring MVC @Controller programming model -->
   <mvc:annotation-driven/>
 
+  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="file:#{systemProperties.externalconfig}"/>
+  </bean>
+
+  <import resource="classpath*:META-INF/spring/module-context.xml"/>
+  <import resource="persistence-context.xml"/>
   <context:component-scan base-package="org.codeqinvest"/>
 
   <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->

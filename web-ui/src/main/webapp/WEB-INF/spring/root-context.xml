@@ -4,11 +4,4 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <!-- Root Context: defines shared resources visible to all other web components -->
-
-  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location" value="file:#{systemProperties.externalconfig}"/>
-  </bean>
-
-  <import resource="classpath*:META-INF/spring/module-context.xml"/>
-  <import resource="persistence-context.xml"/>
 </beans>

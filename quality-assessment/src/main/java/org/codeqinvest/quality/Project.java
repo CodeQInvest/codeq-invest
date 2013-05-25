@@ -20,6 +20,7 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.sonar.SonarConnectionSettings;
@@ -46,6 +47,7 @@ import java.io.Serializable;
 @Table(name = "PROJECT")
 public class Project implements Serializable {
 
+  @Setter
   @Id
   @GeneratedValue
   private Long id;

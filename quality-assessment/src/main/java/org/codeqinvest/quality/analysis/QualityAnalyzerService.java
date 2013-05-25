@@ -46,7 +46,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class QualityAnalyzerService {
+class QualityAnalyzerService {
 
   private final ViolationsCalculatorService violationsCalculatorService;
   private final ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory;
