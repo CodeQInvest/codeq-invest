@@ -23,6 +23,7 @@ import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @Embeddable
-public class QualityCriteria {
+public class QualityCriteria implements Serializable {
 
   private static final List<String> ALLOWED_OPERATORS = Arrays.asList("<", ">", "=", "!=", "<=", ">=");
 

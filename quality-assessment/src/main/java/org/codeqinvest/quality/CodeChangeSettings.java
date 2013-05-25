@@ -24,6 +24,7 @@ import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  * @author fmueller
@@ -32,7 +33,7 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 @ToString
 @Embeddable
-public class CodeChangeSettings {
+public class CodeChangeSettings implements Serializable {
 
   public static final int DEFAULT_METHOD = 0;
   public static final int WEIGHTED_METHOD = 1;

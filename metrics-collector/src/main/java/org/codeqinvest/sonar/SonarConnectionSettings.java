@@ -25,6 +25,7 @@ import org.sonar.wsclient.Host;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  * This class encapsulates all connection settings for
@@ -36,7 +37,7 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 @ToString
 @Embeddable
-public class SonarConnectionSettings {
+public class SonarConnectionSettings implements Serializable {
 
   @Column(name = "SONAR_URL", nullable = false)
   private String url;

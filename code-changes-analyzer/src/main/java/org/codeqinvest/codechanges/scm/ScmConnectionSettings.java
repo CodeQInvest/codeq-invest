@@ -24,6 +24,7 @@ import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  * This class encapsulates all connection settings for
@@ -35,7 +36,7 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 @ToString(exclude = "password")
 @Embeddable
-public class ScmConnectionSettings {
+public class ScmConnectionSettings implements Serializable {
 
   @Column(name = "SCM_TYPE", nullable = false)
   private int type;
