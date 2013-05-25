@@ -28,7 +28,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Set;
 
 /**
  * @author fmueller
@@ -48,7 +48,7 @@ public class QualityAnalyzerScheduler {
   private final QualityViolationCostsCalculator costsCalculator;
   private final QualityAnalysisRepository qualityAnalysisRepository;
 
-  private final CopyOnWriteArraySet<Project> alreadyScheduledProjects = Sets.newCopyOnWriteArraySet();
+  private final Set<Project> alreadyScheduledProjects = Sets.newCopyOnWriteArraySet();
 
   @Autowired
   public QualityAnalyzerScheduler(ProjectRepository projectRepository,
@@ -84,30 +84,5 @@ public class QualityAnalyzerScheduler {
     scheduler.schedule(new AnalyzerRunnable(project, projectRepository, qualityAnalyzerService), new CronTrigger(project.getCronExpression()));
     log.info("Scheduled analyzer job for project {} with cron expression {}", project.getName(), project.getCronExpression());
     return true;
-  }
-
-  private static class AnalyzerRunnable implements Runnable {
-
-    private final long projectId;
-    private final ProjectRepository projectRepository;
-    private final QualityAnalyzerService qualityAnalyzerService;
-
-    public AnalyzerRunnable(Project project, ProjectRepository projectRepository, QualityAnalyzerService qualityAnalyzerService) {
-      this.projectId = project.getId();
-      this.projectRepository = projectRepository;
-      this.qualityAnalyzerService = qualityAnalyzerService;
-    }
-
-    @Override
-    public void run() {
-      Project project = projectRepository.findOne(projectId);
-      if (project != null) {
-        log.info("Start analyzer run for project {}", project.getName());
-        qualityAnalyzerService.analyzeProject(project);
-        log.info("Finished analyzer run for project {}", project.getName());
-      } else {
-        log.error("Could not find project with id " + projectId + " for starting an analyzer run!");
-      }
-    }
   }
 }
