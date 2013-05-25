@@ -24,7 +24,6 @@ import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFact
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
@@ -37,6 +36,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Slf4j
 @Component
 public class QualityAnalyzerScheduler {
+
+  private static final int DEFAULT_POOL_SIZE = 10;
 
   private final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 
@@ -62,6 +63,8 @@ public class QualityAnalyzerScheduler {
     this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
     this.costsCalculator = costsCalculator;
     this.qualityAnalysisRepository = qualityAnalysisRepository;
+
+    scheduler.setPoolSize(DEFAULT_POOL_SIZE);
     scheduler.initialize();
   }
 
