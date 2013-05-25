@@ -54,6 +54,10 @@ public class Artefact implements Serializable {
   @Column(nullable = false)
   private double changeProbability;
 
+  @Setter
+  @Column(nullable = false)
+  private double secureChangeProbability;
+
   protected Artefact() {
   }
 
