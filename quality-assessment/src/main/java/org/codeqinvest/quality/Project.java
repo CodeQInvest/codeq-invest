@@ -24,9 +24,15 @@ import lombok.ToString;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * TODO javadoc
@@ -62,9 +68,6 @@ public class Project implements Serializable {
 
   @Embedded
   private CodeChangeSettings codeChangeSettings;
-
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
-  private List<QualityAnalysis> analyzes;
 
   protected Project() {
   }

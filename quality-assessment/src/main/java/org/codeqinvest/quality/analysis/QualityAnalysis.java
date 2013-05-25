@@ -16,13 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.quality;
+package org.codeqinvest.quality.analysis;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.codeqinvest.quality.Project;
+import org.codeqinvest.quality.QualityViolation;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -57,11 +60,26 @@ public class QualityAnalysis implements Serializable {
   @JoinColumn(name = "ANALYSIS_ID", nullable = false)
   private List<QualityViolation> violations;
 
+  @Column(nullable = false)
+  private boolean successful;
+
+  private String failureReason;
+
   protected QualityAnalysis() {
   }
 
-  public QualityAnalysis(Project project, List<QualityViolation> violations) {
+  private QualityAnalysis(Project project, List<QualityViolation> violations, boolean successful, String failureReason) {
     this.project = project;
     this.violations = violations;
+    this.successful = successful;
+    this.failureReason = failureReason;
+  }
+
+  public static QualityAnalysis success(Project project, List<QualityViolation> violations) {
+    return new QualityAnalysis(project, violations, true, null);
+  }
+
+  public static QualityAnalysis failed(Project project, List<QualityViolation> violations, String failureReason) {
+    return new QualityAnalysis(project, violations, false, failureReason);
   }
 }

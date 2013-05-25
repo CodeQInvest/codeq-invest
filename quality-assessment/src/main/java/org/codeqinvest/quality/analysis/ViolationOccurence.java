@@ -16,19 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm.svn;
+package org.codeqinvest.quality.analysis;
 
-import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.junit.Test;
+import lombok.Data;
+import org.codeqinvest.quality.Artefact;
+import org.codeqinvest.quality.QualityRequirement;
 
-import static org.fest.assertions.Assertions.assertThat;
+/**
+ * @author fmueller
+ */
+@Data
+final class ViolationOccurence {
 
-public class SvnServerAvailabilityCheckerServiceIntegrationTest {
+  private final QualityRequirement requirement;
+  private final Artefact artefact;
 
-  @Test
-  public void apacheSvnServerShouldBeReachable() {
-    SvnServerAvailabilityCheckerService connectionCheckerService = new SvnServerAvailabilityCheckerService();
-    // TODO improve this with vagrant and puppet
-    assertThat(connectionCheckerService.isAvailable(new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/logging/trunk/src/main/java/"))).isTrue();
+  public String getSonarIdentifierOfArtefact() {
+    return artefact.getSonarIdentifier();
   }
 }

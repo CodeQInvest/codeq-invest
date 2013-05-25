@@ -30,7 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:module-test-context-without-jpa.xml")
+@ContextConfiguration(locations = {"classpath:META-INF/spring/module-context.xml", "classpath:inmemory-db-context.xml"})
 public class CodeChangeProbabilityCalculatorFactoryTest {
 
   @Autowired

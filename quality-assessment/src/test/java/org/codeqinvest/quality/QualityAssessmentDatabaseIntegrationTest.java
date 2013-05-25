@@ -19,6 +19,7 @@
 package org.codeqinvest.quality;
 
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;
@@ -96,14 +97,14 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     entityManager.persist(project);
     entityManager.persist(artefact);
 
-    QualityViolation firstViolation = new QualityViolation(artefact, secondRequirement);
-    QualityViolation secondViolation = new QualityViolation(artefact, firstRequirement);
+    QualityViolation firstViolation = new QualityViolation(artefact, secondRequirement, 0, 0);
+    QualityViolation secondViolation = new QualityViolation(artefact, firstRequirement, 0, 0);
 
     List<QualityViolation> violations = new LinkedList<QualityViolation>();
     violations.add(firstViolation);
     violations.add(secondViolation);
 
-    QualityAnalysis analysis = new QualityAnalysis(project, violations);
+    QualityAnalysis analysis = QualityAnalysis.success(project, violations);
     entityManager.persist(analysis);
 
     QualityAnalysis analysisFromDb = entityManager.find(QualityAnalysis.class, analysis.getId());

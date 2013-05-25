@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -55,11 +56,19 @@ public class QualityViolation implements Serializable {
   @JoinColumn(name = "VIOLATION_ID", nullable = false, updatable = false)
   private Artefact artefact;
 
+  @Column(nullable = false)
+  private int remediationCosts;
+
+  @Column(nullable = false)
+  private int nonRemediationCosts;
+
   protected QualityViolation() {
   }
 
-  public QualityViolation(Artefact artefact, QualityRequirement requirement) {
+  public QualityViolation(Artefact artefact, QualityRequirement requirement, int remediationCosts, int nonRemediationCosts) {
     this.artefact = artefact;
     this.requirement = requirement;
+    this.remediationCosts = remediationCosts;
+    this.nonRemediationCosts = nonRemediationCosts;
   }
 }

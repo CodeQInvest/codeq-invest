@@ -22,7 +22,6 @@ import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.codeqinvest.quality.QualityViolation;
 
 import java.util.List;
 
@@ -39,20 +38,20 @@ import java.util.List;
 final class ViolationsAnalysisResult {
 
   private final boolean successful;
-  private final List<QualityViolation> violations;
+  private final List<ViolationOccurence> violations;
   private final Optional<String> failureReason;
 
-  private ViolationsAnalysisResult(boolean successful, List<QualityViolation> violations, Optional<String> failureReason) {
+  private ViolationsAnalysisResult(boolean successful, List<ViolationOccurence> violations, Optional<String> failureReason) {
     this.successful = successful;
     this.violations = violations;
     this.failureReason = failureReason;
   }
 
-  static ViolationsAnalysisResult createSuccessfulAnalysis(List<QualityViolation> violations) {
+  static ViolationsAnalysisResult createSuccessfulAnalysis(List<ViolationOccurence> violations) {
     return new ViolationsAnalysisResult(true, violations, Optional.<String>absent());
   }
 
-  static ViolationsAnalysisResult createFailedAnalysis(List<QualityViolation> violations, String failureReason) {
+  static ViolationsAnalysisResult createFailedAnalysis(List<ViolationOccurence> violations, String failureReason) {
     return new ViolationsAnalysisResult(false, violations, Optional.of(failureReason));
   }
 }

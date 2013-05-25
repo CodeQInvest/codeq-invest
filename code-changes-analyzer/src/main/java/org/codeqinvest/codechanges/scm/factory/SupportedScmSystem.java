@@ -16,19 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm.svn;
+package org.codeqinvest.codechanges.scm.factory;
 
-import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.junit.Test;
+/**
+ * @author fmueller
+ */
+public enum SupportedScmSystem {
 
-import static org.fest.assertions.Assertions.assertThat;
+  SVN(0);
 
-public class SvnServerAvailabilityCheckerServiceIntegrationTest {
+  private final int type;
 
-  @Test
-  public void apacheSvnServerShouldBeReachable() {
-    SvnServerAvailabilityCheckerService connectionCheckerService = new SvnServerAvailabilityCheckerService();
-    // TODO improve this with vagrant and puppet
-    assertThat(connectionCheckerService.isAvailable(new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/logging/trunk/src/main/java/"))).isTrue();
+  private SupportedScmSystem(int type) {
+    this.type = type;
+  }
+
+  public int getType() {
+    return type;
   }
 }

@@ -39,6 +39,6 @@ public class ProjectsCollectorServiceIntegrationTest {
      * TODO this is an ugly test: it can be easily broken by an update of the Sonar demo server
      * => replace this by usage of own sonar server for int test (puppet script + vagrant)
      */
-    assertThat(projectsCollectorService.collectAllProjectIdentifiers(new SonarConnectionSettings("http://nemo.sonarsource.org"))).hasSize(204);
+    assertThat(projectsCollectorService.collectAllProjectIdentifiers(new SonarConnectionSettings("http://nemo.sonarsource.org"))).hasSize(205);
   }
 }

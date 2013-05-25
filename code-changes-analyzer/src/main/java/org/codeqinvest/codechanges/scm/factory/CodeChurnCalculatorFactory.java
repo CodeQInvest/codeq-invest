@@ -32,8 +32,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CodeChurnCalculatorFactory {
 
-  static final int SVN_TYPE = 0;
-
   private final SvnCodeChurnCalculatorService svnCodeChurnCalculator;
 
   @Autowired
@@ -46,7 +44,7 @@ public class CodeChurnCalculatorFactory {
    * and the saved SCM type in these settings.
    */
   public CodeChurnCalculator create(ScmConnectionSettings connectionSettings) {
-    if (connectionSettings.getType() == SVN_TYPE) {
+    if (connectionSettings.getType() == SupportedScmSystem.SVN.getType()) {
       return svnCodeChurnCalculator;
     }
     throw new UnsupportedScmSystem();

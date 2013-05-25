@@ -20,6 +20,7 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -49,6 +50,7 @@ public class Artefact implements Serializable {
   @Column(nullable = false, length = 50)
   private String sonarIdentifier;
 
+  @Setter
   @Column(nullable = false)
   private double changeProbability;
 
@@ -59,5 +61,12 @@ public class Artefact implements Serializable {
     this.name = name;
     this.sonarIdentifier = sonarIdentifier;
     this.changeProbability = 0.0;
+  }
+
+  public String getFilename() {
+    if (name.isEmpty()) {
+      return "";
+    }
+    return name.replace('.', '/') + ".java";
   }
 }

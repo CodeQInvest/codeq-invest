@@ -84,4 +84,16 @@ public class QualityRequirement implements Serializable {
   public boolean isViolated(double metricValue) {
     return criteria.isViolated(metricValue);
   }
+
+  public String getMetricIdentifier() {
+    return criteria.getMetricIdentifier();
+  }
+
+  public double getThreshold() {
+    return criteria.getThreshold();
+  }
+
+  public String getOperator() {
+    return criteria.getOperator();
+  }
 }

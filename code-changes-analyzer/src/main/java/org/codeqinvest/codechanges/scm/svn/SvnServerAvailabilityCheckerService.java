@@ -21,7 +21,6 @@ package org.codeqinvest.codechanges.scm.svn;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
 
 /**
@@ -30,7 +29,6 @@ import org.tmatesoft.svn.core.SVNException;
  * @author fmueller
  */
 @Slf4j
-@Service
 public class SvnServerAvailabilityCheckerService implements ScmAvailabilityCheckerService {
 
   /**
@@ -40,9 +38,10 @@ public class SvnServerAvailabilityCheckerService implements ScmAvailabilityCheck
   public boolean isAvailable(ScmConnectionSettings connectionSettings) {
     try {
       SvnRepositoryFactory.create(connectionSettings).testConnection();
+      log.info("The given svn server is reachable with connection settings: {}", connectionSettings);
       return true;
     } catch (SVNException e) {
-      log.info("The given svn server is not reachable during connection check.", e);
+      log.warn("The given svn server is not reachable during connection check.", e);
       return false;
     }
   }

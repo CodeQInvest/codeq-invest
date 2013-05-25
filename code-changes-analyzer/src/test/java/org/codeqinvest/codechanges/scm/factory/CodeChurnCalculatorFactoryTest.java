@@ -47,7 +47,7 @@ public class CodeChurnCalculatorFactoryTest {
   @Test
   public void createSvnCodeChurnCalculatorForSvnType() {
     ScmConnectionSettings connectionSettings = mock(ScmConnectionSettings.class);
-    when(connectionSettings.getType()).thenReturn(CodeChurnCalculatorFactory.SVN_TYPE);
+    when(connectionSettings.getType()).thenReturn(SupportedScmSystem.SVN.getType());
     assertThat(codeChurnCalculatorFactory.create(connectionSettings)).isInstanceOf(SvnCodeChurnCalculatorService.class);
   }
 }

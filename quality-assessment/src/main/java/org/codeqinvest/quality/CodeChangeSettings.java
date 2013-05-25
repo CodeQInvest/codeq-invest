@@ -46,7 +46,7 @@ public class CodeChangeSettings {
   protected CodeChangeSettings() {
   }
 
-  public CodeChangeSettings(int method, int days) {
+  private CodeChangeSettings(int method, int days) {
     this.method = method;
     this.days = days;
   }

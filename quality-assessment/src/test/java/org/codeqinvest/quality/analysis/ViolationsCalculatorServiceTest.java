@@ -25,7 +25,6 @@ import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityCriteria;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.QualityRequirement;
-import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.sonar.MetricCollectorService;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.ResourcesCollectorService;
@@ -137,8 +136,8 @@ public class ViolationsCalculatorServiceTest {
     ViolationsAnalysisResult analysisResult = violationsCalculatorService.calculateAllViolation(project);
     assertThat(analysisResult.isSuccessful()).isTrue();
     assertThat(analysisResult.getViolations()).containsOnly(
-        new QualityViolation(new Artefact("B", "B"), firstRequirement),
-        new QualityViolation(new Artefact("B", "B"), secondRequirement)
+        new ViolationOccurence(firstRequirement, new Artefact("B", "B")),
+        new ViolationOccurence(secondRequirement, new Artefact("B", "B"))
     );
   }
 
@@ -163,10 +162,10 @@ public class ViolationsCalculatorServiceTest {
     ViolationsAnalysisResult analysisResult = violationsCalculatorService.calculateAllViolation(project);
     assertThat(analysisResult.isSuccessful()).isTrue();
     assertThat(analysisResult.getViolations()).containsOnly(
-        new QualityViolation(new Artefact("A", "A"), firstRequirement),
-        new QualityViolation(new Artefact("A", "A"), secondRequirement),
-        new QualityViolation(new Artefact("B", "B"), firstRequirement),
-        new QualityViolation(new Artefact("B", "B"), secondRequirement)
+        new ViolationOccurence(firstRequirement, new Artefact("A", "A")),
+        new ViolationOccurence(secondRequirement, new Artefact("A", "A")),
+        new ViolationOccurence(firstRequirement, new Artefact("B", "B")),
+        new ViolationOccurence(secondRequirement, new Artefact("B", "B"))
     );
   }
 }

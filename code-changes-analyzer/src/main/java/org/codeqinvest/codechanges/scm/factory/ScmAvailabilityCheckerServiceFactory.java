@@ -16,19 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm.svn;
+package org.codeqinvest.codechanges.scm.factory;
 
+import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.junit.Test;
+import org.codeqinvest.codechanges.scm.svn.SvnServerAvailabilityCheckerService;
+import org.springframework.stereotype.Component;
 
-import static org.fest.assertions.Assertions.assertThat;
+/**
+ * @author fmueller
+ */
+@Component
+public class ScmAvailabilityCheckerServiceFactory {
 
-public class SvnServerAvailabilityCheckerServiceIntegrationTest {
-
-  @Test
-  public void apacheSvnServerShouldBeReachable() {
-    SvnServerAvailabilityCheckerService connectionCheckerService = new SvnServerAvailabilityCheckerService();
-    // TODO improve this with vagrant and puppet
-    assertThat(connectionCheckerService.isAvailable(new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/logging/trunk/src/main/java/"))).isTrue();
+  public ScmAvailabilityCheckerService create(ScmConnectionSettings connectionSettings) {
+    if (connectionSettings.getType() == SupportedScmSystem.SVN.getType()) {
+      return new SvnServerAvailabilityCheckerService();
+    }
+    // currenty only subversion is supported
+    throw new UnsupportedScmSystem();
   }
 }

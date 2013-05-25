@@ -19,10 +19,20 @@
 package org.codeqinvest.quality.analysis;
 
 import lombok.extern.slf4j.Slf4j;
+import org.codeqinvest.codechanges.CodeChangeProbabilityCalculator;
+import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
+import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
+import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
+import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.QualityAnalysis;
+import org.codeqinvest.quality.QualityViolation;
+import org.codeqinvest.sonar.ResourceNotFoundException;
+import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the main service of the quality assessment module. It
@@ -30,7 +40,7 @@ import org.springframework.stereotype.Service;
  * it collects all the necessary data from Sonar and the
  * corresponding source code management system. Before it performs
  * these steps, it checks for the availability of these third-party
- * systems.
+ * systems. The result of an analysis is persisted in the database.
  *
  * @author fmueller
  */
@@ -39,17 +49,87 @@ import org.springframework.stereotype.Service;
 public class QualityAnalyzerService {
 
   private final ViolationsCalculatorService violationsCalculatorService;
+  private final ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory;
   private final CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory;
+  private final QualityViolationCostsCalculator costsCalculator;
+  private final QualityAnalysisRepository qualityAnalysisRepository;
 
   @Autowired
   public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService,
-                                CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory) {
+                                ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory,
+                                CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory,
+                                QualityViolationCostsCalculator costsCalculator,
+                                QualityAnalysisRepository qualityAnalysisRepository) {
     this.violationsCalculatorService = violationsCalculatorService;
+    this.scmAvailabilityCheckerServiceFactory = scmAvailabilityCheckerServiceFactory;
     this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
+    this.costsCalculator = costsCalculator;
+    this.qualityAnalysisRepository = qualityAnalysisRepository;
   }
 
   public QualityAnalysis analyzeProject(Project project) {
-    // TODO implement
-    return null;
+    ViolationsAnalysisResult violationsAnalysisResult = violationsCalculatorService.calculateAllViolation(project);
+    if (!violationsAnalysisResult.isSuccessful()) {
+      log.error("Quality analysis for project {} failed due '{}'", project.getName(), violationsAnalysisResult.getFailureReason().get());
+      return QualityAnalysis.failed(project,
+          zeroCostsForEachViolation(violationsAnalysisResult),
+          violationsAnalysisResult.getFailureReason().get());
+    }
+
+    if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
+      return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "The scm system is not available.");
+    }
+
+    QualityAnalysis qualityAnalysis = addChangeProbabilityToEachArtifact(project, violationsAnalysisResult);
+    return qualityAnalysisRepository.save(qualityAnalysis);
+  }
+
+  private QualityAnalysis addChangeProbabilityToEachArtifact(Project project, ViolationsAnalysisResult violationsAnalysisResult) {
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = codeChangeProbabilityCalculatorFactory.create(project.getCodeChangeSettings());
+    for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
+      Artefact artefact = violation.getArtefact();
+      final double changeProbability;
+      try {
+        changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename());
+        artefact.setChangeProbability(changeProbability);
+      } catch (CodeChurnCalculationException e) {
+        log.error("Quality analysis for project " + project.getName() + " failed!", e);
+        return QualityAnalysis.failed(project,
+            zeroCostsForEachViolation(violationsAnalysisResult),
+            "Error during calculating the code churn for " + violation.getArtefact().getName());
+      } catch (ScmConnectionEncodingException e) {
+        log.error("Quality analysis for project " + project.getName() + " failed!", e);
+        return QualityAnalysis.failed(project,
+            zeroCostsForEachViolation(violationsAnalysisResult),
+            "Error with supplied scm connection encoding.");
+      }
+    }
+
+    try {
+      QualityAnalysis analysis = QualityAnalysis.success(project, calculateCostsForEachViolation(project.getSonarConnectionSettings(), violationsAnalysisResult));
+      log.info("Quality analysis succeeded for project {} with {} violations.", project.getName(), violationsAnalysisResult.getViolations().size());
+      return analysis;
+    } catch (ResourceNotFoundException e) {
+      log.error("Quality analysis for project " + project.getName() + " failed!", e);
+      return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "Resource not found during costs calculation.");
+    }
+  }
+
+  private List<QualityViolation> calculateCostsForEachViolation(SonarConnectionSettings sonarConnectionSettings, ViolationsAnalysisResult violationsAnalysisResult) throws ResourceNotFoundException {
+    List<QualityViolation> qualityViolations = new ArrayList<QualityViolation>(violationsAnalysisResult.getViolations().size());
+    for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
+      int remediationCosts = costsCalculator.calculateRemediationCosts(sonarConnectionSettings, violation);
+      int nonRemediationCosts = costsCalculator.calculateNonRemediationCosts(sonarConnectionSettings, violation);
+      qualityViolations.add(new QualityViolation(violation.getArtefact(), violation.getRequirement(), remediationCosts, nonRemediationCosts));
+    }
+    return qualityViolations;
+  }
+
+  private List<QualityViolation> zeroCostsForEachViolation(ViolationsAnalysisResult violationsAnalysisResult) {
+    List<QualityViolation> qualityViolations = new ArrayList<QualityViolation>(violationsAnalysisResult.getViolations().size());
+    for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
+      qualityViolations.add(new QualityViolation(violation.getArtefact(), violation.getRequirement(), 0, 0));
+    }
+    return qualityViolations;
   }
 }

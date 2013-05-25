@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityRequirement;
-import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.sonar.MetricCollectorService;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.ResourcesCollectorService;
@@ -32,8 +31,8 @@ import org.sonar.wsclient.services.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,12 +64,12 @@ class ViolationsCalculatorService {
 
   ViolationsAnalysisResult calculateAllViolation(Project project) {
     if (!sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
-      return ViolationsAnalysisResult.createFailedAnalysis(Collections.<QualityViolation>emptyList(),
+      return ViolationsAnalysisResult.createFailedAnalysis(Collections.<ViolationOccurence>emptyList(),
           "sonar project is not reachable with supplied connection settings: " + project.getSonarConnectionSettings().toString());
     }
 
     Map<String, Artefact> artefactsThatHaveAtLeastOneViolation = Maps.newHashMap();
-    List<QualityViolation> violations = new LinkedList<QualityViolation>();
+    List<ViolationOccurence> violations = new ArrayList<ViolationOccurence>();
     for (Resource resource : resourcesCollectorService.collectAllResourcesForProject(project.getSonarConnectionSettings())) {
       for (QualityRequirement qualityRequirement : project.getProfile().getRequirements()) {
 
@@ -95,7 +94,7 @@ class ViolationsCalculatorService {
 
           log.debug("Create quality violation for artefact {} with violated requirement {}",
               artefact.getName(), qualityRequirement.getCriteria());
-          violations.add(new QualityViolation(artefact, qualityRequirement));
+          violations.add(new ViolationOccurence(qualityRequirement, artefact));
         }
       }
     }

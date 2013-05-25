@@ -16,19 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm.svn;
+package org.codeqinvest.quality;
 
-import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class SvnServerAvailabilityCheckerServiceIntegrationTest {
+public class ArtefactTest {
 
   @Test
-  public void apacheSvnServerShouldBeReachable() {
-    SvnServerAvailabilityCheckerService connectionCheckerService = new SvnServerAvailabilityCheckerService();
-    // TODO improve this with vagrant and puppet
-    assertThat(connectionCheckerService.isAvailable(new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/logging/trunk/src/main/java/"))).isTrue();
+  public void shouldConvertPackageNameToFilenameProperly() {
+    assertThat(new Artefact("org.my.class.AbcDe", "").getFilename()).isEqualTo("org/my/class/AbcDe.java");
+  }
+
+  @Test
+  public void shouldConvertClassNameToFilenameProperly() {
+    assertThat(new Artefact("AbcDe", "").getFilename()).isEqualTo("AbcDe.java");
+  }
+
+  @Test
+  public void shouldConvertEmptyPackageNameToFilenameProperly() {
+    assertThat(new Artefact("", "").getFilename()).isEqualTo("");
   }
 }
