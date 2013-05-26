@@ -57,7 +57,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
   @OneToMany(cascade = CascadeType.ALL)
   private List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
 
-  private static class SortRiskChargeByThresholdAscending implements Comparator<RiskCharge> {
+  private static class SortRiskChargeByThresholdAscending implements Comparator<RiskCharge>, Serializable {
 
     @Override
     public int compare(RiskCharge riskCharge, RiskCharge otherRiskCharge) {
@@ -71,7 +71,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
     }
   }
 
-  private static class SortRiskChargeByThresholdDescending implements Comparator<RiskCharge> {
+  private static class SortRiskChargeByThresholdDescending implements Comparator<RiskCharge>, Serializable {
 
     private final SortRiskChargeByThresholdAscending sortAscending = new SortRiskChargeByThresholdAscending();
 
