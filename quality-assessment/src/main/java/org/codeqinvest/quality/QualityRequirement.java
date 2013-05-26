@@ -68,6 +68,8 @@ public class QualityRequirement implements Serializable {
   @Embedded
   private QualityCriteria criteria;
 
+  private boolean automaticallyFixable = false;
+
   protected QualityRequirement() {
   }
 
@@ -79,6 +81,14 @@ public class QualityRequirement implements Serializable {
     this.weightingMetricValue = weightingMetricValue;
     this.weightingMetricIdentifier = weightingMetricIdentifier;
     this.criteria = criteria;
+  }
+
+  public void setAutomaticallyFixable() {
+    automaticallyFixable = true;
+  }
+
+  public void setManuallyFixable() {
+    automaticallyFixable = false;
   }
 
   public boolean isViolated(double metricValue) {
