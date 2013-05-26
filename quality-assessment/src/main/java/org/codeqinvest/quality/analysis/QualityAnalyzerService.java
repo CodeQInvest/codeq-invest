@@ -101,12 +101,12 @@ class QualityAnalyzerService {
         changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename());
         artefact.setChangeProbability(changeProbability);
       } catch (CodeChurnCalculationException e) {
-        log.error("Quality analysis for project " + project.getName() + " failed!", e);
+        logFailedAnalysis(project, e);
         return QualityAnalysis.failed(project,
             zeroCostsForEachViolation(violationsAnalysisResult),
             "Error during calculating the code churn for " + violation.getArtefact().getName());
       } catch (ScmConnectionEncodingException e) {
-        log.error("Quality analysis for project " + project.getName() + " failed!", e);
+        logFailedAnalysis(project, e);
         return QualityAnalysis.failed(project,
             zeroCostsForEachViolation(violationsAnalysisResult),
             "Error with supplied scm connection encoding.");
@@ -118,7 +118,7 @@ class QualityAnalyzerService {
       log.info("Quality analysis succeeded for project {} with {} violations.", project.getName(), violationsAnalysisResult.getViolations().size());
       return analysis;
     } catch (ResourceNotFoundException e) {
-      log.error("Quality analysis for project " + project.getName() + " failed!", e);
+      logFailedAnalysis(project, e);
       return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "Resource not found during costs calculation.");
     }
   }
@@ -131,11 +131,15 @@ class QualityAnalyzerService {
             project.getSonarConnectionSettings(), artefact);
         artefact.setSecureChangeProbability(secureChangeProbability);
       } catch (ResourceNotFoundException e) {
-        log.error("Quality analysis for project " + project.getName() + " failed!", e);
+        logFailedAnalysis(project, e);
         return QualityAnalysis.failed(project, qualityAnalysis.getViolations(), "Resource not found during secure change calculation");
       }
     }
     return qualityAnalysis;
+  }
+
+  private void logFailedAnalysis(Project project, Exception e) {
+    log.error("Quality analysis for project " + project.getName() + " failed!", e);
   }
 
   private List<QualityViolation> calculateCostsForEachViolation(SonarConnectionSettings sonarConnectionSettings, ViolationsAnalysisResult violationsAnalysisResult) throws ResourceNotFoundException {
