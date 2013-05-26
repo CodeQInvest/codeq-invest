@@ -20,7 +20,7 @@ package org.codeqinvest.quality;
 
 import org.junit.Test;
 
-public class QualityCriteriaTest {
+public class CriteriaTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void creationOfCriteriaShouldFailForNotAllowedOperator() {

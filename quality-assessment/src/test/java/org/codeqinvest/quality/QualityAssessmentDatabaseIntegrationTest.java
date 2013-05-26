@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIn
     secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", new QualityCriteria("ec", "<", 15));
     profile.addRequirement(firstRequirement);
     profile.addRequirement(secondRequirement);
+    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "cc", Arrays.asList(new RiskCharge(0.3, "<", 10.0))));
 
     SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings("http://localhost", "myProject::123");
     ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings("http://svn.localhost");

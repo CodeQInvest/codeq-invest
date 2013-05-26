@@ -22,48 +22,54 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * TODO javadoc
- *
  * @author fmueller
  */
 @Getter
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "QUALITY_PROFILE")
-public class QualityProfile implements Serializable {
+@Table(name = "RISK_CHARGE")
+public class RiskCharge implements Serializable {
 
   @Id
   @GeneratedValue
   private Long id;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
-  private List<QualityRequirement> requirements = new ArrayList<QualityRequirement>();
+  private double amount;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
-  private List<ChangeRiskAssessmentFunction> changeRiskAssessmentFunctions = new ArrayList<ChangeRiskAssessmentFunction>();
+  @Embedded
+  private Criteria criteria;
 
-  public List<QualityRequirement> getRequirements() {
-    return Collections.unmodifiableList(requirements);
+  protected RiskCharge() {
   }
 
-  public void addRequirement(QualityRequirement requirement) {
-    requirements.add(requirement);
+  public RiskCharge(double amount, String operator, double threshold) {
+    this.amount = amount;
+    this.criteria = new Criteria(operator, threshold);
   }
 
-  public void addChangeRiskAssessmentFunction(ChangeRiskAssessmentFunction changeRiskAssessmentFunction) {
-    changeRiskAssessmentFunctions.add(changeRiskAssessmentFunction);
+  public boolean isPayable(double metricValue) {
+    return !criteria.isViolated(metricValue);
+  }
+
+  public String getOperator() {
+    return criteria.getOperator();
+  }
+
+  public double getThreshold() {
+    return criteria.getThreshold();
+  }
+
+  @Override
+  public String toString() {
+    return "[" + getOperator() + " " + getThreshold() + ", amount: " + amount + "]";
   }
 }

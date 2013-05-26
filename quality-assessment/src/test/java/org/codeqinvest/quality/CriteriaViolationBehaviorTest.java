@@ -23,11 +23,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
-public class QualityCriteriaViolationBehaviorTest {
+public class CriteriaViolationBehaviorTest {
 
   private static final boolean VIOLATED = true;
   private static final boolean NOT_VIOLATED = false;
@@ -37,7 +38,7 @@ public class QualityCriteriaViolationBehaviorTest {
   private final double currentValue;
   private final boolean shouldBeViolated;
 
-  public QualityCriteriaViolationBehaviorTest(String operator, double threshold, double currentValue, boolean shouldBeViolated) {
+  public CriteriaViolationBehaviorTest(String operator, double threshold, double currentValue, boolean shouldBeViolated) {
     this.operator = operator;
     this.threshold = threshold;
     this.currentValue = currentValue;
@@ -45,7 +46,7 @@ public class QualityCriteriaViolationBehaviorTest {
   }
 
   @Parameterized.Parameters
-  public static java.util.Collection<Object[]> data() {
+  public static Collection<Object[]> data() {
     Object[][] testData = new Object[][]{
         {"<", 20.0, 19, NOT_VIOLATED},
         {"<", 20.0, 20, VIOLATED},
@@ -71,7 +72,7 @@ public class QualityCriteriaViolationBehaviorTest {
 
   @Test
   public void testIfCriteriaIsViolated() {
-    QualityCriteria criteria = new QualityCriteria("some_metric", operator, threshold);
+    Criteria criteria = new Criteria(operator, threshold);
     if (shouldBeViolated) {
       assertThat(criteria.isViolated(currentValue))
           .as("Criteria " + criteria + " should be violated for value " + currentValue)

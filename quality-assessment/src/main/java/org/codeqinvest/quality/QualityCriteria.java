@@ -23,9 +23,8 @@ import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * TODO javadoc
@@ -37,49 +36,34 @@ import java.util.List;
 @Embeddable
 public class QualityCriteria implements Serializable {
 
-  private static final List<String> ALLOWED_OPERATORS = Arrays.asList("<", ">", "=", "!=", "<=", ">=");
-
   @Column(nullable = false, length = 50)
   private String metricIdentifier;
 
-  @Column(nullable = false, length = 2)
-  private String operator;
-
-  @Column(nullable = false)
-  private double threshold;
+  @Embedded
+  private Criteria criteria;
 
   protected QualityCriteria() {
   }
 
   public QualityCriteria(String metricIdentifier, String operator, double threshold) {
-    if (!ALLOWED_OPERATORS.contains(operator)) {
-      throw new IllegalArgumentException("only these operators are allowed: " + ALLOWED_OPERATORS);
-    }
-
     this.metricIdentifier = metricIdentifier;
-    this.operator = operator;
-    this.threshold = threshold;
+    this.criteria = new Criteria(operator, threshold);
   }
 
   public boolean isViolated(double metricValue) {
-    if (operator.equals("<")) {
-      return metricValue >= threshold;
-    } else if (operator.equals(">")) {
-      return metricValue <= threshold;
-    } else if (operator.equals("!=")) {
-      return metricValue == threshold;
-    } else if (operator.equals("=")) {
-      return metricValue != threshold;
-    } else if (operator.equals("<=")) {
-      return metricValue > threshold;
-    } else if (operator.equals(">=")) {
-      return metricValue < threshold;
-    }
-    return false;
+    return criteria.isViolated(metricValue);
+  }
+
+  public double getThreshold() {
+    return criteria.getThreshold();
+  }
+
+  public String getOperator() {
+    return criteria.getOperator();
   }
 
   @Override
   public String toString() {
-    return "[" + metricIdentifier + " " + operator + " " + threshold + "]";
+    return "[" + metricIdentifier + " " + getOperator() + " " + getThreshold() + "]";
   }
 }
