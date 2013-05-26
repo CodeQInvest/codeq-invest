@@ -51,6 +51,7 @@ class QualityAnalyzerService {
   private final ViolationsCalculatorService violationsCalculatorService;
   private final ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory;
   private final CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory;
+  private final SecureChangeProbabilityCalculator secureChangeProbabilityCalculator;
   private final QualityViolationCostsCalculator costsCalculator;
   private final QualityAnalysisRepository qualityAnalysisRepository;
 
@@ -58,11 +59,13 @@ class QualityAnalyzerService {
   public QualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService,
                                 ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory,
                                 CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory,
+                                SecureChangeProbabilityCalculator secureChangeProbabilityCalculator,
                                 QualityViolationCostsCalculator costsCalculator,
                                 QualityAnalysisRepository qualityAnalysisRepository) {
     this.violationsCalculatorService = violationsCalculatorService;
     this.scmAvailabilityCheckerServiceFactory = scmAvailabilityCheckerServiceFactory;
     this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
+    this.secureChangeProbabilityCalculator = secureChangeProbabilityCalculator;
     this.costsCalculator = costsCalculator;
     this.qualityAnalysisRepository = qualityAnalysisRepository;
   }
@@ -81,6 +84,11 @@ class QualityAnalyzerService {
     }
 
     QualityAnalysis qualityAnalysis = addChangeProbabilityToEachArtifact(project, violationsAnalysisResult);
+    if (!qualityAnalysis.isSuccessful()) {
+      return qualityAnalysisRepository.save(qualityAnalysis);
+    }
+
+    qualityAnalysis = addSecureChangeProbabilityToEachArtifact(project, qualityAnalysis);
     return qualityAnalysisRepository.save(qualityAnalysis);
   }
 
@@ -113,6 +121,21 @@ class QualityAnalyzerService {
       log.error("Quality analysis for project " + project.getName() + " failed!", e);
       return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "Resource not found during costs calculation.");
     }
+  }
+
+  private QualityAnalysis addSecureChangeProbabilityToEachArtifact(Project project, QualityAnalysis qualityAnalysis) {
+    for (QualityViolation violation : qualityAnalysis.getViolations()) {
+      try {
+        Artefact artefact = violation.getArtefact();
+        double secureChangeProbability = secureChangeProbabilityCalculator.calculateSecureChangeProbability(project.getProfile(),
+            project.getSonarConnectionSettings(), artefact);
+        artefact.setSecureChangeProbability(secureChangeProbability);
+      } catch (ResourceNotFoundException e) {
+        log.error("Quality analysis for project " + project.getName() + " failed!", e);
+        return QualityAnalysis.failed(project, qualityAnalysis.getViolations(), "Resource not found during secure change calculation");
+      }
+    }
+    return qualityAnalysis;
   }
 
   private List<QualityViolation> calculateCostsForEachViolation(SonarConnectionSettings sonarConnectionSettings, ViolationsAnalysisResult violationsAnalysisResult) throws ResourceNotFoundException {

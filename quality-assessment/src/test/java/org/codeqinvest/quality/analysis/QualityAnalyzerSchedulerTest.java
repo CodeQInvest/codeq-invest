@@ -42,6 +42,7 @@ public class QualityAnalyzerSchedulerTest {
         mock(ViolationsCalculatorService.class),
         mock(ScmAvailabilityCheckerServiceFactory.class),
         mock(CodeChangeProbabilityCalculatorFactory.class),
+        mock(SecureChangeProbabilityCalculator.class),
         mock(QualityViolationCostsCalculator.class),
         mock(QualityAnalysisRepository.class));
     project = new Project("MyProject", "* * 4 * * *", new QualityProfile(),

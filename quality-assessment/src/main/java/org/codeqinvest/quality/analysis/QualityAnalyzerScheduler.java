@@ -45,6 +45,7 @@ public class QualityAnalyzerScheduler {
   private final ViolationsCalculatorService violationsCalculatorService;
   private final ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory;
   private final CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory;
+  private final SecureChangeProbabilityCalculator secureChangeProbabilityCalculator;
   private final QualityViolationCostsCalculator costsCalculator;
   private final QualityAnalysisRepository qualityAnalysisRepository;
 
@@ -55,12 +56,13 @@ public class QualityAnalyzerScheduler {
                                   ViolationsCalculatorService violationsCalculatorService,
                                   ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory,
                                   CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory,
-                                  QualityViolationCostsCalculator costsCalculator,
+                                  SecureChangeProbabilityCalculator secureChangeProbabilityCalculator, QualityViolationCostsCalculator costsCalculator,
                                   QualityAnalysisRepository qualityAnalysisRepository) {
     this.projectRepository = projectRepository;
     this.violationsCalculatorService = violationsCalculatorService;
     this.scmAvailabilityCheckerServiceFactory = scmAvailabilityCheckerServiceFactory;
     this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
+    this.secureChangeProbabilityCalculator = secureChangeProbabilityCalculator;
     this.costsCalculator = costsCalculator;
     this.qualityAnalysisRepository = qualityAnalysisRepository;
 
@@ -78,6 +80,7 @@ public class QualityAnalyzerScheduler {
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory,
+        secureChangeProbabilityCalculator,
         costsCalculator,
         qualityAnalysisRepository);
 

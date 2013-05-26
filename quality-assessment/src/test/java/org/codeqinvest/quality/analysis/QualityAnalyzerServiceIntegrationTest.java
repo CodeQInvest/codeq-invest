@@ -30,6 +30,7 @@ import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityCriteria;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.QualityRequirement;
+import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;
@@ -95,7 +96,7 @@ public class QualityAnalyzerServiceIntegrationTest extends AbstractDatabaseInteg
   }
 
   @Test
-  public void qualityAnalysisShouldBePersistedToDatabase() throws CodeChurnCalculationException, ScmConnectionEncodingException {
+  public void qualityAnalysisShouldBePersistedToDatabase() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
     Artefact artefactA = new Artefact("A", "A");
     Artefact artefactB = new Artefact("B", "B");
     Artefact artefactC = new Artefact("C", "C");
@@ -113,8 +114,13 @@ public class QualityAnalyzerServiceIntegrationTest extends AbstractDatabaseInteg
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
+
+    SecureChangeProbabilityCalculator secureChangeProbabilityCalculator = mock(SecureChangeProbabilityCalculator.class);
+    when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
+        any(SonarConnectionSettings.class), any(Artefact.class))).thenReturn(1.0);
+
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
-        codeChangeProbabilityCalculatorFactory, costsCalculator, qualityAnalysisRepository);
+        codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
     QualityAnalysis analysisFromDb = qualityAnalysisRepository.findOne(analysis.getId());

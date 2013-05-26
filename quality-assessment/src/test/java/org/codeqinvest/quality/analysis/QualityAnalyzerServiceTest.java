@@ -43,6 +43,7 @@ import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,11 +57,12 @@ public class QualityAnalyzerServiceTest {
   private Project project;
 
   private ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory;
+  private SecureChangeProbabilityCalculator secureChangeProbabilityCalculator;
   private QualityViolationCostsCalculator costsCalculator;
   private QualityAnalysisRepository qualityAnalysisRepository;
 
   @Before
-  public void setUp() {
+  public void setUp() throws ResourceNotFoundException {
     profile = new QualityProfile();
     firstRequirement = new QualityRequirement(profile, 100, 200, 10, "nloc", new QualityCriteria("cc", ">", 10));
     secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", new QualityCriteria("ec", "<", 15));
@@ -75,6 +77,10 @@ public class QualityAnalyzerServiceTest {
     when(availableScmSystem.isAvailable(any(ScmConnectionSettings.class))).thenReturn(true);
     scmAvailabilityCheckerServiceFactory = mock(ScmAvailabilityCheckerServiceFactory.class);
     when(scmAvailabilityCheckerServiceFactory.create(any(ScmConnectionSettings.class))).thenReturn(availableScmSystem);
+
+    secureChangeProbabilityCalculator = mock(SecureChangeProbabilityCalculator.class);
+    when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
+        any(SonarConnectionSettings.class), any(Artefact.class))).thenReturn(1.0);
 
     costsCalculator = mock(QualityViolationCostsCalculator.class);
     qualityAnalysisRepository = new DummyQualityAnalysisRepository();
@@ -112,6 +118,86 @@ public class QualityAnalyzerServiceTest {
   }
 
   @Test
+  public void addCodeChangeProbabilityToArtefacts() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
+    Artefact artefactA = new Artefact("A", "A");
+    Artefact artefactB = new Artefact("B", "B");
+
+    ViolationOccurence violationA = new ViolationOccurence(firstRequirement, artefactA);
+    ViolationOccurence violationB = new ViolationOccurence(firstRequirement, artefactB);
+
+    ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
+    when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
+        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violationA, violationB)));
+
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.2);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
+
+    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+        scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
+    qualityAnalyzerService.analyzeProject(project);
+
+    assertThat(artefactA.getChangeProbability()).isEqualTo(1.2);
+    assertThat(artefactB.getChangeProbability()).isEqualTo(1.2);
+  }
+
+  @Test
+  public void addSecureChangeProbabilityToArtefacts() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
+    Artefact artefactA = new Artefact("A", "A");
+    Artefact artefactB = new Artefact("B", "B");
+
+    ViolationOccurence violationA = new ViolationOccurence(firstRequirement, artefactA);
+    ViolationOccurence violationB = new ViolationOccurence(firstRequirement, artefactB);
+
+    ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
+    when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
+        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violationA, violationB)));
+
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
+
+    when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
+        any(SonarConnectionSettings.class), eq(artefactA))).thenReturn(1.115);
+    when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
+        any(SonarConnectionSettings.class), eq(artefactB))).thenReturn(1.341);
+
+    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+        scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
+    qualityAnalyzerService.analyzeProject(project);
+
+    assertThat(artefactA.getSecureChangeProbability()).isEqualTo(1.115);
+    assertThat(artefactB.getSecureChangeProbability()).isEqualTo(1.341);
+  }
+
+  @Test
+  public void failedAnalysisWhenSecureChangeProbabilityCalculatorThrowsResourceNotFoundException()
+      throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
+
+    ViolationOccurence violation = new ViolationOccurence(firstRequirement, new Artefact("A", "A"));
+
+    ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
+    when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
+        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violation)));
+
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
+
+    when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
+        any(SonarConnectionSettings.class), any(Artefact.class))).thenThrow(ResourceNotFoundException.class);
+
+    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+        scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
+    QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
+
+    assertThat(analysis.isSuccessful()).isFalse();
+  }
+
+  @Test
   public void takeCostsFromSuppliedCostCalculator() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
     ViolationOccurence violation = new ViolationOccurence(firstRequirement, new Artefact("A", "A"));
 
@@ -125,7 +211,7 @@ public class QualityAnalyzerServiceTest {
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
-        scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, costsCalculator, qualityAnalysisRepository);
+        scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
     qualityAnalyzerService.analyzeProject(project);
     verify(costsCalculator).calculateRemediationCosts(project.getSonarConnectionSettings(), violation);
     verify(costsCalculator).calculateNonRemediationCosts(project.getSonarConnectionSettings(), violation);
@@ -138,7 +224,8 @@ public class QualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createFailedAnalysis(Collections.<ViolationOccurence>emptyList(), "error"));
 
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
-        scmAvailabilityCheckerServiceFactory, mock(CodeChangeProbabilityCalculatorFactory.class), costsCalculator, qualityAnalysisRepository);
+        scmAvailabilityCheckerServiceFactory, mock(CodeChangeProbabilityCalculatorFactory.class),
+        secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
     assertThat(analysis.isSuccessful()).isFalse();
@@ -158,7 +245,8 @@ public class QualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Collections.<ViolationOccurence>emptyList()));
 
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
-        notAvailableCheckerServiceFactory, mock(CodeChangeProbabilityCalculatorFactory.class), costsCalculator, qualityAnalysisRepository);
+        notAvailableCheckerServiceFactory, mock(CodeChangeProbabilityCalculatorFactory.class),
+        secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
     assertThat(analysis.isSuccessful()).isFalse();
@@ -191,7 +279,7 @@ public class QualityAnalyzerServiceTest {
 
     when(costsCalculator.calculateRemediationCosts(any(SonarConnectionSettings.class), any(ViolationOccurence.class))).thenThrow(ResourceNotFoundException.class);
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
-        codeChangeProbabilityCalculatorFactory, costsCalculator, qualityAnalysisRepository);
+        codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
     assertThat(analysis.isSuccessful()).isFalse();
@@ -210,7 +298,7 @@ public class QualityAnalyzerServiceTest {
 
     when(costsCalculator.calculateNonRemediationCosts(any(SonarConnectionSettings.class), any(ViolationOccurence.class))).thenThrow(ResourceNotFoundException.class);
     QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
-        codeChangeProbabilityCalculatorFactory, costsCalculator, qualityAnalysisRepository);
+        codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
     assertThat(analysis.isSuccessful()).isFalse();
@@ -226,7 +314,7 @@ public class QualityAnalyzerServiceTest {
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     return new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
-        codeChangeProbabilityCalculatorFactory, costsCalculator, qualityAnalysisRepository);
+        codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
   }
 
   private <T extends Exception> QualityAnalyzerService createMockedSystemThatThrowsExceptionInCodeChangeCalculation(Class<T> exception) throws CodeChurnCalculationException, ScmConnectionEncodingException {
@@ -239,7 +327,7 @@ public class QualityAnalyzerServiceTest {
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
     return new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
-        codeChangeProbabilityCalculatorFactory, costsCalculator, qualityAnalysisRepository);
+        codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
   }
 
   private void assertThatIsSuccessfulAndContainsOnlyGivenViolationsWithoutCostsComparison(QualityAnalysis analysis, QualityViolation... qualityViolations) {
