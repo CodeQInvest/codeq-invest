@@ -3,6 +3,10 @@ body {
     padding-bottom: 40px;
 }
 
+label {
+    padding-top: 5px;
+}
+
 .squared-fieldset {
     border: 1px solid #e5e5e5;
     padding: 10px;
@@ -10,6 +14,7 @@ body {
 
 .small-legend {
     font-size: 18px;
+    margin-bottom: 5px;
 }
 
 .no-border {
