@@ -9,8 +9,11 @@
 <head>
     <meta charset="utf-8"/>
     <title>CodeQ Invest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link rel="stylesheet" href="resources/css/main.css"/>
     <link rel="stylesheet" href="resources/css/libs/bootstrap-2.3.2.min.css"/>
+    <link rel="stylesheet" href="resources/css/libs/bootstrap-responsive-2.3.2.min.css">
 
     <script src="resources/js/libs/modernizr-2.6.2.min.js"></script>
 </head>
@@ -21,14 +24,20 @@
 
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
-        <div class="brand" th:text="#{app.name}"></div>
-        <ul class="nav">
-            <li class="active"><a href="#" th:text="#{navbar.overview}"></a></li>
-        </ul>
+        <div class="container-fluid">
+            <div class="brand" th:text="#{app.name}"></div>
+            <ul class="nav">
+                <li class="active"><a href="#" th:text="#{navbar.overview}"></a></li>
+            </ul>
+        </div>
     </div>
 </div>
 
-<div tiles:include="content"></div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div tiles:include="content"></div>
+    </div>
+</div>
 
 <script src="resources/js/libs/jquery-1.9.1.min.js"></script>
 <script src="resources/js/libs/bootstrap-2.3.2.min.js"></script>
