@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -54,7 +55,8 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:META-INF/spring/module-context.xml", "classpath:inmemory-db-context.xml"})
 @Transactional
-public class QualityAnalyzerServiceIntegrationTest extends AbstractDatabaseIntegrationTest {
+@TransactionConfiguration(defaultRollback = true)
+public class DefaultQualityAnalyzerServiceIntegrationTest extends AbstractDatabaseIntegrationTest {
 
   private QualityProfile profile;
   private QualityRequirement firstRequirement;
@@ -119,7 +121,7 @@ public class QualityAnalyzerServiceIntegrationTest extends AbstractDatabaseInteg
     when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
         any(SonarConnectionSettings.class), any(Artefact.class))).thenReturn(1.0);
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);

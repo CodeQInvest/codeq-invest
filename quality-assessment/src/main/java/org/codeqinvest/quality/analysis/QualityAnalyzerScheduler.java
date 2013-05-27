@@ -77,7 +77,7 @@ public class QualityAnalyzerScheduler {
     }
     alreadyScheduledProjects.add(project);
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory,
         secureChangeProbabilityCalculator,

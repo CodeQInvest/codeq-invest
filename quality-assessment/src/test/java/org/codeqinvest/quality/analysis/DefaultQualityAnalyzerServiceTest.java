@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class QualityAnalyzerServiceTest {
+public class DefaultQualityAnalyzerServiceTest {
 
   private QualityProfile profile;
   private QualityRequirement firstRequirement;
@@ -134,7 +134,7 @@ public class QualityAnalyzerServiceTest {
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
     qualityAnalyzerService.analyzeProject(project);
 
@@ -164,7 +164,7 @@ public class QualityAnalyzerServiceTest {
     when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
         any(SonarConnectionSettings.class), eq(artefactB))).thenReturn(1.341);
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
     qualityAnalyzerService.analyzeProject(project);
 
@@ -190,7 +190,7 @@ public class QualityAnalyzerServiceTest {
     when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
         any(SonarConnectionSettings.class), any(Artefact.class))).thenThrow(ResourceNotFoundException.class);
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
 
@@ -210,7 +210,7 @@ public class QualityAnalyzerServiceTest {
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory, codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
     qualityAnalyzerService.analyzeProject(project);
     verify(costsCalculator).calculateRemediationCosts(project.getSonarConnectionSettings(), violation);
@@ -223,7 +223,7 @@ public class QualityAnalyzerServiceTest {
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
         .thenReturn(ViolationsAnalysisResult.createFailedAnalysis(Collections.<ViolationOccurence>emptyList(), "error"));
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         scmAvailabilityCheckerServiceFactory, mock(CodeChangeProbabilityCalculatorFactory.class),
         secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
@@ -244,7 +244,7 @@ public class QualityAnalyzerServiceTest {
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Collections.<ViolationOccurence>emptyList()));
 
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
         notAvailableCheckerServiceFactory, mock(CodeChangeProbabilityCalculatorFactory.class),
         secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
@@ -278,7 +278,7 @@ public class QualityAnalyzerServiceTest {
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     when(costsCalculator.calculateRemediationCosts(any(SonarConnectionSettings.class), any(ViolationOccurence.class))).thenThrow(ResourceNotFoundException.class);
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
@@ -297,7 +297,7 @@ public class QualityAnalyzerServiceTest {
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     when(costsCalculator.calculateNonRemediationCosts(any(SonarConnectionSettings.class), any(ViolationOccurence.class))).thenThrow(ResourceNotFoundException.class);
-    QualityAnalyzerService qualityAnalyzerService = new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
+    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
@@ -313,7 +313,7 @@ public class QualityAnalyzerServiceTest {
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
-    return new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
+    return new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
   }
 
@@ -326,7 +326,7 @@ public class QualityAnalyzerServiceTest {
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenThrow(exception);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
-    return new QualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
+    return new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
   }
 
