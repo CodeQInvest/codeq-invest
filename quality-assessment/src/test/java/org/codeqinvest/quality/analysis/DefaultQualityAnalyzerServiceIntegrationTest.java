@@ -32,7 +32,6 @@ import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
-import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +55,7 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(locations = {"classpath:META-INF/spring/module-context.xml", "classpath:inmemory-db-context.xml"})
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
-public class DefaultQualityAnalyzerServiceIntegrationTest extends AbstractDatabaseIntegrationTest {
+public class DefaultQualityAnalyzerServiceIntegrationTest {
 
   private QualityProfile profile;
   private QualityRequirement firstRequirement;

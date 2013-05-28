@@ -21,7 +21,6 @@ package org.codeqinvest.quality;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.sonar.SonarConnectionSettings;
-import org.codeqinvest.test.utils.AbstractDatabaseIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +47,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @ContextConfiguration(locations = {"classpath:META-INF/spring/module-context.xml", "classpath:inmemory-db-context.xml"})
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
-public class QualityAssessmentDatabaseIntegrationTest extends AbstractDatabaseIntegrationTest {
+public class QualityAssessmentDatabaseIntegrationTest {
 
   @PersistenceContext
   private EntityManager entityManager;

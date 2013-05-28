@@ -19,16 +19,13 @@
       <artifactId>database-migrations</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.googlecode.flyway</groupId>
       <artifactId>flyway-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 
