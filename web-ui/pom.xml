@@ -90,7 +90,7 @@
 
   <profiles>
     <profile>
-      <id>run-web-app</id>
+      <id>debug-web-app</id>
       <build>
         <plugins>
           <plugin>
@@ -100,7 +100,9 @@
               <configuration>
                 <properties>
                   <cargo.jvmargs>
-                    -Dexternalconfig=${externalconfig}
+                    -Dspring.profiles.active=test
+                    -Xdebug
+                    -Xrunjdwp:transport=dt_socket,address=15102,server=y,suspend=n
                   </cargo.jvmargs>
                 </properties>
               </configuration>

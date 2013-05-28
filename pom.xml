@@ -441,7 +441,7 @@
               <cargo.logging>${cargo.logging}</cargo.logging>
               <cargo.jvmargs>
                 ${jacoco.agent.argLine}
-                -Dexternalconfig=${externalconfig}
+                -Dspring.profiles.active=test
               </cargo.jvmargs>
             </properties>
           </configuration>
