@@ -43,29 +43,49 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   private final String addProjectSite = getUriWithHost("/projects/create");
 
-  @Test
-  public void shouldListAllQualityProfiles() throws IOException {
+  @Before
+  public void addDummyQualityProfiles() throws IOException {
+    // database clean up not necessary due profile.name is unique (won't be added twice)
     QualityProfile firstProfile = new QualityProfile("first");
     QualityProfile secondProfile = new QualityProfile("second");
     addNewProfile(firstProfile);
     addNewProfile(secondProfile);
+  }
 
+  @Test
+  public void shouldListAllQualityProfiles() throws IOException {
     goTo(addProjectSite);
-    FluentList<FluentWebElement> profileOptions = find("#profile option");
+    FluentList<FluentWebElement> profileOptions = find("#profile > option");
     assertThat(profileOptions).as("Site should contain all available quality profiles.").hasSize(2);
     assertThat(profileOptions.get(0).getText()).isEqualTo("first");
     assertThat(profileOptions.get(1).getText()).isEqualTo("second");
   }
 
   @Test
+  public void shouldSelectFirstQualityProfileAutomatically() throws IOException {
+    goTo(addProjectSite);
+    FluentList<FluentWebElement> profileOptions = find("#profile > option[selected]");
+    assertThat(profileOptions).as("Only one quality profile should be selected.").hasSize(1);
+    assertThat(profileOptions.get(0).getText()).isEqualTo("first");
+  }
+
+  @Test
   public void shouldListAllSupportedCodeChangeProbabilityCalculationMethods() {
     goTo(addProjectSite);
-    FluentList<FluentWebElement> codeChangeMethodOptions = find("#codeMethod option");
+    FluentList<FluentWebElement> codeChangeMethodOptions = find("#codeMethod > option");
     assertThat(codeChangeMethodOptions)
         .as("Site should contain all supported methods for calculating code change probability.")
         .hasSize(SupportedCodeChangeProbabilityMethod.values().length);
     assertThat(codeChangeMethodOptions.get(0).getText()).isEqualTo("Default method");
     assertThat(codeChangeMethodOptions.get(1).getText()).isEqualTo("Weighted method");
+  }
+
+  @Test
+  public void shouldSelectFirstSupportedCodeChangeProbabilityCalculationMethodAutomatically() throws IOException {
+    goTo(addProjectSite);
+    FluentList<FluentWebElement> profileOptions = find("#codeMethod > option[selected]");
+    assertThat(profileOptions).as("Only one code change probability calculation method should be selected.").hasSize(1);
+    assertThat(profileOptions.get(0).getText()).isEqualTo("Default method");
   }
 
   private void addNewProfile(QualityProfile profile) throws IOException {

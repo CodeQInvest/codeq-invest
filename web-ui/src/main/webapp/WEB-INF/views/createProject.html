@@ -39,8 +39,8 @@
                                 </div>
                                 <div class="row-fluid">
                                     <label class="span4" for="profile" th:text="#{form.label.qualityProfile}">Quality Profile:</label>
-                                    <select class="span8" id="profile" th:field="*{profile.id}" th:remove="all-but-first" th:each="profile : ${profiles}">
-                                        <option value="0" th:value="${profile.id}" th:text="${profile.name}">My Quality Profile</option>
+                                    <select class="span8" id="profile" name="profile.id" th:remove="all-but-first">
+                                        <option value="0" th:value="${p.id}" th:text="${p.name}" th:selected="${iterStat.first}" th:each="p,iterStat : ${profiles}">My Quality Profile</option>
                                         <option value="1" selected="selected">Company Standard Profile</option>
                                         <option value="2">Default Profile</option>
                                     </select>
@@ -87,8 +87,8 @@
                                 <legend class="small-legend no-border" th:text="#{form.legend.settings.codeChange}">Code Change Probability Settings</legend>
                                 <div class="row-fluid">
                                     <label class="span4" for="codeMethod" th:text="#{form.label.method}">Method:</label>
-                                    <select class="span8" id="codeMethod" th:field="*{codeChangeSettings.method}" th:remove="all-but-first" th:each="method : ${codeChangeMethods}">
-                                        <option value="0" th:value="${method.id}" th:text="#{${method.messageSourceIdentifier}}">Default</option>
+                                    <select class="span8" id="codeMethod" name="codeChangeSettings.method" th:remove="all-but-first">
+                                        <option value="0" th:value="${method.id}" th:text="#{${method.messageSourceIdentifier}}" th:selected="${iterStat.first}" th:each="method,iterStat : ${codeChangeMethods}">Default</option>
                                         <option value="2">Weighted</option>
                                     </select>
                                 </div>
