@@ -18,15 +18,15 @@
  */
 package org.codeqinvest.sonar;
 
+import com.google.common.collect.Sets;
 import org.sonar.wsclient.Sonar;
 import org.sonar.wsclient.connectors.HttpClient4Connector;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This service collects all projects that are
@@ -37,13 +37,13 @@ import java.util.List;
 @Service
 public class ProjectsCollectorService {
 
-  public Collection<String> collectAllProjectIdentifiers(SonarConnectionSettings connectionSettings) {
+  public Set<ProjectInformation> collectAllProjects(SonarConnectionSettings connectionSettings) {
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
     List<Resource> projectResources = sonar.findAll(new ResourceQuery());
-    List<String> projectIdentifiers = new ArrayList<String>(projectResources.size());
+    Set<ProjectInformation> projects = Sets.newHashSet();
     for (Resource resource : projectResources) {
-      projectIdentifiers.add(resource.getKey());
+      projects.add(new ProjectInformation(resource.getName(), resource.getKey()));
     }
-    return projectIdentifiers;
+    return projects;
   }
 }

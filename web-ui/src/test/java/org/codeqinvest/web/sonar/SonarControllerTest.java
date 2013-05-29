@@ -18,6 +18,9 @@
  */
 package org.codeqinvest.web.sonar;
 
+import com.google.common.collect.Sets;
+import org.codeqinvest.sonar.ProjectInformation;
+import org.codeqinvest.sonar.ProjectsCollectorService;
 import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.junit.Before;
@@ -26,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,11 +42,13 @@ public class SonarControllerTest {
   private MockMvc mockMvc;
 
   private SonarConnectionCheckerService sonarConnectionCheckerService;
+  private ProjectsCollectorService projectsCollectorService;
 
   @Before
   public void setUp() {
     sonarConnectionCheckerService = mock(SonarConnectionCheckerService.class);
-    mockMvc = MockMvcBuilders.standaloneSetup(new SonarController(sonarConnectionCheckerService, new SonarServerValidator())).build();
+    projectsCollectorService = mock(ProjectsCollectorService.class);
+    mockMvc = MockMvcBuilders.standaloneSetup(new SonarController(sonarConnectionCheckerService, projectsCollectorService, new SonarServerValidator())).build();
   }
 
   @Test
@@ -66,7 +72,7 @@ public class SonarControllerTest {
   }
 
   @Test
-  public void badRequestWhenUrlParameterIsMalformed() throws Exception {
+  public void badRequestWhenUrlParameterIsMalformedForReachableRoute() throws Exception {
     mockMvc.perform(put("/sonar/reachable")
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"url\": \"localhost\"}"))
@@ -74,7 +80,45 @@ public class SonarControllerTest {
   }
 
   @Test
-  public void badRequestWhenUrlParameterIsMissed() throws Exception {
+  public void badRequestWhenUrlParameterIsMissedForReachableRoute() throws Exception {
     mockMvc.perform(put("/sonar/reachable").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void shouldReturnAllProjectOfGivenSonar() throws Exception {
+    when(projectsCollectorService.collectAllProjects(any(SonarConnectionSettings.class)))
+        .thenReturn(Sets.newHashSet(new ProjectInformation("A", "A-Key"), new ProjectInformation("B", "B-Key")));
+
+    mockMvc.perform(put("/sonar/projects")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"url\": \"http://localhost\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)));
+  }
+
+  @Test
+  public void shouldReturnNameAndResourceKeyOfSonarProject() throws Exception {
+    when(projectsCollectorService.collectAllProjects(any(SonarConnectionSettings.class)))
+        .thenReturn(Sets.newHashSet(new ProjectInformation("A", "A-Key")));
+
+    mockMvc.perform(put("/sonar/projects")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"url\": \"http://localhost\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name").value("A"))
+        .andExpect(jsonPath("$[0].resourceKey").value("A-Key"));
+  }
+
+  @Test
+  public void badRequestWhenUrlParameterIsMalformedForProjectsRoute() throws Exception {
+    mockMvc.perform(put("/sonar/projects")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"url\": \"localhost\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void badRequestWhenUrlParameterIsMissedForProjectsRoute() throws Exception {
+    mockMvc.perform(put("/sonar/projects").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
   }
 }

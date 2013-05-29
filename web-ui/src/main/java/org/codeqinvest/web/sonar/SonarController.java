@@ -19,6 +19,8 @@
 package org.codeqinvest.web.sonar;
 
 import lombok.extern.slf4j.Slf4j;
+import org.codeqinvest.sonar.ProjectInformation;
+import org.codeqinvest.sonar.ProjectsCollectorService;
 import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +32,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
 
 /**
+ * This controller handles various request made by frontend
+ * JavaScript code to get some information about a given Sonar
+ * server.
+ *
  * @author fmueller
  */
 @Slf4j
@@ -40,11 +47,15 @@ import javax.servlet.http.HttpServletResponse;
 class SonarController {
 
   private final SonarConnectionCheckerService sonarConnectionCheckerService;
+  private final ProjectsCollectorService projectsCollectorService;
   private final SonarServerValidator sonarServerValidator;
 
   @Autowired
-  SonarController(SonarConnectionCheckerService sonarConnectionCheckerService, SonarServerValidator sonarServerValidator) {
+  SonarController(SonarConnectionCheckerService sonarConnectionCheckerService,
+                  ProjectsCollectorService projectsCollectorService,
+                  SonarServerValidator sonarServerValidator) {
     this.sonarConnectionCheckerService = sonarConnectionCheckerService;
+    this.projectsCollectorService = projectsCollectorService;
     this.sonarServerValidator = sonarServerValidator;
   }
 
@@ -57,12 +68,30 @@ class SonarController {
   SonarReachableStatus isSonarServerReachable(@RequestBody SonarServer sonarServer, BindingResult errors, HttpServletResponse response) {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
-      // could be improved with exception and corresponding exception handler
+      // TODO could be improved with exception and corresponding exception handler
       response.setStatus(400);
       return null;
     }
 
     SonarConnectionSettings connectionSettings = new SonarConnectionSettings(sonarServer.getUrl());
     return new SonarReachableStatus(sonarConnectionCheckerService.isReachable(connectionSettings));
+  }
+
+  /**
+   * This route can be used by JavaScript frontend code to retrieve all available
+   * projects of a given Sonar server.
+   */
+  @RequestMapping(value = "/projects", method = RequestMethod.PUT)
+  @ResponseBody
+  Set<ProjectInformation> allProjects(@RequestBody SonarServer sonarServer, BindingResult errors, HttpServletResponse response) {
+    sonarServerValidator.validate(sonarServer, errors);
+    if (errors.hasErrors()) {
+      // TODO could be improved with exception and corresponding exception handler
+      response.setStatus(400);
+      return null;
+    }
+
+    SonarConnectionSettings connectionSettings = new SonarConnectionSettings(sonarServer.getUrl());
+    return projectsCollectorService.collectAllProjects(connectionSettings);
   }
 }
