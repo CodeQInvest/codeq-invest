@@ -87,8 +87,8 @@
                                 <legend class="small-legend no-border" th:text="#{form.legend.settings.codeChange}">Code Change Probability Settings</legend>
                                 <div class="row-fluid">
                                     <label class="span4" for="codeMethod" th:text="#{form.label.method}">Method:</label>
-                                    <select class="span8" id="codeMethod" th:field="*{codeChangeSettings.method}" th:remove="body">
-                                        <option value="1" selected="selected">Default</option>
+                                    <select class="span8" id="codeMethod" th:field="*{codeChangeSettings.method}" th:remove="all-but-first" th:each="method : ${codeChangeMethods}">
+                                        <option value="0" th:value="${method.id}" th:text="#{${method.messageSourceIdentifier}}">Default</option>
                                         <option value="2">Weighted</option>
                                     </select>
                                 </div>

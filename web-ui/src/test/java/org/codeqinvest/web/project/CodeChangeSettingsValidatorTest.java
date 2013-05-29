@@ -47,7 +47,7 @@ public class CodeChangeSettingsValidatorTest {
 
   @Test
   public void validSettingsShouldResultInEmptyErrorsObject() {
-    CodeChangeSettings settings = new CodeChangeSettings(CodeChangeSettings.DEFAULT_METHOD, 1);
+    CodeChangeSettings settings = CodeChangeSettings.defaultSetting(1);
     Errors errors = validateSettings(settings);
     assertThat(errors.hasErrors()).isFalse();
   }
@@ -61,7 +61,7 @@ public class CodeChangeSettingsValidatorTest {
 
   @Test
   public void daysMustNotBeNegative() {
-    CodeChangeSettings settings = new CodeChangeSettings(CodeChangeSettings.DEFAULT_METHOD, -1);
+    CodeChangeSettings settings = CodeChangeSettings.defaultSetting(-1);
     Errors errors = validateSettings(settings);
     assertThat(errors.hasFieldErrors("days")).isTrue();
   }

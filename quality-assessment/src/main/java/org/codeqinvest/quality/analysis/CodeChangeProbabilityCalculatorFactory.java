@@ -23,6 +23,7 @@ import org.codeqinvest.codechanges.DefaultCodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.WeightedCodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 import org.codeqinvest.quality.CodeChangeSettings;
+import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +41,7 @@ class CodeChangeProbabilityCalculatorFactory {
   }
 
   CodeChangeProbabilityCalculator create(CodeChangeSettings codeChangeSettings) {
-    if (codeChangeSettings.getMethod() == CodeChangeSettings.WEIGHTED_METHOD) {
+    if (codeChangeSettings.getMethod() == SupportedCodeChangeProbabilityMethod.WEIGHTED.getId()) {
       return new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, codeChangeSettings.getDays());
     }
     return new DefaultCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, codeChangeSettings.getDays());

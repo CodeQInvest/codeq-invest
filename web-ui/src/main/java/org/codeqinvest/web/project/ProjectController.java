@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.web.project;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.quality.CodeChangeSettings;
@@ -25,6 +26,7 @@ import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.ProjectRepository;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.QualityProfileRepository;
+import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.quality.analysis.QualityAnalyzerScheduler;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +95,11 @@ class ProjectController {
   @ModelAttribute("profiles")
   List<QualityProfile> allQualityProfiles() {
     return profileRepository.findAll();
+  }
+
+  @ModelAttribute("codeChangeMethods")
+  List<SupportedCodeChangeProbabilityMethod> allCodeChangeProbabilityMethods() {
+    return Lists.newArrayList(SupportedCodeChangeProbabilityMethod.values());
   }
 
   private Project createEmptyProject() {

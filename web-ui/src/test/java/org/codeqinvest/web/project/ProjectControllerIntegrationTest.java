@@ -26,9 +26,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codeqinvest.quality.QualityProfile;
+import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -53,6 +55,17 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     assertThat(profileOptions).as("Site should contain all available quality profiles.").hasSize(2);
     assertThat(profileOptions.get(0).getText()).isEqualTo("first");
     assertThat(profileOptions.get(1).getText()).isEqualTo("second");
+  }
+
+  @Test
+  public void shouldListAllSupportedCodeChangeProbabilityCalculationMethods() {
+    goTo(addProjectSite);
+    FluentList<FluentWebElement> codeChangeMethodOptions = find("#codeMethod option");
+    assertThat(codeChangeMethodOptions)
+        .as("Site should contain all supported methods for calculating code change probability.")
+        .hasSize(SupportedCodeChangeProbabilityMethod.values().length);
+    assertThat(codeChangeMethodOptions.get(0).getText()).isEqualTo("Default method");
+    assertThat(codeChangeMethodOptions.get(1).getText()).isEqualTo("Weighted method");
   }
 
   private void addNewProfile(QualityProfile profile) throws IOException {

@@ -23,8 +23,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.util.Arrays;
-
 /**
  * This validator implementation can be used to validate
  * a binded {@link org.codeqinvest.quality.CodeChangeSettings} instance.
@@ -51,7 +49,7 @@ class CodeChangeSettingsValidator implements Validator {
     if (settings.getDays() < 0) {
       errors.rejectValue("days", "negative.value");
     }
-    if (Arrays.binarySearch(CodeChangeSettings.getSupportedMethods(), settings.getMethod()) == -1) {
+    if (!CodeChangeSettings.getSupportedMethods().contains(settings.getMethod())) {
       errors.rejectValue("method", "not.supported.method");
     }
   }
