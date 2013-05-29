@@ -69,7 +69,7 @@ class ProjectController {
   @RequestMapping(value = "/create", method = RequestMethod.GET)
   String initCreateForm(Model model) {
     model.addAttribute("project", createEmptyProject());
-    return "addProject";
+    return "createProject";
   }
 
   /**
@@ -80,7 +80,7 @@ class ProjectController {
     projectConnectionsValidator.validate(project, bindingResult);
     if (bindingResult.hasErrors()) {
       log.info("Rejected creation of project due {} validation errors", bindingResult.getErrorCount());
-      return "addProject";
+      return "createProject";
     }
 
     Project addedProject = projectRepository.save(project);
