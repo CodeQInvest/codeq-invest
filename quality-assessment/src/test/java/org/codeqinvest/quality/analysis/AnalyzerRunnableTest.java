@@ -19,7 +19,7 @@
 package org.codeqinvest.quality.analysis;
 
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.ProjectRepository;
+import org.codeqinvest.quality.repository.ProjectRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;

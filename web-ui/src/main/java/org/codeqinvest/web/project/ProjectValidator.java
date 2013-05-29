@@ -20,8 +20,8 @@ package org.codeqinvest.web.project;
 
 import com.google.common.base.Strings;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.ProjectRepository;
-import org.codeqinvest.quality.QualityProfileRepository;
+import org.codeqinvest.quality.repository.ProjectRepository;
+import org.codeqinvest.quality.repository.QualityProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;

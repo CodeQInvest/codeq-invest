@@ -19,6 +19,7 @@
 package org.codeqinvest.quality;
 
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Arrays;
 
 import static org.fest.assertions.Assertions.assertThat;
 

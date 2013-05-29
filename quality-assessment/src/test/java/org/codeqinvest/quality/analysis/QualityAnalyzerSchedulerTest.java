@@ -22,7 +22,7 @@ import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
 import org.codeqinvest.quality.CodeChangeSettings;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.ProjectRepository;
+import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.junit.Before;

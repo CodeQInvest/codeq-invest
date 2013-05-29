@@ -19,7 +19,7 @@
 package org.codeqinvest.web.qualityprofile;
 
 import org.codeqinvest.quality.QualityProfile;
-import org.codeqinvest.quality.QualityProfileRepository;
+import org.codeqinvest.quality.repository.QualityProfileRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.web.servlet.MockMvc;

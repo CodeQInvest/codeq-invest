@@ -20,7 +20,7 @@ package org.codeqinvest.web.qualityprofile;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.QualityProfile;
-import org.codeqinvest.quality.QualityProfileRepository;
+import org.codeqinvest.quality.repository.QualityProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;

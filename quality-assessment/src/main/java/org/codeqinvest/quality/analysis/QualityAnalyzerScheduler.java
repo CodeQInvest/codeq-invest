@@ -22,7 +22,7 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.ProjectRepository;
+import org.codeqinvest.quality.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;

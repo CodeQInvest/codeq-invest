@@ -20,7 +20,7 @@ package org.codeqinvest.quality.analysis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.ProjectRepository;
+import org.codeqinvest.quality.repository.ProjectRepository;
 
 /**
  * This {@code Runnable} implementation is used in the

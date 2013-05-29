@@ -20,7 +20,7 @@ package org.codeqinvest.quality.analysis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.ProjectRepository;
+import org.codeqinvest.quality.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
