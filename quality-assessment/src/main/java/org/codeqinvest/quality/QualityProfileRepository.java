@@ -19,14 +19,9 @@
 package org.codeqinvest.quality;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author fmueller
  */
-@Transactional(readOnly = true)
-public interface ProjectRepository extends JpaRepository<Project, Long> {
-
-  Project findOneByLowercaseName(String lowercaseName);
+public interface QualityProfileRepository extends JpaRepository<QualityProfile, Long> {
 }

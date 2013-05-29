@@ -20,6 +20,7 @@ package org.codeqinvest.codechanges.scm;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -33,6 +34,7 @@ import java.io.Serializable;
  * @author fmueller
  */
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString(exclude = "password")
 @Embeddable
@@ -53,7 +55,8 @@ public class ScmConnectionSettings implements Serializable {
   @Column(name = "SCM_FILE_ENCODING", nullable = false)
   private String encoding;
 
-  protected ScmConnectionSettings() {
+  public ScmConnectionSettings() {
+    this("");
   }
 
   public ScmConnectionSettings(String url) {

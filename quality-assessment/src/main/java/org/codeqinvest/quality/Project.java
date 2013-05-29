@@ -41,19 +41,22 @@ import java.io.Serializable;
  * @author fmueller
  */
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 @Entity
 @Table(name = "PROJECT")
 public class Project implements Serializable {
 
-  @Setter
   @Id
   @GeneratedValue
   private Long id;
 
   @Column(nullable = false)
   private String name;
+
+  @Column(nullable = false)
+  private String lowercaseName;
 
   @Column(nullable = false, length = 100)
   private String cronExpression;
@@ -77,11 +80,16 @@ public class Project implements Serializable {
   public Project(String name, String cronExpression, QualityProfile profile,
                  SonarConnectionSettings sonarConnectionSettings, ScmConnectionSettings scmSettings,
                  CodeChangeSettings codeChangeSettings) {
-    this.name = name;
+    setName(name);
     this.cronExpression = cronExpression;
     this.profile = profile;
     this.sonarConnectionSettings = sonarConnectionSettings;
     this.scmSettings = scmSettings;
     this.codeChangeSettings = codeChangeSettings;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+    this.lowercaseName = name.toLowerCase();
   }
 }

@@ -20,6 +20,7 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -30,6 +31,7 @@ import java.io.Serializable;
  * @author fmueller
  */
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 @Embeddable
@@ -38,16 +40,19 @@ public class CodeChangeSettings implements Serializable {
   public static final int DEFAULT_METHOD = 0;
   public static final int WEIGHTED_METHOD = 1;
 
+  private static final int DEFAULT_DAYS = 30;
+
   @Column(name = "CODE_CHANGE_METHOD", nullable = false)
   private int method;
 
   @Column(name = "CODE_CHANGE_DAYS")
   private int days;
 
-  protected CodeChangeSettings() {
+  public CodeChangeSettings() {
+    this(DEFAULT_METHOD, DEFAULT_DAYS);
   }
 
-  private CodeChangeSettings(int method, int days) {
+  public CodeChangeSettings(int method, int days) {
     this.method = method;
     this.days = days;
   }
@@ -58,5 +63,9 @@ public class CodeChangeSettings implements Serializable {
 
   public static CodeChangeSettings weightedSetting(int days) {
     return new CodeChangeSettings(WEIGHTED_METHOD, days);
+  }
+
+  public static int[] getSupportedMethods() {
+    return new int[]{DEFAULT_METHOD, WEIGHTED_METHOD};
   }
 }

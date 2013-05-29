@@ -20,9 +20,11 @@ package org.codeqinvest.quality;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -45,15 +47,35 @@ import java.util.List;
 @Table(name = "QUALITY_PROFILE")
 public class QualityProfile implements Serializable {
 
+  @Setter
   @Id
   @GeneratedValue
   private Long id;
+
+  @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  private String lowercaseName;
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
   private List<QualityRequirement> requirements = new ArrayList<QualityRequirement>();
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
   private List<ChangeRiskAssessmentFunction> changeRiskAssessmentFunctions = new ArrayList<ChangeRiskAssessmentFunction>();
+
+  public QualityProfile() {
+    this("default-profile");
+  }
+
+  public QualityProfile(String name) {
+    setName(name);
+  }
+
+  public void setName(String name) {
+    this.name = name;
+    this.lowercaseName = name.toLowerCase();
+  }
 
   public List<QualityRequirement> getRequirements() {
     return Collections.unmodifiableList(requirements);

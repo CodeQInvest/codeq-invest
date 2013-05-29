@@ -20,6 +20,7 @@ package org.codeqinvest.sonar;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.sonar.wsclient.Host;
 
@@ -34,6 +35,7 @@ import java.io.Serializable;
  * @author fmueller
  */
 @Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 @Embeddable
@@ -51,7 +53,8 @@ public class SonarConnectionSettings implements Serializable {
   @Column(name = "SONAR_PASSWORD")
   private String password;
 
-  protected SonarConnectionSettings() {
+  public SonarConnectionSettings() {
+    this("");
   }
 
   public SonarConnectionSettings(String url) {
