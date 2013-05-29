@@ -86,6 +86,14 @@
       <groupId>org.fluentlenium</groupId>
       <artifactId>fluentlenium-festassert</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.jayway.restassured</groupId>
+      <artifactId>rest-assured</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>

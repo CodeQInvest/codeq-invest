@@ -16,16 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web;
+package org.codeqinvest.web.sonar;
 
-import org.fluentlenium.adapter.FluentTest;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class AbstractFluentTestWithHtmlUnitDriver extends FluentTest {
+/**
+ * @author fmueller
+ */
+@Getter
+@Setter
+class SonarServer {
 
-  @Override
-  public WebDriver getDefaultDriver() {
-    return new HtmlUnitDriver();
+  private final String url;
+
+  public SonarServer() {
+    this("");
+  }
+
+  SonarServer(String url) {
+    this.url = url;
   }
 }

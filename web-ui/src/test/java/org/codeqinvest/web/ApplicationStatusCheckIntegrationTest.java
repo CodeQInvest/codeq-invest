@@ -36,7 +36,7 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 public class ApplicationStatusCheckIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
-  private final String overviewUrl = System.getProperty("system.host");
+  private final String overviewUrl = IntegrationTestHelper.getUriWithHost("");
 
   @Test
   public void isProperlyDeployed() throws IOException {

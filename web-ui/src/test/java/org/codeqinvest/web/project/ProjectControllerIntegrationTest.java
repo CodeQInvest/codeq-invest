@@ -28,6 +28,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
+import org.codeqinvest.web.IntegrationTestHelper;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Before;
@@ -41,7 +42,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
-  private final String addProjectSite = getUriWithHost("/projects/create");
+  private final String addProjectSite = IntegrationTestHelper.getUriWithHost("/projects/create");
 
   @Before
   public void addDummyQualityProfiles() throws IOException {
@@ -90,7 +91,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   private void addNewProfile(QualityProfile profile) throws IOException {
     HttpClient httpClient = new DefaultHttpClient();
-    HttpPost post = new HttpPost(getUriWithHost("/qualityprofiles/create"));
+    HttpPost post = new HttpPost(IntegrationTestHelper.getUriWithHost("/qualityprofiles/create"));
     List<NameValuePair> nvps = new ArrayList<NameValuePair>();
     nvps.add(new BasicNameValuePair("name", profile.getName()));
     post.setEntity(new UrlEncodedFormEntity(nvps, Consts.UTF_8));

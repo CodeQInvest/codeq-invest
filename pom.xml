@@ -72,6 +72,8 @@
     <fest.assert.version>1.4</fest.assert.version>
     <fluentlenium.version>0.7.8</fluentlenium.version>
     <thucydides.version>0.9.116</thucydides.version>
+    <rest.assured.version>1.7.2</rest.assured.version>
+    <json.path.version>0.8.1</json.path.version>
     <hsql.version>2.2.9</hsql.version>
   </properties>
 
@@ -294,6 +296,18 @@
         <groupId>net.thucydides</groupId>
         <artifactId>thucydides-jbehave-plugin</artifactId>
         <version>${thucydides.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.jayway.restassured</groupId>
+        <artifactId>rest-assured</artifactId>
+        <version>${rest.assured.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>${json.path.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

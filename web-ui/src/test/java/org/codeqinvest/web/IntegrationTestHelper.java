@@ -18,14 +18,12 @@
  */
 package org.codeqinvest.web;
 
-import org.fluentlenium.adapter.FluentTest;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+public final class IntegrationTestHelper {
 
-public abstract class AbstractFluentTestWithHtmlUnitDriver extends FluentTest {
+  private IntegrationTestHelper() {
+  }
 
-  @Override
-  public WebDriver getDefaultDriver() {
-    return new HtmlUnitDriver();
+  public static String getUriWithHost(String url) {
+    return System.getProperty("system.host", "http://localhost:8080") + url;
   }
 }

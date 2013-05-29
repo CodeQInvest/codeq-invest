@@ -16,16 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web;
+package org.codeqinvest.web.sonar;
 
-import org.fluentlenium.adapter.FluentTest;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import com.jayway.restassured.http.ContentType;
+import org.codeqinvest.web.IntegrationTestHelper;
+import org.junit.Test;
 
-public abstract class AbstractFluentTestWithHtmlUnitDriver extends FluentTest {
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
-  @Override
-  public WebDriver getDefaultDriver() {
-    return new HtmlUnitDriver();
+public class SonarControllerIntegrationTest {
+
+  @Test
+  public void shouldReturnProperJsonForSonarReachabilityRequest() {
+    given()
+        .body("{\"url\": \"http://localhost\"}")
+        .contentType(ContentType.JSON)
+    .expect()
+        .body("ok", equalTo(false))
+    .when()
+        .put(IntegrationTestHelper.getUriWithHost("/sonar/reachable"));
   }
 }
