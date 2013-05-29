@@ -22,10 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.fluentlenium.adapter.FluentTest;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.io.IOException;
 
@@ -37,7 +34,7 @@ import static org.fest.assertions.Assertions.assertThat;
  *
  * @author fmueller
  */
-public class ApplicationStatusCheckIntegrationTest extends FluentTest {
+public class ApplicationStatusCheckIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
   private final String overviewUrl = System.getProperty("system.host");
 
@@ -56,10 +53,5 @@ public class ApplicationStatusCheckIntegrationTest extends FluentTest {
     assertThat(find(".brand").getText())
         .as("The overview page should be properly displayed by showing at least the correct brand in the navigation bar.")
         .isEqualTo("CodeQ Invest");
-  }
-
-  @Override
-  public WebDriver getDefaultDriver() {
-    return new HtmlUnitDriver();
   }
 }
