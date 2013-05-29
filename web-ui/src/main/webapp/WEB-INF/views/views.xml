@@ -10,4 +10,7 @@
   <definition name="addProject" extends="layout">
     <put-attribute name="content" value="/views/addProject :: content" type="thymeleaf"/>
   </definition>
+  <definition name="project" extends="layout">
+    <put-attribute name="content" value="/views/project :: content" type="thymeleaf"/>
+  </definition>
 </tiles-definitions>

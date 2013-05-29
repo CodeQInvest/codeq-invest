@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>CodeQ Invest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="stylesheet" href="../../resources/css/main.css"/>
+    <link rel="stylesheet" href="../../resources/css/libs/bootstrap-2.3.2.min.css"/>
+    <link rel="stylesheet" href="../../resources/css/libs/bootstrap-responsive-2.3.2.min.css"/>
+</head>
+
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <div class="brand" th:text="#{app.name}">CodeQ Invest</div>
+            <ul class="nav">
+                <li class="active"><a href="#" th:text="#{navbar.overview}">Overview</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div tiles:fragment="content">
+            This is the project site!
+        </div>
+    </div>
+</div>
+
+<script src="../../resources/js/libs/jquery-1.9.1.min.js"></script>
+<script src="../../resources/js/libs/bootstrap-2.3.2.min.js"></script>
+</body>
+</html>
