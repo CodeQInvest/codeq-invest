@@ -149,6 +149,9 @@
             <goals>
               <goal>start</goal>
             </goals>
+            <configuration>
+              <skip>${skipITs}</skip>
+            </configuration>
           </execution>
           <execution>
             <id>stop-cargo</id>
@@ -156,6 +159,9 @@
             <goals>
               <goal>stop</goal>
             </goals>
+            <configuration>
+              <skip>${skipITs}</skip>
+            </configuration>
           </execution>
         </executions>
       </plugin>
