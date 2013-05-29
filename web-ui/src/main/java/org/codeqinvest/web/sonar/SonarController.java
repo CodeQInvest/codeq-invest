@@ -71,6 +71,7 @@ class SonarController {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
       // TODO could be improved with exception and corresponding exception handler
+      log.info("Rejected checking Sonar server due {} validation errors", errors.getErrorCount());
       response.setStatus(BAD_REQUEST);
       return null;
     }
@@ -89,11 +90,14 @@ class SonarController {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
       // TODO could be improved with exception and corresponding exception handler
+      log.info("Rejected retrieving all projects from Sonar server due {} validation errors", errors.getErrorCount());
       response.setStatus(BAD_REQUEST);
       return null;
     }
 
     SonarConnectionSettings connectionSettings = new SonarConnectionSettings(sonarServer.getUrl());
-    return projectsCollectorService.collectAllProjects(connectionSettings);
+    Set<ProjectInformation> projects = projectsCollectorService.collectAllProjects(connectionSettings);
+    log.info("Found {} projects for sonar server at {}", projects.size(), sonarServer.getUrl());
+    return projects;
   }
 }
