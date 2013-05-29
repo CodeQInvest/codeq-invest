@@ -88,7 +88,7 @@ public class Project implements Serializable {
     this.codeChangeSettings = codeChangeSettings;
   }
 
-  public void setName(String name) {
+  public final void setName(String name) {
     this.name = name;
     this.lowercaseName = name.toLowerCase();
   }

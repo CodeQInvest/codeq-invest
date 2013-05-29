@@ -65,15 +65,13 @@ class ProjectConnectionsValidator implements Validator {
   public void validate(Object target, Errors errors) {
     ValidationUtils.invokeValidator(projectValidator, target, errors);
     Project project = (Project) target;
-    if (project.getSonarConnectionSettings() != null) {
-      if (!sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
-        errors.rejectValue("sonarConnectionSettings", "sonar.not.reachable");
-      }
+    if (project.getSonarConnectionSettings() != null
+        && !sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
+      errors.rejectValue("sonarConnectionSettings", "sonar.not.reachable");
     }
-    if (project.getScmSettings() != null) {
-      if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
-        errors.rejectValue("scmSettings", "scm.not.available");
-      }
+    if (project.getScmSettings() != null
+        && !scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
+      errors.rejectValue("scmSettings", "scm.not.available");
     }
   }
 }

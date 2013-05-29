@@ -18,9 +18,9 @@
  */
 package org.codeqinvest.web.sonar;
 
+import org.codeqinvest.web.validation.ValidationHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import java.net.MalformedURLException;
@@ -48,7 +48,7 @@ class SonarServerValidator implements Validator {
    */
   @Override
   public void validate(Object target, Errors errors) {
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "url", "field.required");
+    ValidationHelper.rejectIfEmptyOrWhitespace(errors, "url");
     SonarServer server = (SonarServer) target;
     if (server.getUrl() != null) {
       try {

@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.quality.repository.QualityProfileRepository;
+import org.codeqinvest.web.validation.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
@@ -70,12 +71,12 @@ class ProjectValidator implements Validator {
    */
   @Override
   public void validate(Object target, Errors errors) {
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "field.required");
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "cronExpression", "field.required");
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "profile", "field.required");
-    ValidationUtils.rejectIfEmpty(errors, "sonarConnectionSettings", "field.required");
-    ValidationUtils.rejectIfEmpty(errors, "scmSettings", "field.required");
-    ValidationUtils.rejectIfEmpty(errors, "codeChangeSettings", "field.required");
+    ValidationHelper.rejectIfEmptyOrWhitespace(errors, "name");
+    ValidationHelper.rejectIfEmptyOrWhitespace(errors, "cronExpression");
+    ValidationHelper.rejectIfEmpty(errors, "profile");
+    ValidationHelper.rejectIfEmpty(errors, "sonarConnectionSettings");
+    ValidationHelper.rejectIfEmpty(errors, "scmSettings");
+    ValidationHelper.rejectIfEmpty(errors, "codeChangeSettings");
 
     Project project = (Project) target;
     validateUniqueName(project, errors);
@@ -87,10 +88,9 @@ class ProjectValidator implements Validator {
   }
 
   private void validateUniqueName(Project project, Errors errors) {
-    if (!Strings.isNullOrEmpty(project.getName())) {
-      if (projectRepository.findOneByLowercaseName(project.getLowercaseName()) != null) {
-        errors.rejectValue("name", "not.unique");
-      }
+    if (!Strings.isNullOrEmpty(project.getName())
+        && projectRepository.findOneByLowercaseName(project.getLowercaseName()) != null) {
+      errors.rejectValue("name", "not.unique");
     }
   }
 
@@ -105,10 +105,9 @@ class ProjectValidator implements Validator {
   }
 
   private void validateThatQualityProfileExists(Project project, Errors errors) {
-    if (project.getProfile() != null && project.getProfile().getId() != null) {
-      if (!profileRepository.exists(project.getProfile().getId())) {
-        errors.rejectValue("profile", "not.exists");
-      }
+    if (project.getProfile() != null && project.getProfile().getId() != null
+        && !profileRepository.exists(project.getProfile().getId())) {
+      errors.rejectValue("profile", "not.exists");
     }
   }
 

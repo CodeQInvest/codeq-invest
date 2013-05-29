@@ -20,9 +20,9 @@ package org.codeqinvest.web.project;
 
 import com.google.common.base.Strings;
 import org.codeqinvest.sonar.SonarConnectionSettings;
+import org.codeqinvest.web.validation.ValidationHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import java.net.MalformedURLException;
@@ -50,8 +50,8 @@ class SonarConnectionSettingsValidator implements Validator {
    */
   @Override
   public void validate(Object target, Errors errors) {
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "url", "field.required");
-    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "project", "field.required");
+    ValidationHelper.rejectIfEmptyOrWhitespace(errors, "url");
+    ValidationHelper.rejectIfEmptyOrWhitespace(errors, "project");
 
     SonarConnectionSettings settings = (SonarConnectionSettings) target;
     if (!Strings.isNullOrEmpty(settings.getUrl())) {

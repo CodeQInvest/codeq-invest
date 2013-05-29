@@ -68,7 +68,8 @@ public class ScmConnectionSettings implements Serializable {
   }
 
   public ScmConnectionSettings(String url, String username, String password, String encoding) {
-    this.type = 0; // for SVN
+    // default type is subversion
+    this.type = 0;
     this.url = url;
     this.username = username;
     this.password = password;

@@ -16,36 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web.project;
+package org.codeqinvest.web.validation;
 
-import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.codeqinvest.web.validation.ValidationHelper;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import org.springframework.validation.ValidationUtils;
 
 /**
- * This validator implementation can be used to validate
- * a binded {@link org.codeqinvest.codechanges.scm.ScmConnectionSettings} instance.
+ * This helper class offer some convenient methods
+ * for validating data.
  *
  * @author fmueller
  */
-@Component
-class ScmConnectionSettingsValidator implements Validator {
+public final class ValidationHelper {
 
-  /**
-   * This validator only supports {@link org.codeqinvest.codechanges.scm.ScmConnectionSettings} type.
-   */
-  @Override
-  public boolean supports(Class<?> clazz) {
-    return ScmConnectionSettings.class.equals(clazz);
+  private static final String FIELD_REQUIRED = "field.required";
+
+  private ValidationHelper() {
   }
 
   /**
-   * {@inheritDoc}
+   * Validates if a given field is not empty and uses
+   * default error message key when violated.
    */
-  @Override
-  public void validate(Object target, Errors errors) {
-    ValidationHelper.rejectIfEmptyOrWhitespace(errors, "url");
+  public static void rejectIfEmpty(Errors errors, String field) {
+    ValidationUtils.rejectIfEmpty(errors, field, FIELD_REQUIRED);
+  }
+
+  /**
+   * Validates if a given field is not empty or blank and uses
+   * default error message key when violated.
+   */
+  public static void rejectIfEmptyOrWhitespace(Errors errors, String field) {
+    ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, FIELD_REQUIRED);
   }
 }

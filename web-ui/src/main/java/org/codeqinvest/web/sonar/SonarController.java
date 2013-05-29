@@ -46,6 +46,8 @@ import java.util.Set;
 @RequestMapping("/sonar")
 class SonarController {
 
+  private static final int BAD_REQUEST = 400;
+
   private final SonarConnectionCheckerService sonarConnectionCheckerService;
   private final ProjectsCollectorService projectsCollectorService;
   private final SonarServerValidator sonarServerValidator;
@@ -69,7 +71,7 @@ class SonarController {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
       // TODO could be improved with exception and corresponding exception handler
-      response.setStatus(400);
+      response.setStatus(BAD_REQUEST);
       return null;
     }
 
@@ -87,7 +89,7 @@ class SonarController {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
       // TODO could be improved with exception and corresponding exception handler
-      response.setStatus(400);
+      response.setStatus(BAD_REQUEST);
       return null;
     }
 
