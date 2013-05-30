@@ -77,7 +77,9 @@ class SonarController {
     }
 
     SonarConnectionSettings connectionSettings = new SonarConnectionSettings(sonarServer.getUrl());
-    return new SonarReachableStatus(sonarConnectionCheckerService.isReachable(connectionSettings));
+    SonarReachableStatus reachableStatus = new SonarReachableStatus(sonarConnectionCheckerService.isReachable(connectionSettings));
+    log.info("Sonar server at {} is reachable: {}", sonarServer.getUrl(), reachableStatus.isOk());
+    return reachableStatus;
   }
 
   /**
