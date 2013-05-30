@@ -6,7 +6,23 @@
     </encoder>
   </appender>
 
-  <root level="INFO">
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>codeqinvest.log</File>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <FileNamePattern>codeqinvest.%d{yyyy-MM-dd}.log</FileNamePattern>
+    </rollingPolicy>
+
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d %5p %40.40c:%4L - %m%n</pattern>
+    </layout>
+  </appender>
+
+  <logger name="org.codeqinvest">
+    <level value="info"/>
+  </logger>
+
+  <root level="warn">
     <appender-ref ref="console"/>
+    <appender-ref ref="file"/>
   </root>
 </configuration>
