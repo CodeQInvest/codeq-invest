@@ -26,7 +26,7 @@
     <div class="row-fluid">
     <div tiles:fragment="content">
         <div class="span8 offset2 well">
-            <form action="#" method="POST" th:action="@{/projects/add}" th:object="${project}">
+            <form action="#" method="POST" th:action="@{/projects/create}" th:object="${project}">
                 <fieldset>
                     <legend>Add new project</legend>
                     <div class="row-fluid">
@@ -138,5 +138,11 @@
 
 <script src="../../resources/js/libs/jquery-1.9.1.min.js"></script>
 <script src="../../resources/js/libs/bootstrap-2.3.2.min.js"></script>
+<script src="../../resources/js/SonarReachabilityModule.js"></script>
+
+<script type="text/javascript" tiles:fragment="javascriptFragments">
+    SonarReachabilityModule.init($, '#sonarUrl');
+</script>
+
 </body>
 </html>

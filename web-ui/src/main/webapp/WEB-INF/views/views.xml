@@ -6,11 +6,14 @@
 <tiles-definitions>
   <definition name="overview" extends="layout">
     <put-attribute name="content" value="/views/overview :: content" type="thymeleaf"/>
+    <put-attribute name="javascriptFragments" value="" type="string"/>
   </definition>
   <definition name="createProject" extends="layout">
     <put-attribute name="content" value="/views/createProject :: content" type="thymeleaf"/>
+    <put-attribute name="javascriptFragments" value="/views/createProject :: javascriptFragments" type="thymeleaf"/>
   </definition>
   <definition name="project" extends="layout">
     <put-attribute name="content" value="/views/project :: content" type="thymeleaf"/>
+    <put-attribute name="javascriptFragments" value="" type="string"/>
   </definition>
 </tiles-definitions>
