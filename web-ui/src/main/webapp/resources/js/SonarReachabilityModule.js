@@ -1,6 +1,6 @@
 var SonarReachabilityModule = (function () {
 
-    me = {}
+    var me = {};
 
     function isReachable(jQuery, sonarUrl, reachableCallback) {
         jQuery.ajax({
@@ -17,17 +17,32 @@ var SonarReachabilityModule = (function () {
         })
     }
 
-    me.init = function (jQuery, urlTextfield) {
-        jQuery(urlTextfield).change(function () {
-            isReachable(jQuery, jQuery(urlTextfield).val(), function(reachable) {
+    function bindOnChange(jQuery, uiElement, getSonarServerUrl, statusDiv) {
+        jQuery(uiElement).change(function () {
+
+            // show in progress label
+            jQuery(statusDiv).show();
+            jQuery(statusDiv + ' .label-info').show();
+            jQuery(statusDiv + ' .label-success').hide();
+            jQuery(statusDiv + ' .label-important').hide();
+
+            isReachable(jQuery, getSonarServerUrl(), function(reachable) {
+                jQuery(statusDiv + ' .label-info').hide();
                 if (reachable === true) {
-                    console.log('sonar is reachable');
-                    // TODO modify UI
+                    jQuery(statusDiv + ' .label-important').hide();
+                    jQuery(statusDiv + ' .label-success').show();
                 } else {
-                    console.log('sonar is not reachable');
-                    // TODO modify UI
+                    jQuery(statusDiv + ' .label-success').hide();
+                    jQuery(statusDiv + ' .label-important').show();
                 }
             });
+        });
+    }
+
+    me.init = function (jQuery, getSonarServerUrl, bindOnElements, statusDiv) {
+        // bind functionality to given ui elements
+        jQuery.each(bindOnElements, function(index, value) {
+            bindOnChange(jQuery, value,getSonarServerUrl, statusDiv);
         });
     }
 
