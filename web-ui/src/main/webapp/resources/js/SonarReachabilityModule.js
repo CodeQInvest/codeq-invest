@@ -2,14 +2,18 @@ var SonarReachabilityModule = (function () {
 
     var me = {};
 
-    function isReachable(jQuery, sonarUrl, reachableCallback) {
+    function isReachable(jQuery, connectionSettings, reachableCallback) {
         jQuery.ajax({
             type: 'put',
             url: '/sonar/reachable',
             contentType: 'application/json',
             dataType: 'json',
             processData: false,
-            data: '{ "url": "' + sonarUrl + '"}'
+            data: '{'
+                + '"url": "' + connectionSettings.url + '",'
+                + '"username": "' + connectionSettings.username +'",'
+                + '"password": "' + connectionSettings.password +'"'
+                + '}'
         }).done(function (data) {
             reachableCallback(data['ok']);
         }).fail(function() {
@@ -17,7 +21,7 @@ var SonarReachabilityModule = (function () {
         })
     }
 
-    function bindOnChange(jQuery, uiElement, getSonarServerUrl, statusDiv) {
+    function bindOnChange(jQuery, uiElement, getSonarConnectionSettings, statusDiv) {
         jQuery(uiElement).change(function () {
 
             // show in progress label
@@ -26,7 +30,7 @@ var SonarReachabilityModule = (function () {
             jQuery(statusDiv + ' .label-success').hide();
             jQuery(statusDiv + ' .label-important').hide();
 
-            isReachable(jQuery, getSonarServerUrl(), function(reachable) {
+            isReachable(jQuery, getSonarConnectionSettings(), function(reachable) {
                 jQuery(statusDiv + ' .label-info').hide();
                 if (reachable === true) {
                     jQuery(statusDiv + ' .label-important').hide();
@@ -39,10 +43,10 @@ var SonarReachabilityModule = (function () {
         });
     }
 
-    me.init = function (jQuery, getSonarServerUrl, bindOnElements, statusDiv) {
+    me.init = function (jQuery, getSonarConnectionSettings, bindOnElements, statusDiv) {
         // bind functionality to given ui elements
         jQuery.each(bindOnElements, function(index, value) {
-            bindOnChange(jQuery, value,getSonarServerUrl, statusDiv);
+            bindOnChange(jQuery, value, getSonarConnectionSettings, statusDiv);
         });
     }
 

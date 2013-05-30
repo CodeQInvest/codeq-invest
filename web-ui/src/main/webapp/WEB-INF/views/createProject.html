@@ -154,13 +154,17 @@
 
 <script type="text/javascript" tiles:fragment="javascriptFragments">
 
-    var getSonarServerUrl = function() {
-        return $('#sonarUrl').val();
+    var getSonarConnectionSettings = function() {
+        return {
+            url: $('#sonarUrl').val(),
+            username: $('#sonarUsername').val(),
+            password: $('#sonarPassword').val()
+        };
     };
 
     var sonarServerCredentialElements = ['#sonarUrl', '#sonarUsername', '#sonarPassword'];
-    SonarReachabilityModule.init($, getSonarServerUrl, sonarServerCredentialElements, '#sonarConnectionStatus');
-    LoadSonarProjectsModule.init($, getSonarServerUrl, sonarServerCredentialElements, '#sonarProject', '#sonarProjectLoading', '#sonarProjectLoaded');
+    SonarReachabilityModule.init($, getSonarConnectionSettings, sonarServerCredentialElements, '#sonarConnectionStatus');
+    LoadSonarProjectsModule.init($, getSonarConnectionSettings, sonarServerCredentialElements, '#sonarProject', '#sonarProjectLoading', '#sonarProjectLoaded');
 </script>
 
 </body>

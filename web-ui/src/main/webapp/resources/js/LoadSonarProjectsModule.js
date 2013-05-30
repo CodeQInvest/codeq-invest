@@ -2,16 +2,21 @@ var LoadSonarProjectsModule = (function () {
 
     var me = {};
 
-    var lastSonarServerUrl;
+    var lastSonarServer;
+    var loadedProjects = 0;
 
-    function loadProjects(jQuery, sonarUrl, loadedProjectsCallback) {
+    function loadProjects(jQuery, connectionSettings, loadedProjectsCallback) {
         jQuery.ajax({
             type: 'put',
             url: '/sonar/projects',
             contentType: 'application/json',
             dataType: 'json',
             processData: false,
-            data: '{ "url": "' + sonarUrl + '"}'
+            data: '{'
+                + '"url": "' + connectionSettings.url + '",'
+                + '"username": "' + connectionSettings.username +'",'
+                + '"password": "' + connectionSettings.password +'"'
+                + '}'
         }).done(function (data) {
             loadedProjectsCallback(data);
         }).fail(function() {
@@ -19,26 +24,32 @@ var LoadSonarProjectsModule = (function () {
         })
     }
 
-    function bindOnChange(jQuery, uiElement, getSonarServerUrl, projectsSelect, loadingProjectsDiv, loadedProjectsDiv) {
+    function bindOnChange(jQuery, uiElement, getSonarConnectionSettings, projectsSelect, loadingProjectsDiv, loadedProjectsDiv) {
         jQuery(uiElement).change(function () {
-            var currentSonarServer = getSonarServerUrl();
-            if (currentSonarServer !== lastSonarServerUrl) {
-                lastSonarServerUrl = currentSonarServer;
+            var currentSonarServer = getSonarConnectionSettings();
+            if (currentSonarServer !== lastSonarServer) {
+                lastSonarServer = currentSonarServer;
 
-                jQuery(loadedProjectsDiv).hide();
-                jQuery(loadingProjectsDiv).show();
+                if (lastSonarServer === undefined || lastSonarServer.url !== currentSonarServer.url || loadedProjects === 0) {
+                    jQuery(loadedProjectsDiv).hide();
+                    jQuery(loadingProjectsDiv).show();
+                }
 
                 loadProjects(jQuery, currentSonarServer, function(projects) {
+                    loadedProjects = projects.length;
                     if (projects.length > 0) {
                         var projectOptions = "";
                         jQuery.each(projects, function(index, project) {
                             projectOptions += '<option value="' + project.resourceKey + '">' + project.name + '</option>';
                         });
-                        jQuery(projectsSelect).empty().append(projectOptions);
 
-                        jQuery(loadingProjectsDiv).hide();
-                        jQuery(loadedProjectsDiv).show();
+                        if (projectOptions !== jQuery(projectsSelect).html()) {
+                            jQuery(projectsSelect).empty().append(projectOptions);
+                            jQuery(loadingProjectsDiv).hide();
+                            jQuery(loadedProjectsDiv).show();
+                        }
                     } else {
+                        jQuery(projectsSelect).empty();
                         jQuery(loadingProjectsDiv).hide();
                         jQuery(loadedProjectsDiv).hide();
                     }
@@ -47,10 +58,10 @@ var LoadSonarProjectsModule = (function () {
         });
     }
 
-    me.init = function (jQuery, getSonarServerUrl, bindOnElements, projectsSelect, loadingProjectsDiv, loadedProjectsDiv) {
+    me.init = function (jQuery, getSonarConnectionSettings, bindOnElements, projectsSelect, loadingProjectsDiv, loadedProjectsDiv) {
         // bind functionality to given ui elements
         jQuery.each(bindOnElements, function(index, value) {
-            bindOnChange(jQuery, value, getSonarServerUrl, projectsSelect, loadingProjectsDiv, loadedProjectsDiv);
+            bindOnChange(jQuery, value, getSonarConnectionSettings, projectsSelect, loadingProjectsDiv, loadedProjectsDiv);
         });
     }
 

@@ -20,21 +20,36 @@ package org.codeqinvest.web.sonar;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.codeqinvest.sonar.SonarConnectionSettings;
 
 /**
  * @author fmueller
  */
 @Getter
 @Setter
+@ToString(exclude = "password")
 class SonarServer {
 
   private final String url;
+  private final String username;
+  private final String password;
 
   public SonarServer() {
     this("");
   }
 
-  SonarServer(String url) {
+  public SonarServer(String url) {
+    this(url, "", "");
+  }
+
+  SonarServer(String url, String username, String password) {
     this.url = url;
+    this.username = username;
+    this.password = password;
+  }
+
+  SonarConnectionSettings getConnectionSettings() {
+    return new SonarConnectionSettings(getUrl(), getUsername(), getPassword(), "");
   }
 }

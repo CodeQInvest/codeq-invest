@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.sonar.ProjectInformation;
 import org.codeqinvest.sonar.ProjectsCollectorService;
 import org.codeqinvest.sonar.SonarConnectionCheckerService;
-import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -71,15 +70,14 @@ class SonarController {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
       // TODO could be improved with exception and corresponding exception handler
-      log.info("Rejected checking Sonar server due {} validation errors", errors.getErrorCount());
+      log.info("Rejected checking Sonar server {} due {} validation errors", sonarServer, errors.getErrorCount());
       response.setStatus(BAD_REQUEST);
       return null;
     }
 
-    SonarConnectionSettings connectionSettings = new SonarConnectionSettings(sonarServer.getUrl());
-    SonarReachableStatus reachableStatus = new SonarReachableStatus(sonarConnectionCheckerService.isReachable(connectionSettings));
-    log.info("Sonar server at {} is reachable: {}", sonarServer.getUrl(), reachableStatus.isOk());
-    return reachableStatus;
+    boolean isReachable = sonarConnectionCheckerService.isReachable(sonarServer.getConnectionSettings());
+    log.info("Sonar server at {} is reachable: {}", sonarServer, isReachable);
+    return new SonarReachableStatus(isReachable);
   }
 
   /**
@@ -92,14 +90,13 @@ class SonarController {
     sonarServerValidator.validate(sonarServer, errors);
     if (errors.hasErrors()) {
       // TODO could be improved with exception and corresponding exception handler
-      log.info("Rejected retrieving all projects from Sonar server due {} validation errors", errors.getErrorCount());
+      log.info("Rejected retrieving all projects from Sonar server {} due {} validation errors", sonarServer, errors.getErrorCount());
       response.setStatus(BAD_REQUEST);
       return null;
     }
 
-    SonarConnectionSettings connectionSettings = new SonarConnectionSettings(sonarServer.getUrl());
-    Set<ProjectInformation> projects = projectsCollectorService.collectAllProjects(connectionSettings);
-    log.info("Found {} projects for sonar server at {}", projects.size(), sonarServer.getUrl());
+    Set<ProjectInformation> projects = projectsCollectorService.collectAllProjects(sonarServer.getConnectionSettings());
+    log.info("Found {} projects for sonar server at {}", projects.size(), sonarServer);
     return projects;
   }
 }
