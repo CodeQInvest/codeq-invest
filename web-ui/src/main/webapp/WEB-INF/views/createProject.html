@@ -58,6 +58,24 @@
                         </div>
                         <div class="span6">
                             <fieldset class="squared-fieldset">
+                                <legend class="small-legend no-border" th:text="#{form.legend.settings.codeChange}">Code Change Probability Settings</legend>
+                                <div class="row-fluid">
+                                    <label class="span4" for="codeMethod" th:text="#{form.label.method}">Method:</label>
+                                    <select class="span8" id="codeMethod" name="codeChangeSettings.method" th:remove="all-but-first">
+                                        <option value="0" th:value="${method.id}" th:text="#{${method.messageSourceIdentifier}}" th:selected="${iterStat.first}" th:each="method,iterStat : ${codeChangeMethods}">Default</option>
+                                        <option value="2">Weighted</option>
+                                    </select>
+                                </div>
+                                <div class="row-fluid">
+                                    <label class="span4" for="codeDays" th:text="#{form.label.days}">Number of days:</label>
+                                    <input class="span8" type="text" id="codeDays" th:field="*{codeChangeSettings.days}"/>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <fieldset class="squared-fieldset">
                                 <legend class="small-legend no-border" th:text="#{form.legend.settings.sonar}">Sonar Settings</legend>
                                 <div class="row-fluid">
                                     <label class="span4" for="sonarUrl" th:text="#{form.label.url}">URL:</label>
@@ -87,24 +105,6 @@
                                 <div id="sonarProjectLoaded" class="row-fluid hide">
                                     <label class="span4" for="sonarProject" th:text="#{form.label.project}">Project:</label>
                                     <select class="span8" id="sonarProject" th:field="*{sonarConnectionSettings.project}"></select>
-                                </div>
-                            </fieldset>
-                        </div>
-                    </div>
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <fieldset class="squared-fieldset">
-                                <legend class="small-legend no-border" th:text="#{form.legend.settings.codeChange}">Code Change Probability Settings</legend>
-                                <div class="row-fluid">
-                                    <label class="span4" for="codeMethod" th:text="#{form.label.method}">Method:</label>
-                                    <select class="span8" id="codeMethod" name="codeChangeSettings.method" th:remove="all-but-first">
-                                        <option value="0" th:value="${method.id}" th:text="#{${method.messageSourceIdentifier}}" th:selected="${iterStat.first}" th:each="method,iterStat : ${codeChangeMethods}">Default</option>
-                                        <option value="2">Weighted</option>
-                                    </select>
-                                </div>
-                                <div class="row-fluid">
-                                    <label class="span4" for="codeDays" th:text="#{form.label.days}">Number of days:</label>
-                                    <input class="span8" type="text" id="codeDays" th:field="*{codeChangeSettings.days}"/>
                                 </div>
                             </fieldset>
                         </div>
