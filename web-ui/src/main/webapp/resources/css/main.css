@@ -20,3 +20,7 @@ label {
 .no-border {
     border: 0px;
 }
+
+.label-in-form {
+    margin-top: 7px;
+}
