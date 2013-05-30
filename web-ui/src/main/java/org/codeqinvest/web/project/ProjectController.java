@@ -21,13 +21,14 @@ package org.codeqinvest.web.project;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.codechanges.scm.factory.SupportedScmSystem;
 import org.codeqinvest.quality.CodeChangeSettings;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.quality.QualityProfile;
-import org.codeqinvest.quality.repository.QualityProfileRepository;
 import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.quality.analysis.QualityAnalyzerScheduler;
+import org.codeqinvest.quality.repository.ProjectRepository;
+import org.codeqinvest.quality.repository.QualityProfileRepository;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -100,6 +101,11 @@ class ProjectController {
   @ModelAttribute("codeChangeMethods")
   List<SupportedCodeChangeProbabilityMethod> allCodeChangeProbabilityMethods() {
     return Lists.newArrayList(SupportedCodeChangeProbabilityMethod.values());
+  }
+
+  @ModelAttribute("supportedScmSystems")
+  List<SupportedScmSystem> allSupportedScmSystems() {
+    return Lists.newArrayList(SupportedScmSystem.values());
   }
 
   private Project createEmptyProject() {

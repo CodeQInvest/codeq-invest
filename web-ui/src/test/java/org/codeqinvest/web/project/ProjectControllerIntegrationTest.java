@@ -25,6 +25,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.codeqinvest.codechanges.scm.factory.SupportedScmSystem;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
@@ -87,6 +88,24 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     FluentList<FluentWebElement> profileOptions = find("#codeMethod > option[selected]");
     assertThat(profileOptions).as("Only one code change probability calculation method should be selected.").hasSize(1);
     assertThat(profileOptions.get(0).getText()).isEqualTo("Default method");
+  }
+
+  @Test
+  public void shouldListAllSupportedScmSystems() {
+    goTo(addProjectSite);
+    FluentList<FluentWebElement> codeChangeMethodOptions = find("#scmSystem > option");
+    assertThat(codeChangeMethodOptions)
+        .as("Site should contain all supported SCM systems.")
+        .hasSize(SupportedScmSystem.values().length);
+    assertThat(codeChangeMethodOptions.get(0).getText()).isEqualTo(SupportedScmSystem.SVN.getName());
+  }
+
+  @Test
+  public void shouldSelectFirstSupportedScmSystemsAutomatically() throws IOException {
+    goTo(addProjectSite);
+    FluentList<FluentWebElement> profileOptions = find("#scmSystem > option[selected]");
+    assertThat(profileOptions).as("Only one SCM system should be selected.").hasSize(1);
+    assertThat(profileOptions.get(0).getText()).isEqualTo(SupportedScmSystem.SVN.getName());
   }
 
   private void addNewProfile(QualityProfile profile) throws IOException {

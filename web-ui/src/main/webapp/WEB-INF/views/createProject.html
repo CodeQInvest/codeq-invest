@@ -113,7 +113,8 @@
                                 <legend class="small-legend no-border" th:text="#{form.legend.settings.scm}">SCM Settings</legend>
                                 <div class="row-fluid">
                                     <label class="span4" for="scmSystem" th:text="#{form.label.system}">System:</label>
-                                    <select class="span8" id="scmSystem" th:field="*{scmSettings.type}" th:remove="body">
+                                    <select class="span8" id="scmSystem" name="scmSettings.type" th:remove="all-but-first">
+                                        <option value="0" th:value="${scm.type}" th:text="${scm.name}" th:selected="${iterStat.first}" th:each="scm,iterStat : ${supportedScmSystems}">Git</option>
                                         <option value="1" selected="selected">Subversion</option>
                                     </select>
                                 </div>

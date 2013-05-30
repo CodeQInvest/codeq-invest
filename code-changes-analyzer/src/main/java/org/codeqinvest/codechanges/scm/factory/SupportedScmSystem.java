@@ -18,20 +18,21 @@
  */
 package org.codeqinvest.codechanges.scm.factory;
 
+import lombok.Getter;
+
 /**
  * @author fmueller
  */
+@Getter
 public enum SupportedScmSystem {
 
-  SVN(0);
+  SVN(0, "Subversion");
 
   private final int type;
+  private final String name;
 
-  private SupportedScmSystem(int type) {
+  private SupportedScmSystem(int type, String name) {
     this.type = type;
-  }
-
-  public int getType() {
-    return type;
+    this.name = name;
   }
 }
