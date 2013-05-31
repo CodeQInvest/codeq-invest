@@ -7,14 +7,13 @@
   </appender>
 
   <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <File>codeqinvest.log</File>
+    <file>codeqinvest.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <FileNamePattern>codeqinvest.%d{yyyy-MM-dd}.log</FileNamePattern>
+      <fileNamePattern>codeqinvest.%d{yyyy-MM-dd}.log</fileNamePattern>
     </rollingPolicy>
-
-    <layout class="ch.qos.logback.classic.PatternLayout">
+    <encoder>
       <pattern>%d %5p %40.40c:%4L - %m%n</pattern>
-    </layout>
+    </encoder>
   </appender>
 
   <logger name="org.codeqinvest">
