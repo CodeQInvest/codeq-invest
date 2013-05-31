@@ -44,9 +44,19 @@ public class ProjectControllerFirefoxIntegrationTest extends FluentTest {
     submit("#createProjectForm");
     submit("#createProjectForm");
 
-    assertThat(find("#sonarProject option"))
-        .as("The loaded projects should be displayed after the site was reloaded due validation errors.")
-        .hasSize(numberOfLoadedProjects);
+    assertThat(find("#sonarProject option")).hasSize(numberOfLoadedProjects);
+  }
+
+  @Test
+  public void whenFormWasSubmittedBeforeSonarProjectsCouldBeLoadedTheyShouldBeLoadedWhenTheFormIsDisplayedWithValidationErrors() {
+    goTo(IntegrationTestHelper.ADD_PROJECT_SITE);
+    fill("#sonarUrl").with("http://nemo.sonarsource.org");
+    click("#sonarUsername");
+
+    submit("#createProjectForm");
+
+    await().atMost(1, TimeUnit.MINUTES).until("#sonarProject option").areDisplayed();
+    assertThat(find("#sonarProject option")).isNotEmpty();
   }
 
   @Override

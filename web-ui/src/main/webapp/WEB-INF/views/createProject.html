@@ -169,7 +169,7 @@
 <script src="../../resources/js/SonarReachabilityModule.js"></script>
 <script src="../../resources/js/LoadSonarProjectsModule.js"></script>
 
-<script type="text/javascript" tiles:fragment="javascriptFragments">
+<script type="text/javascript" tiles:fragment="javascriptFragments">//<![CDATA[
     (function() {
         var getSonarConnectionSettings = function() {
             return {
@@ -183,8 +183,12 @@
         SonarReachabilityModule.init($, getSonarConnectionSettings, sonarServerCredentialElements, '#sonarConnectionStatus');
         LoadSonarProjectsModule.init($, getSonarConnectionSettings, sonarServerCredentialElements,
                 '#sonarProject', '#sonarProjectLoading', '#sonarProjectLoaded', '#retrievedSonarProjects');
+
+        if ($('#sonarUrl').val().length !== 0 && $('#sonarProject option').length === 0) {
+            LoadSonarProjectsModule.loadProjects();
+        }
     })();
-</script>
+//]]></script>
 
 </body>
 </html>
