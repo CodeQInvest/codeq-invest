@@ -37,9 +37,12 @@ import java.util.Set;
 @Service
 public class ProjectsCollectorService {
 
+  /**
+   * Collects all Java projects of the specified Sonar server.
+   */
   public Set<ProjectInformation> collectAllProjects(SonarConnectionSettings connectionSettings) {
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
-    List<Resource> projectResources = sonar.findAll(new ResourceQuery());
+    List<Resource> projectResources = sonar.findAll(new ResourceQuery().setLanguages("java"));
     Set<ProjectInformation> projects = Sets.newHashSet();
     for (Resource resource : projectResources) {
       projects.add(new ProjectInformation(resource.getName(), resource.getKey()));
