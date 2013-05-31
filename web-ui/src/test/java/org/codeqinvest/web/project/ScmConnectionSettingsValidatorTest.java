@@ -28,7 +28,6 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ScmConnectionSettingsValidatorTest {
 
-
   private ScmConnectionSettingsValidator validator;
 
   @Before
@@ -51,6 +50,14 @@ public class ScmConnectionSettingsValidatorTest {
     ScmConnectionSettings settings = new ScmConnectionSettings("scm:svn:http://localhost");
     Errors errors = validateSettings(settings);
     assertThat(errors.hasErrors()).isFalse();
+  }
+
+  @Test
+  public void typeShouldBeSupported() {
+    ScmConnectionSettings settings = new ScmConnectionSettings("scm:svn:http://localhost");
+    settings.setType(-1);
+    Errors errors = validateSettings(settings);
+    assertThat(errors.hasFieldErrors("type")).isTrue();
   }
 
   @Test

@@ -20,6 +20,9 @@ package org.codeqinvest.codechanges.scm.factory;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author fmueller
  */
@@ -34,5 +37,13 @@ public enum SupportedScmSystem {
   private SupportedScmSystem(int type, String name) {
     this.type = type;
     this.name = name;
+  }
+
+  public static List<Integer> getSupportedTypes() {
+    List<Integer> types = new ArrayList<Integer>();
+    for (SupportedScmSystem scmSystem : values()) {
+      types.add(scmSystem.getType());
+    }
+    return types;
   }
 }

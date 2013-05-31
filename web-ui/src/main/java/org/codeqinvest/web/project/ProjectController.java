@@ -83,6 +83,7 @@ class ProjectController {
     projectConnectionsValidator.validate(project, bindingResult);
     if (bindingResult.hasErrors()) {
       log.info("Rejected creation of project due {} validation errors", bindingResult.getErrorCount());
+      model.addAttribute("fieldErrors", bindingResult.getFieldErrors());
       return "createProject";
     }
 

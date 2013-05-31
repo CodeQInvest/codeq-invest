@@ -26,9 +26,19 @@
     <div class="row-fluid">
     <div tiles:fragment="content">
         <div class="span8 offset2 well">
-            <form action="#" method="POST" th:action="@{/projects/create}" th:object="${project}">
+            <form id="createProjectForm" action="#" method="POST" th:action="@{/projects/create}" th:object="${project}">
                 <fieldset>
                     <legend>Add new project</legend>
+                    <div class="row-fluid" th:if="${not #lists.isEmpty(fieldErrors)}">
+                        <div id="validationErrorBox" class="span12 error-box">
+                            <p th:text="#{create.project.validation.errors}">Could not add new project. There are validation errors.</p>
+                            <ul th:remove="all-but-first">
+                                <li th:text="#{${error.code}(#{'form.field.' + ${error.field}})}" th:each="error : ${fieldErrors}">One validation error</li>
+                                <li>One validation error</li>
+                                <li>One validation error</li>
+                            </ul>
+                        </div>
+                    </div>
                     <div class="row-fluid">
                         <div class="span6">
                             <fieldset class="squared-fieldset">
@@ -119,7 +129,7 @@
                                     </select>
                                 </div>
                                 <div class="row-fluid">
-                                    <label class="span4" for="scmUrl" th:text="#{form.label.url}">URL:</label>
+                                    <label class="span4" for="scmUrl" th:text="#{form.label.repository}">Repository URL:</label>
                                     <input class="span8" type="text" id="scmUrl" th:field="*{scmSettings.url}" placeholder="scm:svn:https://svn.company.com/repo/trunk/src/main/java" th:placeholder="#{form.placeholder.scmUrl}"/>
                                 </div>
                                 <div class="row-fluid">

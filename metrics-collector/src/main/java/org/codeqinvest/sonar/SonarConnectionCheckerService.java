@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.sonar;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpGet;
 import org.sonar.wsclient.connectors.HttpClient4Connector;
@@ -37,6 +38,10 @@ public class SonarConnectionCheckerService {
   private static final int OK = 200;
 
   public boolean isReachable(SonarConnectionSettings connectionSettings) {
+    if (connectionSettings == null || Strings.isNullOrEmpty(connectionSettings.getUrl())) {
+      return false;
+    }
+
     HttpClient4Connector connector = new HttpClient4Connector(connectionSettings.asHostObject());
     try {
       return connector.getHttpClient()

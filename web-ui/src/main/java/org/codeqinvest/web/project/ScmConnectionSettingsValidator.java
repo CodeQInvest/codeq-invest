@@ -19,6 +19,7 @@
 package org.codeqinvest.web.project;
 
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.codechanges.scm.factory.SupportedScmSystem;
 import org.codeqinvest.web.validation.ValidationHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -47,5 +48,9 @@ class ScmConnectionSettingsValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
     ValidationHelper.rejectIfEmptyOrWhitespace(errors, "url");
+    ScmConnectionSettings settings = (ScmConnectionSettings) target;
+    if (!SupportedScmSystem.getSupportedTypes().contains(settings.getType())) {
+      errors.rejectValue("type", "not.supported.scm.type");
+    }
   }
 }

@@ -108,6 +108,23 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     assertThat(profileOptions.get(0).getText()).isEqualTo(SupportedScmSystem.SVN.getName());
   }
 
+  @Test
+  public void shouldDisplayValidationErrorsWhenFormLacksNecessaryInformation() {
+    goTo(addProjectSite);
+    submit("#createProjectForm");
+    assertThat(find("#validationErrorBox"))
+        .as("After submitting an empty form the validation errors should be displayed.")
+        .isNotEmpty();
+  }
+
+  @Test
+  public void shouldDisplayCorrectMessageForValidationError() {
+    // this tiny test verifies that the resource boundle was loaded and the correct error message is displayed
+    goTo(addProjectSite);
+    submit("#createProjectForm");
+    assertThat(find("#validationErrorBox li").getTexts()).contains("Name is required.");
+  }
+
   private void addNewProfile(QualityProfile profile) throws IOException {
     HttpClient httpClient = new DefaultHttpClient();
     HttpPost post = new HttpPost(IntegrationTestHelper.getUriWithHost("/qualityprofiles/create"));

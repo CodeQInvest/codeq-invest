@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.codechanges.scm.svn;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
@@ -36,6 +37,10 @@ public class SvnServerAvailabilityCheckerService implements ScmAvailabilityCheck
    */
   @Override
   public boolean isAvailable(ScmConnectionSettings connectionSettings) {
+    if (connectionSettings == null || Strings.isNullOrEmpty(connectionSettings.getUrl())) {
+      return false;
+    }
+
     try {
       SvnRepositoryFactory.create(connectionSettings).testConnection();
       log.info("The given svn server is reachable with connection settings: {}", connectionSettings);

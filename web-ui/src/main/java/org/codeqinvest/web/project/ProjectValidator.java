@@ -107,7 +107,7 @@ class ProjectValidator implements Validator {
   private void validateThatQualityProfileExists(Project project, Errors errors) {
     if (project.getProfile() != null && project.getProfile().getId() != null
         && !profileRepository.exists(project.getProfile().getId())) {
-      errors.rejectValue("profile", "not.exists");
+      errors.rejectValue("profile", "quality.profile.not.exists");
     }
   }
 

@@ -24,3 +24,12 @@ label {
 .label-in-form {
     margin-top: 7px;
 }
+
+.error-box {
+    padding-top: 6px;
+    padding-left: 6px;
+    margin: 0px;
+    border: 1px solid #fbd3c6;
+    background: #fde4e1;
+    color: #cb4721;
+}
