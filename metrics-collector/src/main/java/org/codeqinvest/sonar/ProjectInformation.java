@@ -26,6 +26,15 @@ import lombok.Data;
 @Data
 public class ProjectInformation {
 
-  private final String name;
-  private final String resourceKey;
+  private String name;
+  private String resourceKey;
+
+  public ProjectInformation() {
+    this("", "");
+  }
+
+  public ProjectInformation(String name, String resourceKey) {
+    this.name = name;
+    this.resourceKey = resourceKey;
+  }
 }

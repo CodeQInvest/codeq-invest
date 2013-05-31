@@ -39,11 +39,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.codeqinvest.web.IntegrationTestHelper.ADD_PROJECT_SITE;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
-
-  private final String addProjectSite = IntegrationTestHelper.getUriWithHost("/projects/create");
 
   @Before
   public void addDummyQualityProfiles() throws IOException {
@@ -56,7 +55,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldListAllQualityProfiles() throws IOException {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> profileOptions = find("#profile > option");
     assertThat(profileOptions).as("Site should contain all available quality profiles.").hasSize(2);
     assertThat(profileOptions.get(0).getText()).isEqualTo("first");
@@ -65,7 +64,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldSelectFirstQualityProfileAutomatically() throws IOException {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> profileOptions = find("#profile > option[selected]");
     assertThat(profileOptions).as("Only one quality profile should be selected.").hasSize(1);
     assertThat(profileOptions.get(0).getText()).isEqualTo("first");
@@ -73,7 +72,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldListAllSupportedCodeChangeProbabilityCalculationMethods() {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> codeChangeMethodOptions = find("#codeMethod > option");
     assertThat(codeChangeMethodOptions)
         .as("Site should contain all supported methods for calculating code change probability.")
@@ -84,7 +83,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldSelectFirstSupportedCodeChangeProbabilityCalculationMethodAutomatically() throws IOException {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> profileOptions = find("#codeMethod > option[selected]");
     assertThat(profileOptions).as("Only one code change probability calculation method should be selected.").hasSize(1);
     assertThat(profileOptions.get(0).getText()).isEqualTo("Default method");
@@ -92,7 +91,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldListAllSupportedScmSystems() {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> codeChangeMethodOptions = find("#scmSystem > option");
     assertThat(codeChangeMethodOptions)
         .as("Site should contain all supported SCM systems.")
@@ -102,7 +101,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldSelectFirstSupportedScmSystemsAutomatically() throws IOException {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> profileOptions = find("#scmSystem > option[selected]");
     assertThat(profileOptions).as("Only one SCM system should be selected.").hasSize(1);
     assertThat(profileOptions.get(0).getText()).isEqualTo(SupportedScmSystem.SVN.getName());
@@ -110,7 +109,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
 
   @Test
   public void shouldDisplayValidationErrorsWhenFormLacksNecessaryInformation() {
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     submit("#createProjectForm");
     assertThat(find("#validationErrorBox"))
         .as("After submitting an empty form the validation errors should be displayed.")
@@ -120,7 +119,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
   @Test
   public void shouldDisplayCorrectMessageForValidationError() {
     // this tiny test verifies that the resource boundle was loaded and the correct error message is displayed
-    goTo(addProjectSite);
+    goTo(ADD_PROJECT_SITE);
     submit("#createProjectForm");
     assertThat(find("#validationErrorBox li").getTexts()).contains("Name is required.");
   }

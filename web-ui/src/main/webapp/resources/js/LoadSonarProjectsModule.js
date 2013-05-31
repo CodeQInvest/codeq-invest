@@ -24,7 +24,7 @@ var LoadSonarProjectsModule = (function () {
         })
     }
 
-    function bindOnChange(jQuery, uiElement, getSonarConnectionSettings, projectsSelect, loadingProjectsDiv, loadedProjectsDiv) {
+    function bindOnChange(jQuery, uiElement, getSonarConnectionSettings, projectsSelect, loadingProjectsDiv, loadedProjectsDiv, retrievedSonarProjects) {
         jQuery(uiElement).change(function () {
             var currentSonarServer = getSonarConnectionSettings();
             if (currentSonarServer !== lastSonarServer) {
@@ -38,17 +38,19 @@ var LoadSonarProjectsModule = (function () {
                 loadProjects(jQuery, currentSonarServer, function(projects) {
                     loadedProjects = projects.length;
                     if (projects.length > 0) {
-                        var projectOptions = "";
+                        var projectOptions = '';
                         jQuery.each(projects, function(index, project) {
                             projectOptions += '<option value="' + project.resourceKey + '">' + project.name + '</option>';
                         });
 
                         if (projectOptions !== jQuery(projectsSelect).html()) {
+                            jQuery(retrievedSonarProjects).val(JSON.stringify(projects));
                             jQuery(projectsSelect).empty().append(projectOptions);
                             jQuery(loadingProjectsDiv).hide();
                             jQuery(loadedProjectsDiv).show();
                         }
                     } else {
+                        jQuery(retrievedSonarProjects).val('');
                         jQuery(projectsSelect).empty();
                         jQuery(loadingProjectsDiv).hide();
                         jQuery(loadedProjectsDiv).hide();
@@ -58,10 +60,10 @@ var LoadSonarProjectsModule = (function () {
         });
     }
 
-    me.init = function (jQuery, getSonarConnectionSettings, bindOnElements, projectsSelect, loadingProjectsDiv, loadedProjectsDiv) {
+    me.init = function (jQuery, getSonarConnectionSettings, bindOnElements, projectsSelect, loadingProjectsDiv, loadedProjectsDiv, retrievedSonarProjects) {
         // bind functionality to given ui elements
         jQuery.each(bindOnElements, function(index, value) {
-            bindOnChange(jQuery, value, getSonarConnectionSettings, projectsSelect, loadingProjectsDiv, loadedProjectsDiv);
+            bindOnChange(jQuery, value, getSonarConnectionSettings, projectsSelect, loadingProjectsDiv, loadedProjectsDiv, retrievedSonarProjects);
         });
     }
 

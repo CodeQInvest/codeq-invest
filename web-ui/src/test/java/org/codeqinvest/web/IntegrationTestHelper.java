@@ -20,6 +20,8 @@ package org.codeqinvest.web;
 
 public final class IntegrationTestHelper {
 
+  public static final String ADD_PROJECT_SITE = getUriWithHost("/projects/create");
+
   private IntegrationTestHelper() {
   }
 

@@ -112,9 +112,15 @@
                                         <span class="label label-info label-in-form" th:text="#{sonar.projects.progress}">Loading projects...</span>
                                     </div>
                                 </div>
-                                <div id="sonarProjectLoaded" class="row-fluid hide">
+                                <div id="sonarProjectLoaded" class="row-fluid hide" th:class="${not #lists.isEmpty(retrievedSonarProjects)}? 'row-fluid' : 'row-fluid hide'">
                                     <label class="span4" for="sonarProject" th:text="#{form.label.project}">Project:</label>
-                                    <select class="span8" id="sonarProject" th:field="*{sonarConnectionSettings.project}"></select>
+                                    <select class="span8" id="sonarProject" name="sonarConnectionSettings.project">
+                                        <option th:value="${sonarProject.resourceKey}"
+                                                th:text="${sonarProject.name}"
+                                                th:selected="${sonarProject.resourceKey} == ${project.sonarConnectionSettings.project}"
+                                                th:each="sonarProject : ${retrievedSonarProjects}"></option>
+                                    </select>
+                                    <input type="hidden" id="retrievedSonarProjects" name="retrievedSonarProjectsAsJson" th:value="${retrievedSonarProjectsAsJson}"/>
                                 </div>
                             </fieldset>
                         </div>
@@ -159,22 +165,25 @@
 
 <script src="../../resources/js/libs/jquery-1.9.1.min.js"></script>
 <script src="../../resources/js/libs/bootstrap-2.3.2.min.js"></script>
+<script src="../../resources/js/libs/json2.js"></script>
 <script src="../../resources/js/SonarReachabilityModule.js"></script>
 <script src="../../resources/js/LoadSonarProjectsModule.js"></script>
 
 <script type="text/javascript" tiles:fragment="javascriptFragments">
-
-    var getSonarConnectionSettings = function() {
-        return {
-            url: $('#sonarUrl').val(),
-            username: $('#sonarUsername').val(),
-            password: $('#sonarPassword').val()
+    (function() {
+        var getSonarConnectionSettings = function() {
+            return {
+                url: $('#sonarUrl').val(),
+                username: $('#sonarUsername').val(),
+                password: $('#sonarPassword').val()
+            };
         };
-    };
 
-    var sonarServerCredentialElements = ['#sonarUrl', '#sonarUsername', '#sonarPassword'];
-    SonarReachabilityModule.init($, getSonarConnectionSettings, sonarServerCredentialElements, '#sonarConnectionStatus');
-    LoadSonarProjectsModule.init($, getSonarConnectionSettings, sonarServerCredentialElements, '#sonarProject', '#sonarProjectLoading', '#sonarProjectLoaded');
+        var sonarServerCredentialElements = ['#sonarUrl', '#sonarUsername', '#sonarPassword'];
+        SonarReachabilityModule.init($, getSonarConnectionSettings, sonarServerCredentialElements, '#sonarConnectionStatus');
+        LoadSonarProjectsModule.init($, getSonarConnectionSettings, sonarServerCredentialElements,
+                '#sonarProject', '#sonarProjectLoading', '#sonarProjectLoaded', '#retrievedSonarProjects');
+    })();
 </script>
 
 </body>

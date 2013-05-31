@@ -18,6 +18,8 @@
  */
 package org.codeqinvest.web.project;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
@@ -29,6 +31,7 @@ import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.quality.analysis.QualityAnalyzerScheduler;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.quality.repository.QualityProfileRepository;
+import org.codeqinvest.sonar.ProjectInformation;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +41,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -49,6 +53,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/projects")
 class ProjectController {
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private final ProjectRepository projectRepository;
   private final QualityProfileRepository profileRepository;
@@ -79,10 +85,15 @@ class ProjectController {
    * This methods handles the submitted form for creating a new project.
    */
   @RequestMapping(value = "/create", method = RequestMethod.POST)
-  String create(@ModelAttribute Project project, Model model, BindingResult bindingResult) {
+  String create(@ModelAttribute Project project,
+                BindingResult bindingResult,
+                @ModelAttribute("retrievedSonarProjectsAsJson") String sonarProjects,
+                Model model) {
+
     projectConnectionsValidator.validate(project, bindingResult);
     if (bindingResult.hasErrors()) {
       log.info("Rejected creation of project due {} validation errors", bindingResult.getErrorCount());
+      addDeserializedSonarProjectsToModel(sonarProjects, model);
       model.addAttribute("fieldErrors", bindingResult.getFieldErrors());
       return "createProject";
     }
@@ -92,6 +103,18 @@ class ProjectController {
     model.addAttribute("project", addedProject);
     log.info("Created project {} and scheduled its quality analysis", project.getName());
     return "project";
+  }
+
+  private void addDeserializedSonarProjectsToModel(String jsonString, Model model) {
+    if (!Strings.isNullOrEmpty(jsonString)) {
+      try {
+        ProjectInformation[] sonarProjects = OBJECT_MAPPER.readValue(jsonString, ProjectInformation[].class);
+        model.addAttribute("retrievedSonarProjects", sonarProjects);
+      } catch (IOException e) {
+        log.error("Could not parse sonar projects json tree!", e);
+        throw new RuntimeException("Sonar projects json tree could not be parsed!", e);
+      }
+    }
   }
 
   @ModelAttribute("profiles")
