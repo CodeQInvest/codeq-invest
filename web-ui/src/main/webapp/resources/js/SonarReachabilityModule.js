@@ -9,11 +9,7 @@ var SonarReachabilityModule = (function () {
             contentType: 'application/json',
             dataType: 'json',
             processData: false,
-            data: '{'
-                + '"url": "' + connectionSettings.url + '",'
-                + '"username": "' + connectionSettings.username +'",'
-                + '"password": "' + connectionSettings.password +'"'
-                + '}'
+            data: JSON.stringify(connectionSettings)
         }).done(function (data) {
             reachableCallback(data['ok']);
         }).fail(function() {
