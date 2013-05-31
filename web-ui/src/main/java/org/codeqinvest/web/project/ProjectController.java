@@ -112,7 +112,7 @@ class ProjectController {
         model.addAttribute("retrievedSonarProjects", sonarProjects);
       } catch (IOException e) {
         log.error("Could not parse sonar projects json tree!", e);
-        throw new RuntimeException("Sonar projects json tree could not be parsed!", e);
+        throw new SonarProjectsJsonDeserializationException(e);
       }
     }
   }

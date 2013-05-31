@@ -16,39 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm.factory;
-
-import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.codeqinvest.web.project;
 
 /**
- * This enum encapsulates all supported SCM systems.
+ * This exception describes an error in deserializing retrieved Sonar projects
+ * data from a submitted form. Due this should never happen, it is
+ * a {@link java.lang.RuntimeException}.
  *
  * @author fmueller
  */
-@Getter
-public enum SupportedScmSystem {
+class SonarProjectsJsonDeserializationException extends RuntimeException {
 
-  SVN(0, "Subversion");
-
-  private final int type;
-  private final String name;
-
-  private SupportedScmSystem(int type, String name) {
-    this.type = type;
-    this.name = name;
-  }
-
-  /**
-   * Returns the type ids of all supported SCM systems.
-   */
-  public static List<Integer> getSupportedTypes() {
-    List<Integer> types = new ArrayList<Integer>();
-    for (SupportedScmSystem scmSystem : values()) {
-      types.add(scmSystem.getType());
-    }
-    return types;
+  SonarProjectsJsonDeserializationException(Exception e) {
+    super(e);
   }
 }

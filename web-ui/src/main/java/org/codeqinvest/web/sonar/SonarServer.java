@@ -35,11 +35,15 @@ class SonarServer {
   private final String username;
   private final String password;
 
+  /**
+   * This constructor is only used for deserializing form data
+   * into instances of this class.
+   */
   public SonarServer() {
     this("");
   }
 
-  public SonarServer(String url) {
+  SonarServer(String url) {
     this(url, "", "");
   }
 
