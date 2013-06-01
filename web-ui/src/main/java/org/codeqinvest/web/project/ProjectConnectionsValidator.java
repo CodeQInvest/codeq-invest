@@ -19,6 +19,7 @@
 package org.codeqinvest.web.project;
 
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
+import org.codeqinvest.codechanges.scm.factory.UnsupportedScmSystem;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +69,17 @@ class ProjectConnectionsValidator implements Validator {
     if (!sonarConnectionCheckerService.isReachable(project.getSonarConnectionSettings())) {
       errors.rejectValue("sonarConnectionSettings", "sonar.not.reachable");
     }
-    if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
-      errors.rejectValue("scmSettings", "scm.not.available");
+
+    try {
+      if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
+        scmSystemNotAvailable(errors);
+      }
+    } catch (UnsupportedScmSystem e) {
+      scmSystemNotAvailable(errors);
     }
+  }
+
+  private void scmSystemNotAvailable(Errors errors) {
+    errors.rejectValue("scmSettings", "scm.not.available");
   }
 }

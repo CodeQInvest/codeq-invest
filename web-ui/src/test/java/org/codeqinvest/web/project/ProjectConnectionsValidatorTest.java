@@ -21,6 +21,7 @@ package org.codeqinvest.web.project;
 import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
+import org.codeqinvest.codechanges.scm.factory.UnsupportedScmSystem;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.codeqinvest.sonar.SonarConnectionSettings;
@@ -96,6 +97,14 @@ public class ProjectConnectionsValidatorTest {
   public void shouldFailWhenScmSystemIsNotAvailable() {
     when(sonarConnectionCheckerService.isReachable(any(SonarConnectionSettings.class))).thenReturn(true);
     mockNotAvailableScmSystem();
+    Errors errors = validateProject(project);
+    assertThat(errors.hasFieldErrors("scmSettings")).isTrue();
+  }
+
+  @Test
+  public void shouldFailWhenScmSystemIsNotSupported() {
+    when(scmAvailabilityCheckerServiceFactory.create(any(ScmConnectionSettings.class))).thenThrow(UnsupportedScmSystem.class);
+    validator = new ProjectConnectionsValidator(projectValidator, sonarConnectionCheckerService, scmAvailabilityCheckerServiceFactory);
     Errors errors = validateProject(project);
     assertThat(errors.hasFieldErrors("scmSettings")).isTrue();
   }
