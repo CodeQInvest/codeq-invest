@@ -33,7 +33,7 @@ import static org.codeqinvest.web.IntegrationTestHelper.ADD_PROJECT_SITE;
 import static org.codeqinvest.web.IntegrationTestHelper.addNewProfile;
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
+public class CreateProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
   @Before
   public void addDummyQualityProfiles() throws IOException {

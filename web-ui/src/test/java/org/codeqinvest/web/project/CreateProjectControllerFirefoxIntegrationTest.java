@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ProjectControllerFirefoxIntegrationTest extends FluentTest {
+public class CreateProjectControllerFirefoxIntegrationTest extends FluentTest {
 
   @Test
   public void loadedProjectsShouldStillBePresentAfterSiteWasSubmittedTwiceWithValidationErrors() {

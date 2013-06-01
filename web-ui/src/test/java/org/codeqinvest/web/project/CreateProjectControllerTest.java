@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ProjectControllerTest {
+public class CreateProjectControllerTest {
 
   private MockMvc mockMvc;
 
@@ -71,7 +71,7 @@ public class ProjectControllerTest {
         new SonarConnectionSettingsValidator(), new ScmConnectionSettingsValidator(), new CodeChangeSettingsValidator());
     projectConnectionsValidator = new ProjectConnectionsValidator(projectValidator, sonarConnectionCheckerService, scmAvailabilityCheckerServiceFactory);
 
-    mockMvc = MockMvcBuilders.standaloneSetup(new ProjectController(projectRepository, profileRepository, analyzerScheduler, projectConnectionsValidator)).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(new CreateProjectController(projectRepository, profileRepository, analyzerScheduler, projectConnectionsValidator)).build();
   }
 
   @Test

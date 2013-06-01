@@ -46,14 +46,14 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * This controller handles all requests for managing projects.
+ * This controller handles all requests for creating new projects.
  *
  * @author fmueller
  */
 @Slf4j
 @Controller
 @RequestMapping("/projects")
-class ProjectController {
+class CreateProjectController {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -63,10 +63,10 @@ class ProjectController {
   private final ProjectConnectionsValidator projectConnectionsValidator;
 
   @Autowired
-  ProjectController(ProjectRepository projectRepository,
-                    QualityProfileRepository profileRepository,
-                    QualityAnalyzerScheduler analyzerScheduler,
-                    ProjectConnectionsValidator projectConnectionsValidator) {
+  CreateProjectController(ProjectRepository projectRepository,
+                          QualityProfileRepository profileRepository,
+                          QualityAnalyzerScheduler analyzerScheduler,
+                          ProjectConnectionsValidator projectConnectionsValidator) {
     this.projectRepository = projectRepository;
     this.profileRepository = profileRepository;
     this.analyzerScheduler = analyzerScheduler;
@@ -111,18 +111,6 @@ class ProjectController {
     return "project";
   }
 
-  private void addDeserializedSonarProjectsToModel(String jsonString, Model model) {
-    if (!Strings.isNullOrEmpty(jsonString)) {
-      try {
-        ProjectInformation[] sonarProjects = OBJECT_MAPPER.readValue(jsonString, ProjectInformation[].class);
-        model.addAttribute("retrievedSonarProjects", sonarProjects);
-      } catch (IOException e) {
-        log.error("Could not parse sonar projects json tree!", e);
-        throw new SonarProjectsJsonDeserializationException(e);
-      }
-    }
-  }
-
   @ModelAttribute("currentUrl")
   String currentUrl() {
     return "/projects/create";
@@ -141,6 +129,18 @@ class ProjectController {
   @ModelAttribute("supportedScmSystems")
   List<SupportedScmSystem> allSupportedScmSystems() {
     return Lists.newArrayList(SupportedScmSystem.values());
+  }
+
+  private void addDeserializedSonarProjectsToModel(String jsonString, Model model) {
+    if (!Strings.isNullOrEmpty(jsonString)) {
+      try {
+        ProjectInformation[] sonarProjects = OBJECT_MAPPER.readValue(jsonString, ProjectInformation[].class);
+        model.addAttribute("retrievedSonarProjects", sonarProjects);
+      } catch (IOException e) {
+        log.error("Could not parse sonar projects json tree!", e);
+        throw new SonarProjectsJsonDeserializationException(e);
+      }
+    }
   }
 
   private Project createEmptyProject() {
