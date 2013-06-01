@@ -31,7 +31,7 @@ import static org.fest.assertions.Assertions.assertThat;
 @RunWith(Parameterized.class)
 public class ChangeRiskAssessmentFunctionRiskChargeAmountBehaviorTest {
 
-  private final QualityProfile dummyProfile = new QualityProfile();
+  private final QualityProfile dummyProfile = new QualityProfile("quality-profile");
 
   private List<RiskCharge> riskCharges;
   private double currentMetricValue;

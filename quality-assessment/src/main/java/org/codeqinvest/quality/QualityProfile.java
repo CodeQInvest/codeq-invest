@@ -65,7 +65,7 @@ public class QualityProfile implements Serializable {
   private List<ChangeRiskAssessmentFunction> changeRiskAssessmentFunctions = new ArrayList<ChangeRiskAssessmentFunction>();
 
   public QualityProfile() {
-    this("default-profile");
+    // only used by frameworks
   }
 
   public QualityProfile(String name) {

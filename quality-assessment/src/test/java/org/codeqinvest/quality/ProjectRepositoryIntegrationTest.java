@@ -51,7 +51,7 @@ public class ProjectRepositoryIntegrationTest {
 
   @Before
   public void createAndPersistExampleProject() {
-    QualityProfile profile = new QualityProfile();
+    QualityProfile profile = new QualityProfile("quality-profile");
 
     SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings("http://localhost", "myProject::123");
     ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings("http://svn.localhost");

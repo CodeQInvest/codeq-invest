@@ -45,7 +45,7 @@ public class QualityAnalyzerSchedulerTest {
         mock(SecureChangeProbabilityCalculator.class),
         mock(QualityViolationCostsCalculator.class),
         mock(QualityAnalysisRepository.class));
-    project = new Project("MyProject", "* * 4 * * *", new QualityProfile(),
+    project = new Project("MyProject", "* * 4 * * *", new QualityProfile("quality-profile"),
         mock(SonarConnectionSettings.class), mock(ScmConnectionSettings.class), CodeChangeSettings.defaultSetting(1));
     project.setId(1L);
   }

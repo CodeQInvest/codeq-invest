@@ -57,9 +57,10 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
   public void shouldListAllQualityProfiles() throws IOException {
     goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> profileOptions = find("#profile > option");
-    assertThat(profileOptions).as("Site should contain all available quality profiles.").hasSize(2);
-    assertThat(profileOptions.get(0).getText()).isEqualTo("first");
-    assertThat(profileOptions.get(1).getText()).isEqualTo("second");
+    assertThat(profileOptions).as("Site should contain all available quality profiles.").hasSize(3);
+    assertThat(profileOptions.get(0).getText()).isEqualTo("Default Profile");
+    assertThat(profileOptions.get(1).getText()).isEqualTo("first");
+    assertThat(profileOptions.get(2).getText()).isEqualTo("second");
   }
 
   @Test
@@ -67,7 +68,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     goTo(ADD_PROJECT_SITE);
     FluentList<FluentWebElement> profileOptions = find("#profile > option[selected]");
     assertThat(profileOptions).as("Only one quality profile should be selected.").hasSize(1);
-    assertThat(profileOptions.get(0).getText()).isEqualTo("first");
+    assertThat(profileOptions.get(0).getText()).isEqualTo("Default Profile");
   }
 
   @Test

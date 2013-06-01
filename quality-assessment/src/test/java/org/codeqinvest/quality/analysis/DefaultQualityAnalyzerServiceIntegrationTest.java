@@ -74,7 +74,7 @@ public class DefaultQualityAnalyzerServiceIntegrationTest {
 
   @Before
   public void setUp() {
-    profile = new QualityProfile();
+    profile = new QualityProfile("quality-profile");
     firstRequirement = new QualityRequirement(profile, 100, 200, 10, "nloc", new QualityCriteria("cc", ">", 10));
     secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", new QualityCriteria("ec", "<", 15));
     profile.addRequirement(firstRequirement);

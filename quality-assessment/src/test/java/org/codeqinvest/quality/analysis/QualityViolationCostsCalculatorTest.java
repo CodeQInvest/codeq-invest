@@ -32,6 +32,8 @@ import static org.mockito.Mockito.mock;
 
 public class QualityViolationCostsCalculatorTest {
 
+  private final QualityProfile qualityProfile = new QualityProfile("quality-profile");
+
   private QualityViolationCostsCalculator costsCalculator;
   private FakeMetricCollectorService metricCollectorService;
   private SonarConnectionSettings connectionSettings;
@@ -50,7 +52,7 @@ public class QualityViolationCostsCalculatorTest {
 
   @Test
   public void calculateRemediationCostsProperlyForGreaterOperator() throws ResourceNotFoundException {
-    QualityRequirement requirement = new QualityRequirement(new QualityProfile(), 20, 30, 100, "nloc", new QualityCriteria("metric", ">", 10.0));
+    QualityRequirement requirement = new QualityRequirement(qualityProfile, 20, 30, 100, "nloc", new QualityCriteria("metric", ">", 10.0));
     ViolationOccurence violation = new ViolationOccurence(requirement, artefact);
 
     // 20 * (abs(10.0 - 2.0) + 1) * (120.0 / 100.0) = 216 min
@@ -59,7 +61,7 @@ public class QualityViolationCostsCalculatorTest {
 
   @Test
   public void calculateRemediationCostsProperlyForLessOperator() throws ResourceNotFoundException {
-    QualityRequirement requirement = new QualityRequirement(new QualityProfile(), 20, 30, 100, "nloc", new QualityCriteria("metric", "<", 1.0));
+    QualityRequirement requirement = new QualityRequirement(qualityProfile, 20, 30, 100, "nloc", new QualityCriteria("metric", "<", 1.0));
     ViolationOccurence violation = new ViolationOccurence(requirement, artefact);
 
     // 20 * (abs(1.0 - 2.0) + 1) * (120.0 / 100.0) = 48 min
@@ -68,7 +70,7 @@ public class QualityViolationCostsCalculatorTest {
 
   @Test
   public void calculateNonRemediationCostsProperlyForGreaterEqualsOperator() throws ResourceNotFoundException {
-    QualityRequirement requirement = new QualityRequirement(new QualityProfile(), 20, 30, 100, "nloc", new QualityCriteria("metric", ">=", 5.0));
+    QualityRequirement requirement = new QualityRequirement(qualityProfile, 20, 30, 100, "nloc", new QualityCriteria("metric", ">=", 5.0));
     ViolationOccurence violation = new ViolationOccurence(requirement, artefact);
 
     // 30 * abs(5.0 - 2.0) * (120.0 / 100.0) = 108 min

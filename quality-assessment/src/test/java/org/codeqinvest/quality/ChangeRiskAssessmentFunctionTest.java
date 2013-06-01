@@ -26,13 +26,15 @@ import java.util.List;
 
 public class ChangeRiskAssessmentFunctionTest {
 
+  private final QualityProfile qualityProfile = new QualityProfile("quality-profile");
+
   @Test(expected = IllegalArgumentException.class)
   public void allRiskChargesShouldHaveTheSameOperator() {
     List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
     riskCharges.add(new RiskCharge(0.0, ">", 0.0));
-    new ChangeRiskAssessmentFunction(new QualityProfile(), "", riskCharges);
+    new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -41,25 +43,25 @@ public class ChangeRiskAssessmentFunctionTest {
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
     riskCharges.add(new RiskCharge(0.0, "<", 1.0));
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
-    new ChangeRiskAssessmentFunction(new QualityProfile(), "", riskCharges);
+    new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void riskChargesMustNotBeEmpty() {
-    new ChangeRiskAssessmentFunction(new QualityProfile(), "", Collections.<RiskCharge>emptyList());
+    new ChangeRiskAssessmentFunction(qualityProfile, "", Collections.<RiskCharge>emptyList());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void equalOperatorShouldNotBeAllowedInRiskCharges() {
     List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "=", 0.0));
-    new ChangeRiskAssessmentFunction(new QualityProfile(), "", riskCharges);
+    new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void notEqualOperatorShouldNotBeAllowedInRiskCharges() {
     List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "!=", 0.0));
-    new ChangeRiskAssessmentFunction(new QualityProfile(), "", riskCharges);
+    new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }
 }
