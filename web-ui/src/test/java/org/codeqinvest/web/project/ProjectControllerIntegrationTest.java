@@ -18,28 +18,19 @@
  */
 package org.codeqinvest.web.project;
 
-import org.apache.http.Consts;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.codeqinvest.codechanges.scm.factory.SupportedScmSystem;
 import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
 import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
-import org.codeqinvest.web.IntegrationTestHelper;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.codeqinvest.web.IntegrationTestHelper.ADD_PROJECT_SITE;
+import static org.codeqinvest.web.IntegrationTestHelper.addNewProfile;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
@@ -51,6 +42,14 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     QualityProfile secondProfile = new QualityProfile("second");
     addNewProfile(firstProfile);
     addNewProfile(secondProfile);
+  }
+
+  @Test
+  public void addProjectNavigationMenuItemShouldBeActive() {
+    goTo(ADD_PROJECT_SITE);
+    assertThat(find("#addProjectMenutItem").getAttribute("class"))
+        .as("When displaying the 'add new project' site the corresponding menu item should be active.")
+        .contains("active");
   }
 
   @Test
@@ -123,14 +122,5 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     goTo(ADD_PROJECT_SITE);
     submit("#createProjectForm");
     assertThat(find("#validationErrorBox li").getTexts()).contains("Name is required.");
-  }
-
-  private void addNewProfile(QualityProfile profile) throws IOException {
-    HttpClient httpClient = new DefaultHttpClient();
-    HttpPost post = new HttpPost(IntegrationTestHelper.getUriWithHost("/qualityprofiles/create"));
-    List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-    nvps.add(new BasicNameValuePair("name", profile.getName()));
-    post.setEntity(new UrlEncodedFormEntity(nvps, Consts.UTF_8));
-    httpClient.execute(post);
   }
 }

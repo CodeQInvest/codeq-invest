@@ -16,7 +16,21 @@
         <div class="container-fluid">
             <div class="brand" th:text="#{app.name}"></div>
             <ul class="nav">
-                <li class="active"><a href="#" th:text="#{navbar.overview}"></a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span th:text="#{navbar.projects}">Projects</span>
+                        <b class="caret"></b>
+                    </a>
+                    <ul id="projectsMenuItem" class="dropdown-menu">
+                        <li th:each="project : ${projects}">
+                            <a href="#" th:href="@{'/projects/' + ${project.id}}" th:text="${project.name}">My project</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li id="addProjectMenutItem" th:class="${currentUrl} == @{/projects/create}? 'active' : ''">
+                            <a href="#" th:href="@{/projects/create}" th:text="#{navbar.addProject}">Add new project</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

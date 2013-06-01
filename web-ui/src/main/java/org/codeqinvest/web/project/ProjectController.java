@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -93,6 +94,11 @@ class ProjectController {
     projectConnectionsValidator.validate(project, bindingResult);
     if (bindingResult.hasErrors()) {
       log.info("Rejected creation of project due {} validation errors", bindingResult.getErrorCount());
+      if (log.isDebugEnabled()) {
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+          log.debug("Field {} has following error: {}", fieldError.getField(), fieldError.getCode());
+        }
+      }
       addDeserializedSonarProjectsToModel(sonarProjects, model);
       model.addAttribute("fieldErrors", bindingResult.getFieldErrors());
       return "createProject";
@@ -115,6 +121,11 @@ class ProjectController {
         throw new SonarProjectsJsonDeserializationException(e);
       }
     }
+  }
+
+  @ModelAttribute("currentUrl")
+  String currentUrl() {
+    return "/projects/create";
   }
 
   @ModelAttribute("profiles")

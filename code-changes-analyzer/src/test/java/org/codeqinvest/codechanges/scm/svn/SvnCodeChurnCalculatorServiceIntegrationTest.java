@@ -42,7 +42,7 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   @Test
   public void shouldCalculateAllCodeChurnProportionsForOneDayAndOneFile() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     // TODO improve this test with vagrant and puppet and own svn repository server via vm
-    ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://rapla.googlecode.com/svn/trunk//src/");
+    ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://rapla.googlecode.com/svn/trunk/src/");
     DailyCodeChurn codeChurn = codeChurnCalculatorService.calculateCodeChurn(connectionSettings,
         "org/rapla/server/internal/SecurityManager.java",
         new LocalDate(2013, 5, 17));

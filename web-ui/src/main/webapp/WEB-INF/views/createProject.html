@@ -14,9 +14,26 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid">
-            <div class="brand" th:text="#{app.name}">CodeQ Invest</div>
+            <div class="brand">CodeQ Invest</div>
             <ul class="nav">
-                <li class="active"><a href="#" th:text="#{navbar.overview}">Overview</a></li>
+                <li class="dropdown active">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span>Projects</span>
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">Web Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="#">Code Module</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="active">
+                            <a href="#">Add new project</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -28,7 +45,7 @@
         <div class="span8 offset2 well">
             <form id="createProjectForm" action="#" method="POST" th:action="@{/projects/create}" th:object="${project}">
                 <fieldset>
-                    <legend>Add new project</legend>
+                    <legend th:text="#{form.addProject}">Add new project</legend>
                     <div class="row-fluid" th:if="${not #lists.isEmpty(fieldErrors)}">
                         <div id="validationErrorBox" class="span12 error-box">
                             <p th:text="#{create.project.validation.errors}">Could not add new project. There are validation errors.</p>
