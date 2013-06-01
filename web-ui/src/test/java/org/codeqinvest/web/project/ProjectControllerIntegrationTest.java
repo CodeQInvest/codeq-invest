@@ -30,7 +30,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
   @Test
-  public void addProjectNavigationMenuItemShouldBeActive() throws IOException {
+  public void currentProjectShouldBeActiveItemInNavigationMenu() throws IOException {
     addRandomProject();
 
     goTo(PROJECT_SITE + "1");
