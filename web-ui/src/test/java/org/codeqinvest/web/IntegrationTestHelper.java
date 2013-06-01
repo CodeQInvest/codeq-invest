@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.web;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -25,8 +26,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.quality.CodeChangeSettings;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityProfile;
+import org.codeqinvest.sonar.SonarConnectionSettings;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ import java.util.List;
 
 public final class IntegrationTestHelper {
 
+  public static final String PROJECT_SITE = getUriWithHost("/projects/");
   public static final String ADD_PROJECT_SITE = getUriWithHost("/projects/create");
   public static final String ADD_QUALITY_PROFILE_SITE = getUriWithHost("/qualityprofiles/create");
 
@@ -49,7 +54,21 @@ public final class IntegrationTestHelper {
     doPostRequest(ADD_QUALITY_PROFILE_SITE, Arrays.<NameValuePair>asList(new BasicNameValuePair("name", profile.getName())));
   }
 
-  public static void addNewProject(Project project) throws IOException {
+  public static void addRandomProject() throws IOException {
+    QualityProfile profile = new QualityProfile();
+    profile.setId(1L);
+
+    Project project = new Project("Project-" + RandomUtils.nextInt(),
+        "* * 3 * * *",
+        profile,
+        new SonarConnectionSettings("http://nemo.sonarsource.org", "org.apache.cloudstack:cloudstack"),
+        new ScmConnectionSettings("http://rapla.googlecode.com/svn/trunk/src/"),
+        CodeChangeSettings.defaultSetting(20));
+
+    addNewProject(project);
+  }
+
+  private static void addNewProject(Project project) throws IOException {
     List<NameValuePair> parameters = new ArrayList<NameValuePair>();
     parameters.add(new BasicNameValuePair("name", project.getName()));
     parameters.add(new BasicNameValuePair("profile.id", "1"));

@@ -16,25 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web;
+package org.codeqinvest.web.project;
 
+import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.codeqinvest.web.IntegrationTestHelper.PROJECT_SITE;
 import static org.codeqinvest.web.IntegrationTestHelper.addRandomProject;
 import static org.fest.assertions.Assertions.assertThat;
 
-public class NavigationBarIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
+public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
   @Test
-  public void shouldListAllProjectsInNavigationBarMenuItem() throws IOException {
-    addRandomProject();
+  public void addProjectNavigationMenuItemShouldBeActive() throws IOException {
     addRandomProject();
 
-    goTo(IntegrationTestHelper.ADD_PROJECT_SITE);
-    assertThat(find("#projectsMenuItem li"))
-        .as("All projects should be listed in corresponding menu item.")
-        .hasSize(2 + 2); // + 2 because of addProject menu item and delimiter item
+    goTo(PROJECT_SITE + "1");
+    assertThat(find("#projectsMenuItem > .active > a").getAttribute("href")).endsWith("1");
   }
 }

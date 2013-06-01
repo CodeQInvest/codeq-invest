@@ -22,7 +22,7 @@
                         <b class="caret"></b>
                     </a>
                     <ul id="projectsMenuItem" class="dropdown-menu">
-                        <li th:each="project : ${projects}">
+                        <li th:class="${currentUrl} == @{'/projects/' + ${project.id}}? 'active' : ''" th:each="project : ${projects}">
                             <a href="#" th:href="@{'/projects/' + ${project.id}}" th:text="${project.name}">My project</a>
                         </li>
                         <li class="divider"></li>
