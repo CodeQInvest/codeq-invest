@@ -18,7 +18,6 @@
  */
 package org.codeqinvest.web.overview;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,13 +27,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  * @author fmueller
  */
-@Slf4j
 @Controller
 class OverviewController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   String showOverview() {
-    log.debug("Serving overview request");
-    return "overview";
+    // not really needed for MVP, because of that the add new project site is returned by default
+    return "redirect:/projects/create";
   }
 }

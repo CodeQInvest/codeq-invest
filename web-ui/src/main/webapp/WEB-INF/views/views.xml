@@ -4,10 +4,6 @@
     "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 
 <tiles-definitions>
-  <definition name="overview" extends="layout">
-    <put-attribute name="content" value="/views/overview :: content" type="thymeleaf"/>
-    <put-attribute name="javascriptFragments" value="" type="string"/>
-  </definition>
   <definition name="createProject" extends="layout">
     <put-attribute name="content" value="/views/createProject :: content" type="thymeleaf"/>
     <put-attribute name="javascriptFragments" value="/views/createProject :: javascriptFragments" type="thymeleaf"/>
