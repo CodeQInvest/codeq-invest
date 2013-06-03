@@ -11,26 +11,354 @@
 </head>
 
 <body>
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid">
-            <div class="brand" th:text="#{app.name}">CodeQ Invest</div>
+            <div class="brand">CodeQ Invest</div>
             <ul class="nav">
-                <li class="active"><a href="#" th:text="#{navbar.overview}">Overview</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span>Projects</span>
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">Web Dashboard</a>
+                        </li>
+                        <li class="active">
+                            <a href="#">My Project</a>
+                        </li>
+                        <li>
+                            <a href="#">Code Module</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">Add new project</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
 </div>
 
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div tiles:fragment="content">
-            This is the project site!
+    <div tiles:fragment="content">
+        <div class="row-fluid">
+            <div class="span12 text-right">
+                Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile | <a href="#">Configure</a>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <ul class="breadcrumb with-border">
+                    <li><a href="#">My Project</a> <span class="divider">/</span></li>
+                    <li><a href="#">org</a> <span class="divider">/</span></li>
+                    <li><a href="#">java</a> <span class="divider">/</span></li>
+                    <li><a href="#">subpackage</a> <span class="divider">/</span></li>
+                    <li class="active">util</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span6 with-border-right">
+                <form>
+                    <legend class="no-border">Investment Opportunities</legend>
+                    <div class="row-fluid">
+                        <div id="treemap" class="span12"></div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span7">
+                            <div class="treemap-legend muted">
+                                <span class="colorScale-legend-left">Color: Change Probability 0%</span>
+                                <span id="colorScale"></span>
+                                <span class="colorScale-legend-right">100%</span>
+                            </div>
+                        </div>
+                        <div class="span5">
+                            <div class="text-right treemap-legend muted">
+                                Size: Investment Potential
+                            </div>
+                        </div>
+                    </div>
+                    <fieldset>
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Artefact</th>
+                                    <th>Change Probability</th>
+                                    <th>Manual Estimate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>animate</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="bar" style="width: 43.49%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="0">none</option>
+                                        <option value="1">very low</option>
+                                        <option value="2">low</option>
+                                        <option value="3">normal</option>
+                                        <option value="4">high</option>
+                                        <option value="5">very high</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>analytics</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="bar" style="width: 47.78%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select>
+                                        <option value="0">none</option>
+                                        <option value="1">very low</option>
+                                        <option value="2">low</option>
+                                        <option value="3">normal</option>
+                                        <option value="4">high</option>
+                                        <option value="5">very high</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-actions">
+                            <a class="btn btn-primary" href="#">Apply manual estimates</a>
+                            <a class="btn btn-danger" style="float: right;" href="#">Delete manual estimates</a>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="span6">
+                <div class="row-fluid">
+                    <div class="span12">
+                    <form class="form-inline">
+                        <legend class="no-border">Investment</legend>
+                        <fieldset>
+                            <label for="amount">Amount:</label>
+                            <input type="text" id="amount" placeholder="7h 30m"/>
+                            <input class="btn btn-primary" type="submit" value="Calculate"/>
+                        </fieldset>
+                    </form>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12 label label-success">
+                        <div class="invest-calculation-label">
+                                1d 3h 15m Profit with ROI of 108%
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="table-header label-info">Quality Investment Plan</div>
+                    <table class="table table-condensed table-striped table-borders">
+                        <thead>
+                        <tr>
+                            <th>Requirement</th>
+                            <th>Artefact</th>
+                            <th>RC</th>
+                            <th>Profit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Response for Class &lt; 50</td>
+                            <td>FunctionSequence</td>
+                            <td>2h 30m</td>
+                            <td>4h</td>
+                        </tr>
+                        <tr>
+                            <td>Duplicated Code &#61; 0%</td>
+                            <td>Scheduler</td>
+                            <td>1h 24m</td>
+                            <td>3h 30m</td>
+                        </tr>
+                        <tr>
+                            <td>Complexity per method &lt; 5</td>
+                            <td>NumberInterpolator</td>
+                            <td>40m</td>
+                            <td>1h 20m</td>
+                        </tr>
+                        <tr>
+                            <td>Code Coverage &gt; 80%</td>
+                            <td>AspectRatioBanker</td>
+                            <td>1h 40m</td>
+                            <td>45m</td>
+                        </tr>
+                        <tr>
+                            <td>LCOM4 &#61; 1</td>
+                            <td>Transition</td>
+                            <td>1h 10m</td>
+                            <td>30m</td>
+                        </tr>
+                        <tr>
+                            <td>Public API documented &gt;&#61; 50%</td>
+                            <td>CommunityStructure</td>
+                            <td>30m</td>
+                            <td>20m</td>
+                        </tr>
+                        <tr>
+                            <td>Comments &gt;&#61; 10%</td>
+                            <td>FunctionSequence</td>
+                            <td>50m</td>
+                            <td>20m</td>
+                        </tr>
+                        <tr>
+                            <td>Code Coverage &gt; 80%</td>
+                            <td>FunctionSequence</td>
+                            <td>60m</td>
+                            <td>20m</td>
+                        </tr>
+                        <tr>
+                            <td>Code Coverage &gt; 80%</td>
+                            <td>Scheduler</td>
+                            <td>40m</td>
+                            <td>10m</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="../../resources/js/libs/jquery-1.9.1.min.js"></script>
 <script src="../../resources/js/libs/bootstrap-2.3.2.min.js"></script>
+<script src="../../resources/js/libs/json2.js"></script>
+<script src="../../resources/js/libs/d3.v3.min.js"></script>
+<script src="../../resources/js/libs/tinycolor-0.9.14.min.js"></script>
+<script src="../../resources/js/SonarReachabilityModule.js"></script>
+<script src="../../resources/js/LoadSonarProjectsModule.js"></script>
+<script src="../../resources/js/TreeMap.js"></script>
+<script src="../../resources/js/ColorScale.js"></script>
+
+<script type="text/javascript" th:remove="all">//<![CDATA[
+var testJson = {
+    "name": "org.java.subpackage.util",
+    "children": [
+        {
+            "name": "analytics",
+            changeProbability: 47.78,
+            "children": [
+                {
+                    "name": "cluster",
+                    changeProbability: 35.75,
+                    "children": [
+                        {"name": "AgglomerativeCluster", "value": 40, changeProbability: 80},
+                        {"name": "CommunityStructure", "value": 240, changeProbability: 10},
+                        {"name": "HierarchicalCluster", "value": 44, changeProbability: 12},
+                        {"name": "MergeEdge", "value": 130, changeProbability: 41}
+                    ]
+                },
+                {
+                    "name": "graph",
+                    changeProbability: 29.6,
+                    "children": [
+                        {"name": "BetweennessCentrality", "value": 48, changeProbability: 30},
+                        {"name": "LinkDistance", "value": 10, changeProbability: 5},
+                        {"name": "MaxFlowMinCut", "value": 42, changeProbability: 4},
+                        {"name": "ShortestPaths", "value": 240, changeProbability: 44},
+                        {"name": "SpanningTree", "value": 412, changeProbability: 65}
+                    ]
+                },
+                {
+                    "name": "optimization",
+                    changeProbability: 100,
+                    "children": [
+                        {"name": "AspectRatioBanker", "value": 110, changeProbability: 100}
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "animate",
+            changeProbability: 43.49,
+            "children": [
+                {"name": "Easing", "value": 240, changeProbability: 56},
+                {"name": "FunctionSequence", "value": 192, changeProbability: 88},
+                {
+                    "name": "interpolate",
+                    changeProbability: 17.89,
+                    "children": [
+                        {"name": "ArrayInterpolator", "value": 22, changeProbability: 12},
+                        {"name": "ColorInterpolator", "value": 43, changeProbability: 0},
+                        {"name": "DateInterpolator", "value": 64, changeProbability: 0},
+                        {"name": "Interpolator", "value": 24, changeProbability: 24},
+                        {"name": "MatrixInterpolator", "value": 23, changeProbability: 23},
+                        {"name": "NumberInterpolator", "value": 81, changeProbability: 90},
+                        {"name": "ObjectInterpolator", "value": 110, changeProbability: 0},
+                        {"name": "PointInterpolator", "value": 12, changeProbability: 10},
+                        {"name": "RectangleInterpolator", "value": 38, changeProbability: 2}
+                    ]
+                },
+                {"name": "ISchedulable", "value": 13, changeProbability: 22},
+                {"name": "Parallel", "value": 302, changeProbability: 32},
+                {"name": "Pause", "value": 6, changeProbability: 38},
+                {"name": "Scheduler", "value": 130, changeProbability: 87},
+                {"name": "Sequence", "value": 41, changeProbability: 4},
+                {"name": "Transition", "value": 70, changeProbability: 34},
+                {"name": "Transitioner", "value": 20, changeProbability: 76},
+                {"name": "TransitionEvent", "value": 33, changeProbability: 56},
+                {"name": "Tween", "value": 56, changeProbability: 11}
+            ]
+        }
+    ]
+};
+//]]></script>
+
+<script type="text/javascript" tiles:fragment="javascriptFragments">//<![CDATA[
+    (function() {
+
+        var margin = {
+            top: 20,
+            right: 0,
+            bottom: 10,
+            left: 0
+        };
+
+        var treemapContainer = $('#treemap');
+        TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
+            return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
+        }, testJson);
+
+        ColorScale.createWithDefaultSize('#colorScale', function(d) {
+            return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
+        });
+
+        /*
+         * The following functions are used to resize the treemap according to
+         * the size of the surrounding element.
+         */
+        var debounce = function(fn, timeout){
+            var timeoutID = -1;
+            return function() {
+                if (timeoutID > -1) {
+                    window.clearTimeout(timeoutID);
+                }
+                timeoutID = window.setTimeout(fn, timeout);
+            }
+        };
+
+        var treemapSvg = $('#treemap svg');
+        var treemapAspectRatio = treemapSvg.width() / treemapSvg.height();
+
+        var debouncedRedraw = debounce(function() {
+            var treemapTargetWidth = treemapContainer.width();
+            treemapSvg.attr('width', treemapTargetWidth);
+            treemapSvg.attr('height', Math.round(treemapTargetWidth / treemapAspectRatio));
+        }, 125);
+
+        $(window).resize(debouncedRedraw);
+    }());
+//]]></script>
+
 </body>
 </html>

@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid">
             <div class="brand" th:text="#{app.name}"></div>
@@ -36,16 +36,18 @@
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row-fluid" tiles:include="content">
-    </div>
+<div class="container-fluid" tiles:include="content">
 </div>
 
 <script th:src="@{/resources/js/libs/jquery-1.9.1.min.js}"></script>
 <script th:src="@{/resources/js/libs/bootstrap-2.3.2.min.js}"></script>
 <script th:src="@{/resources/js/libs/json2.js}"></script>
+<script th:src="@{/resources/js/libs/d3.v3.min.js}"></script>
+<script th:src="@{/resources/js/libs/tinycolor-0.9.14.min.js}"></script>
 <script th:src="@{/resources/js/SonarReachabilityModule.js}"></script>
 <script th:src="@{/resources/js/LoadSonarProjectsModule.js}"></script>
+<script th:src="@{/resources/js/TreeMap.js}"></script>
+<script th:src="@{/resources/js/ColorScale.js}"></script>
 <script tiles:include="javascriptFragments"></script>
 </body>
 </html>
