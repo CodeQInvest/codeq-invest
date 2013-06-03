@@ -42,6 +42,7 @@ public class ResourcesCollectorService {
     if (!connectionSettings.hasProject()) {
       throw new IllegalArgumentException("you can only collect resources with connection settings that has a project");
     }
+    log.info("Start collecting all classes for project {} at Sonar server", connectionSettings.getProject());
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
     List<Resource> resources = sonar.findAll(ResourceQuery.create(connectionSettings.getProject())
         .setAllDepths()

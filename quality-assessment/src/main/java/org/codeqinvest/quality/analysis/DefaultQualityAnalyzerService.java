@@ -58,11 +58,11 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
 
   @Autowired
   public DefaultQualityAnalyzerService(ViolationsCalculatorService violationsCalculatorService,
-                                ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory,
-                                CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory,
-                                SecureChangeProbabilityCalculator secureChangeProbabilityCalculator,
-                                QualityViolationCostsCalculator costsCalculator,
-                                QualityAnalysisRepository qualityAnalysisRepository) {
+                                       ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory,
+                                       CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory,
+                                       SecureChangeProbabilityCalculator secureChangeProbabilityCalculator,
+                                       QualityViolationCostsCalculator costsCalculator,
+                                       QualityAnalysisRepository qualityAnalysisRepository) {
     this.violationsCalculatorService = violationsCalculatorService;
     this.scmAvailabilityCheckerServiceFactory = scmAvailabilityCheckerServiceFactory;
     this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
@@ -83,6 +83,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
           violationsAnalysisResult.getFailureReason().get());
     }
 
+    log.info("Checking the availability of the SCM system {} for project {}", project.getScmSettings(), project.getName());
     if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
       return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "The scm system is not available.");
     }
@@ -93,10 +94,12 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
     }
 
     qualityAnalysis = addSecureChangeProbabilityToEachArtifact(project, qualityAnalysis);
+    log.info("Quality analysis succeeded for project {} with {} violations.", project.getName(), violationsAnalysisResult.getViolations().size());
     return qualityAnalysisRepository.save(qualityAnalysis);
   }
 
   private QualityAnalysis addChangeProbabilityToEachArtifact(Project project, ViolationsAnalysisResult violationsAnalysisResult) {
+    log.info("Starting calculation of change probability for each artefact of project {}", project.getName());
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = codeChangeProbabilityCalculatorFactory.create(project.getCodeChangeSettings());
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
       Artefact artefact = violation.getArtefact();
@@ -118,9 +121,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
     }
 
     try {
-      QualityAnalysis analysis = QualityAnalysis.success(project, calculateCostsForEachViolation(project.getSonarConnectionSettings(), violationsAnalysisResult));
-      log.info("Quality analysis succeeded for project {} with {} violations.", project.getName(), violationsAnalysisResult.getViolations().size());
-      return analysis;
+      return QualityAnalysis.success(project, calculateCostsForEachViolation(project.getSonarConnectionSettings(), violationsAnalysisResult));
     } catch (ResourceNotFoundException e) {
       logFailedAnalysis(project, e);
       return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "Resource not found during costs calculation.");
@@ -128,6 +129,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
   }
 
   private QualityAnalysis addSecureChangeProbabilityToEachArtifact(Project project, QualityAnalysis qualityAnalysis) {
+    log.info("Starting calculation of secure change probability for each artefact of project {}", project.getName());
     for (QualityViolation violation : qualityAnalysis.getViolations()) {
       try {
         Artefact artefact = violation.getArtefact();
@@ -139,6 +141,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
         return QualityAnalysis.failed(project, qualityAnalysis.getViolations(), "Resource not found during secure change calculation");
       }
     }
+    log.info("Finished calculation of secure change probability for each artefact of project {}", project.getName());
     return qualityAnalysis;
   }
 

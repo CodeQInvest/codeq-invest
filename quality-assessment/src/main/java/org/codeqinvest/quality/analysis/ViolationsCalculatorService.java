@@ -68,6 +68,7 @@ class ViolationsCalculatorService {
           "sonar project is not reachable with supplied connection settings: " + project.getSonarConnectionSettings().toString());
     }
 
+    log.info("Start violation analysis for project {}", project.getName());
     Map<String, Artefact> artefactsThatHaveAtLeastOneViolation = Maps.newHashMap();
     List<ViolationOccurence> violations = new ArrayList<ViolationOccurence>();
     for (Resource resource : resourcesCollectorService.collectAllResourcesForProject(project.getSonarConnectionSettings())) {
@@ -92,7 +93,7 @@ class ViolationsCalculatorService {
             artefactsThatHaveAtLeastOneViolation.put(resource.getKey(), artefact);
           }
 
-          log.debug("Create quality violation for artefact {} with violated requirement {}",
+          log.info("Create quality violation for artefact {} with violated requirement {}",
               artefact.getName(), qualityRequirement.getCriteria());
           violations.add(new ViolationOccurence(qualityRequirement, artefact));
         }
