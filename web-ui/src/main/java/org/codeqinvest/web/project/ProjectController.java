@@ -39,6 +39,7 @@ class ProjectController {
   @RequestMapping("{projectId}")
   String showProject(@PathVariable long projectId, Model model) {
     model.addAttribute("currentUrl", "/projects/" + projectId);
+    model.addAttribute("investmentOpportunitiesJson", "{ \"name\": \"No Data\", \"value\": 0, \"children\": []}");
     return "project";
   }
 }

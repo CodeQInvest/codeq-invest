@@ -227,6 +227,79 @@
                 </div>
             </div>
         </div>
+        <div id="investmentOpportunities" class="hide" th:text="${investmentOpportunitiesJson}">
+            {
+            "name": "org.java.subpackage.util",
+            "children": [
+            {
+            "name": "analytics",
+            "changeProbability": 47.78,
+            "children": [
+            {
+            "name": "cluster",
+            "changeProbability": 35.75,
+            "children": [
+            {"name": "AgglomerativeCluster", "value": 40, "changeProbability": 80},
+            {"name": "CommunityStructure", "value": 240, "changeProbability": 10},
+            {"name": "HierarchicalCluster", "value": 44, "changeProbability": 12},
+            {"name": "MergeEdge", "value": 130, "changeProbability": 41}
+            ]
+            },
+            {
+            "name": "graph",
+            "changeProbability": 29.6,
+            "children": [
+            {"name": "BetweennessCentrality", "value": 48, "changeProbability": 30},
+            {"name": "LinkDistance", "value": 10, "changeProbability": 5},
+            {"name": "MaxFlowMinCut", "value": 42, "changeProbability": 4},
+            {"name": "ShortestPaths", "value": 240, "changeProbability": 44},
+            {"name": "SpanningTree", "value": 412, "changeProbability": 65}
+            ]
+            },
+            {
+            "name": "optimization",
+            "changeProbability": 100,
+            "children": [
+            {"name": "AspectRatioBanker", "value": 110, "changeProbability": 100}
+            ]
+            }
+            ]
+            },
+            {
+            "name": "animate",
+            "changeProbability": 43.49,
+            "children": [
+            {"name": "Easing", "value": 240, "changeProbability": 56},
+            {"name": "FunctionSequence", "value": 192, "changeProbability": 88},
+            {
+            "name": "interpolate",
+            "changeProbability": 17.89,
+            "children": [
+            {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12},
+            {"name": "ColorInterpolator", "value": 43, "changeProbability": 0},
+            {"name": "DateInterpolator", "value": 64, "changeProbability": 0},
+            {"name": "Interpolator", "value": 24, "changeProbability": 24},
+            {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23},
+            {"name": "NumberInterpolator", "value": 81, "changeProbability": 90},
+            {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0},
+            {"name": "PointInterpolator", "value": 12, "changeProbability": 10},
+            {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2}
+            ]
+            },
+            {"name": "ISchedulable", "value": 13, "changeProbability": 22},
+            {"name": "Parallel", "value": 302, "changeProbability": 32},
+            {"name": "Pause", "value": 6, "changeProbability": 38},
+            {"name": "Scheduler", "value": 130, "changeProbability": 87},
+            {"name": "Sequence", "value": 41, "changeProbability": 4},
+            {"name": "Transition", "value": 70, "changeProbability": 34},
+            {"name": "Transitioner", "value": 20, "changeProbability": 76},
+            {"name": "TransitionEvent", "value": 33, "changeProbability": 56},
+            {"name": "Tween", "value": 56, "changeProbability": 11}
+            ]
+            }
+            ]
+            }
+        </div>
     </div>
 </div>
 
@@ -239,80 +312,6 @@
 <script src="../../resources/js/LoadSonarProjectsModule.js"></script>
 <script src="../../resources/js/TreeMap.js"></script>
 <script src="../../resources/js/ColorScale.js"></script>
-
-<script type="text/javascript" th:remove="all">//<![CDATA[
-var testJson = {
-    "name": "org.java.subpackage.util",
-    "children": [
-        {
-            "name": "analytics",
-            changeProbability: 47.78,
-            "children": [
-                {
-                    "name": "cluster",
-                    changeProbability: 35.75,
-                    "children": [
-                        {"name": "AgglomerativeCluster", "value": 40, changeProbability: 80},
-                        {"name": "CommunityStructure", "value": 240, changeProbability: 10},
-                        {"name": "HierarchicalCluster", "value": 44, changeProbability: 12},
-                        {"name": "MergeEdge", "value": 130, changeProbability: 41}
-                    ]
-                },
-                {
-                    "name": "graph",
-                    changeProbability: 29.6,
-                    "children": [
-                        {"name": "BetweennessCentrality", "value": 48, changeProbability: 30},
-                        {"name": "LinkDistance", "value": 10, changeProbability: 5},
-                        {"name": "MaxFlowMinCut", "value": 42, changeProbability: 4},
-                        {"name": "ShortestPaths", "value": 240, changeProbability: 44},
-                        {"name": "SpanningTree", "value": 412, changeProbability: 65}
-                    ]
-                },
-                {
-                    "name": "optimization",
-                    changeProbability: 100,
-                    "children": [
-                        {"name": "AspectRatioBanker", "value": 110, changeProbability: 100}
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "animate",
-            changeProbability: 43.49,
-            "children": [
-                {"name": "Easing", "value": 240, changeProbability: 56},
-                {"name": "FunctionSequence", "value": 192, changeProbability: 88},
-                {
-                    "name": "interpolate",
-                    changeProbability: 17.89,
-                    "children": [
-                        {"name": "ArrayInterpolator", "value": 22, changeProbability: 12},
-                        {"name": "ColorInterpolator", "value": 43, changeProbability: 0},
-                        {"name": "DateInterpolator", "value": 64, changeProbability: 0},
-                        {"name": "Interpolator", "value": 24, changeProbability: 24},
-                        {"name": "MatrixInterpolator", "value": 23, changeProbability: 23},
-                        {"name": "NumberInterpolator", "value": 81, changeProbability: 90},
-                        {"name": "ObjectInterpolator", "value": 110, changeProbability: 0},
-                        {"name": "PointInterpolator", "value": 12, changeProbability: 10},
-                        {"name": "RectangleInterpolator", "value": 38, changeProbability: 2}
-                    ]
-                },
-                {"name": "ISchedulable", "value": 13, changeProbability: 22},
-                {"name": "Parallel", "value": 302, changeProbability: 32},
-                {"name": "Pause", "value": 6, changeProbability: 38},
-                {"name": "Scheduler", "value": 130, changeProbability: 87},
-                {"name": "Sequence", "value": 41, changeProbability: 4},
-                {"name": "Transition", "value": 70, changeProbability: 34},
-                {"name": "Transitioner", "value": 20, changeProbability: 76},
-                {"name": "TransitionEvent", "value": 33, changeProbability: 56},
-                {"name": "Tween", "value": 56, changeProbability: 11}
-            ]
-        }
-    ]
-};
-//]]></script>
 
 <script type="text/javascript" tiles:fragment="javascriptFragments">//<![CDATA[
     (function() {
@@ -327,7 +326,7 @@ var testJson = {
         var treemapContainer = $('#treemap');
         TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
             return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
-        }, testJson);
+        }, JSON.parse($('#investmentOpportunities').text()));
 
         ColorScale.createWithDefaultSize('#colorScale', function(d) {
             return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
