@@ -19,6 +19,7 @@
 package org.codeqinvest.web.project;
 
 import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,11 +30,25 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
-  @Test
-  public void currentProjectShouldBeActiveItemInNavigationMenu() throws IOException {
+  @BeforeClass
+  public static void addProject() throws IOException {
     addRandomProject();
+  }
 
+  @Test
+  public void currentProjectShouldBeActiveItemInNavigationMenu() {
     goTo(PROJECT_SITE + "1");
     assertThat(find("#projectsMenuItem > .active > a").getAttribute("href")).endsWith("1");
+  }
+
+  @Test
+  public void whenProjectHasNoAnalysisInfoBoxShouldBeVisible() {
+    goTo(PROJECT_SITE + "1");
+    assertThat(find("#projectInvestmentInformation"))
+        .as("When a project has no analysis the investment data boxes and forms should not be displayed.")
+        .isEmpty();
+    assertThat(find("#noAnalysisBox"))
+        .as("When a project has no analysis the 'no analysis' info box should be displayed.")
+        .isNotEmpty();
   }
 }

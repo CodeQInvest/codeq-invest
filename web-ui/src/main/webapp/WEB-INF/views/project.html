@@ -44,190 +44,198 @@
 
 <div class="container-fluid">
     <div tiles:fragment="content">
-        <div class="row-fluid">
-            <div class="span12 text-right">
-                Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile <a href="#" th:remove="all">Configure</a>
+        <div id="noAnalysisBox" th:unless="${lastAnalysis}">
+            <div class="row-fluid">
+                <div class="span4 offset4 well text-center">
+                    This project has no Analysis!
+                </div>
             </div>
         </div>
-        <div class="row-fluid">
-            <div class="span12">
-                <ul class="breadcrumb with-border">
-                    <li><a href="#">My Project</a> <span class="divider">/</span></li>
-                    <li><a href="#">org</a> <span class="divider">/</span></li>
-                    <li><a href="#">java</a> <span class="divider">/</span></li>
-                    <li><a href="#">subpackage</a> <span class="divider">/</span></li>
-                    <li class="active">util</li>
-                </ul>
+        <div id="projectInvestmentInformation" th:if="${lastAnalysis}">
+            <div class="row-fluid">
+                <div class="span12 text-right">
+                    Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile <a href="#" th:remove="all">Configure</a>
+                </div>
             </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span6 with-border-right">
-                <form>
-                    <legend class="no-border">Investment Opportunities</legend>
-                    <div class="row-fluid">
-                        <div id="treemap" class="span12"></div>
-                    </div>
-                    <div class="row-fluid">
-                        <div class="span7">
-                            <div class="treemap-legend muted">
-                                <span class="colorScale-legend-left">Color: Change Probability 0%</span>
-                                <span id="colorScale"></span>
-                                <span class="colorScale-legend-right">100%</span>
+            <div class="row-fluid">
+                <div class="span12">
+                    <ul class="breadcrumb with-border">
+                        <li><a href="#">My Project</a> <span class="divider">/</span></li>
+                        <li><a href="#">org</a> <span class="divider">/</span></li>
+                        <li><a href="#">java</a> <span class="divider">/</span></li>
+                        <li><a href="#">subpackage</a> <span class="divider">/</span></li>
+                        <li class="active">util</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span6 with-border-right">
+                    <form>
+                        <legend class="no-border">Investment Opportunities</legend>
+                        <div class="row-fluid">
+                            <div id="treemap" class="span12"></div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span7">
+                                <div class="treemap-legend muted">
+                                    <span class="colorScale-legend-left">Color: Change Probability 0%</span>
+                                    <span id="colorScale"></span>
+                                    <span class="colorScale-legend-right">100%</span>
+                                </div>
+                            </div>
+                            <div class="span5">
+                                <div class="text-right treemap-legend muted">
+                                    Size: Investment Potential
+                                </div>
                             </div>
                         </div>
-                        <div class="span5">
-                            <div class="text-right treemap-legend muted">
-                                Size: Investment Potential
-                            </div>
-                        </div>
-                    </div>
-                    <fieldset th:remove="all">
-                        <table class="table table-condensed">
-                            <thead>
+                        <fieldset th:remove="all">
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>Artefact</th>
+                                        <th>Change Probability</th>
+                                        <th>Manual Estimate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 <tr>
-                                    <th>Artefact</th>
-                                    <th>Change Probability</th>
-                                    <th>Manual Estimate</th>
+                                    <td>animate</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="bar" style="width: 43.49%;"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select>
+                                            <option value="0">none</option>
+                                            <option value="1">very low</option>
+                                            <option value="2">low</option>
+                                            <option value="3">normal</option>
+                                            <option value="4">high</option>
+                                            <option value="5">very high</option>
+                                        </select>
+                                    </td>
                                 </tr>
+                                <tr>
+                                    <td>analytics</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="bar" style="width: 47.78%;"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select>
+                                            <option value="0">none</option>
+                                            <option value="1">very low</option>
+                                            <option value="2">low</option>
+                                            <option value="3">normal</option>
+                                            <option value="4">high</option>
+                                            <option value="5">very high</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="form-actions">
+                                <a class="btn btn-primary" href="#">Apply manual estimates</a>
+                                <a class="btn btn-danger" style="float: right;" href="#">Delete manual estimates</a>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="span6">
+                    <div class="row-fluid">
+                        <div class="span12">
+                        <form class="form-inline">
+                            <legend class="no-border">Investment</legend>
+                            <fieldset>
+                                <label for="amount">Amount:</label>
+                                <input type="text" id="amount" placeholder="7h 30m"/>
+                                <input class="btn btn-primary" type="submit" value="Calculate"/>
+                            </fieldset>
+                        </form>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12 label label-success">
+                            <div class="invest-calculation-label">
+                                    1d 3h 15m Profit with ROI of 108%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="table-header label-info">Quality Investment Plan</div>
+                        <table class="table table-condensed table-striped table-borders">
+                            <thead>
+                            <tr>
+                                <th>Requirement</th>
+                                <th>Artefact</th>
+                                <th>RC</th>
+                                <th>Profit</th>
+                            </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <td>animate</td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="bar" style="width: 43.49%;"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="0">none</option>
-                                        <option value="1">very low</option>
-                                        <option value="2">low</option>
-                                        <option value="3">normal</option>
-                                        <option value="4">high</option>
-                                        <option value="5">very high</option>
-                                    </select>
-                                </td>
+                                <td>Response for Class &lt; 50</td>
+                                <td>FunctionSequence</td>
+                                <td>2h 30m</td>
+                                <td>4h</td>
                             </tr>
                             <tr>
-                                <td>analytics</td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="bar" style="width: 47.78%;"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select>
-                                        <option value="0">none</option>
-                                        <option value="1">very low</option>
-                                        <option value="2">low</option>
-                                        <option value="3">normal</option>
-                                        <option value="4">high</option>
-                                        <option value="5">very high</option>
-                                    </select>
-                                </td>
+                                <td>Duplicated Code &#61; 0%</td>
+                                <td>Scheduler</td>
+                                <td>1h 24m</td>
+                                <td>3h 30m</td>
+                            </tr>
+                            <tr>
+                                <td>Complexity per method &lt; 5</td>
+                                <td>NumberInterpolator</td>
+                                <td>40m</td>
+                                <td>1h 20m</td>
+                            </tr>
+                            <tr>
+                                <td>Code Coverage &gt; 80%</td>
+                                <td>AspectRatioBanker</td>
+                                <td>1h 40m</td>
+                                <td>45m</td>
+                            </tr>
+                            <tr>
+                                <td>LCOM4 &#61; 1</td>
+                                <td>Transition</td>
+                                <td>1h 10m</td>
+                                <td>30m</td>
+                            </tr>
+                            <tr>
+                                <td>Public API documented &gt;&#61; 50%</td>
+                                <td>CommunityStructure</td>
+                                <td>30m</td>
+                                <td>20m</td>
+                            </tr>
+                            <tr>
+                                <td>Comments &gt;&#61; 10%</td>
+                                <td>FunctionSequence</td>
+                                <td>50m</td>
+                                <td>20m</td>
+                            </tr>
+                            <tr>
+                                <td>Code Coverage &gt; 80%</td>
+                                <td>FunctionSequence</td>
+                                <td>60m</td>
+                                <td>20m</td>
+                            </tr>
+                            <tr>
+                                <td>Code Coverage &gt; 80%</td>
+                                <td>Scheduler</td>
+                                <td>40m</td>
+                                <td>10m</td>
                             </tr>
                             </tbody>
                         </table>
-                        <div class="form-actions">
-                            <a class="btn btn-primary" href="#">Apply manual estimates</a>
-                            <a class="btn btn-danger" style="float: right;" href="#">Delete manual estimates</a>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-            <div class="span6">
-                <div class="row-fluid">
-                    <div class="span12">
-                    <form class="form-inline">
-                        <legend class="no-border">Investment</legend>
-                        <fieldset>
-                            <label for="amount">Amount:</label>
-                            <input type="text" id="amount" placeholder="7h 30m"/>
-                            <input class="btn btn-primary" type="submit" value="Calculate"/>
-                        </fieldset>
-                    </form>
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span12 label label-success">
-                        <div class="invest-calculation-label">
-                                1d 3h 15m Profit with ROI of 108%
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="table-header label-info">Quality Investment Plan</div>
-                    <table class="table table-condensed table-striped table-borders">
-                        <thead>
-                        <tr>
-                            <th>Requirement</th>
-                            <th>Artefact</th>
-                            <th>RC</th>
-                            <th>Profit</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>Response for Class &lt; 50</td>
-                            <td>FunctionSequence</td>
-                            <td>2h 30m</td>
-                            <td>4h</td>
-                        </tr>
-                        <tr>
-                            <td>Duplicated Code &#61; 0%</td>
-                            <td>Scheduler</td>
-                            <td>1h 24m</td>
-                            <td>3h 30m</td>
-                        </tr>
-                        <tr>
-                            <td>Complexity per method &lt; 5</td>
-                            <td>NumberInterpolator</td>
-                            <td>40m</td>
-                            <td>1h 20m</td>
-                        </tr>
-                        <tr>
-                            <td>Code Coverage &gt; 80%</td>
-                            <td>AspectRatioBanker</td>
-                            <td>1h 40m</td>
-                            <td>45m</td>
-                        </tr>
-                        <tr>
-                            <td>LCOM4 &#61; 1</td>
-                            <td>Transition</td>
-                            <td>1h 10m</td>
-                            <td>30m</td>
-                        </tr>
-                        <tr>
-                            <td>Public API documented &gt;&#61; 50%</td>
-                            <td>CommunityStructure</td>
-                            <td>30m</td>
-                            <td>20m</td>
-                        </tr>
-                        <tr>
-                            <td>Comments &gt;&#61; 10%</td>
-                            <td>FunctionSequence</td>
-                            <td>50m</td>
-                            <td>20m</td>
-                        </tr>
-                        <tr>
-                            <td>Code Coverage &gt; 80%</td>
-                            <td>FunctionSequence</td>
-                            <td>60m</td>
-                            <td>20m</td>
-                        </tr>
-                        <tr>
-                            <td>Code Coverage &gt; 80%</td>
-                            <td>Scheduler</td>
-                            <td>40m</td>
-                            <td>10m</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        </div>
-        <div id="investmentOpportunities" class="hide" th:text="${investmentOpportunitiesJson}">
+            <div id="investmentOpportunities" class="hide" th:text="${investmentOpportunitiesJson}">
             {
             "name": "org.java.subpackage.util",
             "children": [
@@ -299,6 +307,7 @@
             }
             ]
             }
+            </div>
         </div>
     </div>
 </div>
