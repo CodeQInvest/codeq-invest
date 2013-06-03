@@ -16,43 +16,45 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.quality.analysis;
+package org.codeqinvest.web.quality.analysis;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Project;
+import org.codeqinvest.quality.analysis.QualityAnalyzerScheduler;
 import org.codeqinvest.quality.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * This {@code Runnable} implementation is used in the
- * quality analyzer scheduler to encapsulate the job logic.
+ * This controller handles all requests for executing quality analyzer runs.
  *
  * @author fmueller
  */
 @Slf4j
-class AnalyzerRunnable implements Runnable {
+@Controller
+class QualityAnalysisController {
 
-  private final long projectId;
+  private final QualityAnalyzerScheduler analyzerScheduler;
   private final ProjectRepository projectRepository;
-  private final QualityAnalyzerService qualityAnalyzerService;
 
-  public AnalyzerRunnable(Project project, ProjectRepository projectRepository, QualityAnalyzerService qualityAnalyzerService) {
-    this.projectId = project.getId();
+  @Autowired
+  QualityAnalysisController(QualityAnalyzerScheduler analyzerScheduler, ProjectRepository projectRepository) {
+    this.analyzerScheduler = analyzerScheduler;
     this.projectRepository = projectRepository;
-    this.qualityAnalyzerService = qualityAnalyzerService;
   }
 
-  @Override
-  public void run() {
+  /**
+   * This method handles the manual execution of a quality analysis for
+   * the specified project.
+   */
+  @RequestMapping("/projects/{projectId}/analyze")
+  String analyzeProject(@PathVariable long projectId) {
     Project project = projectRepository.findOne(projectId);
     if (project != null) {
-      project.setHadAnalysis(true);
-      projectRepository.save(project);
-
-      log.info("Start analyzer run for project {}", project.getName());
-      qualityAnalyzerService.analyzeProject(project);
-      log.info("Finished analyzer run for project {}", project.getName());
-    } else {
-      log.error("Could not find project with id " + projectId + " for starting an analyzer run!");
+      analyzerScheduler.executeAnalyzer(project);
     }
+    return "redirect:/projects/" + projectId;
   }
 }

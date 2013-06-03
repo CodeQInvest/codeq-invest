@@ -22,31 +22,36 @@ import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
 import org.codeqinvest.quality.CodeChangeSettings;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.quality.QualityProfile;
+import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
-public class QualityAnalyzerSchedulerTest {
+public class DefaultQualityAnalyzerSchedulerTest {
 
   private QualityAnalyzerScheduler analyzerScheduler;
+  private ProjectRepository projectRepository;
   private Project project;
 
   @Before
   public void setUpMockedSystem() {
-    analyzerScheduler = new QualityAnalyzerScheduler(mock(ProjectRepository.class),
+    projectRepository = mock(ProjectRepository.class);
+    analyzerScheduler = new DefaultQualityAnalyzerScheduler(projectRepository,
         mock(ViolationsCalculatorService.class),
         mock(ScmAvailabilityCheckerServiceFactory.class),
         mock(CodeChangeProbabilityCalculatorFactory.class),
         mock(SecureChangeProbabilityCalculator.class),
         mock(QualityViolationCostsCalculator.class),
         mock(QualityAnalysisRepository.class));
-    project = new Project("MyProject", "* * 4 * * *", new QualityProfile("quality-profile"),
-        mock(SonarConnectionSettings.class), mock(ScmConnectionSettings.class), CodeChangeSettings.defaultSetting(1));
+    project = spy(new Project("MyProject", "* * 4 * * *", new QualityProfile("quality-profile"),
+        mock(SonarConnectionSettings.class), mock(ScmConnectionSettings.class), CodeChangeSettings.defaultSetting(1)));
     project.setId(1L);
   }
 
@@ -59,5 +64,25 @@ public class QualityAnalyzerSchedulerTest {
   public void failToScheduleProjectTwice() {
     analyzerScheduler.scheduleAnalyzer(project);
     assertThat(analyzerScheduler.scheduleAnalyzer(project)).isFalse();
+  }
+
+  @Test
+  public void executedProjectShouldBeMarkedAsHadAnalysis() {
+    analyzerScheduler.executeAnalyzer(project);
+    assertThat(project.hadAnalysis()).isTrue();
+  }
+
+  @Test
+  public void scheduledProjectShouldNotBeMarkedAsHadAnalysis() {
+    analyzerScheduler.scheduleAnalyzer(project);
+    assertThat(project.hadAnalysis()).isFalse();
+  }
+
+  @Test
+  public void executedProjectShouldBeSavedToDatabaseAfterMarkedAsHadAnalysis() {
+    analyzerScheduler.executeAnalyzer(project);
+    InOrder inOrder = inOrder(project, projectRepository);
+    inOrder.verify(project).setHadAnalysis(true);
+    inOrder.verify(projectRepository).save(project);
   }
 }

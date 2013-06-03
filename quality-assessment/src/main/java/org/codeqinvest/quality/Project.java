@@ -65,6 +65,8 @@ public class Project implements Serializable {
   @JoinColumn(name = "PROFILE_ID", nullable = false)
   private QualityProfile profile;
 
+  private boolean hadAnalysis;
+
   @Embedded
   private SonarConnectionSettings sonarConnectionSettings;
 
@@ -86,10 +88,15 @@ public class Project implements Serializable {
     this.sonarConnectionSettings = sonarConnectionSettings;
     this.scmSettings = scmSettings;
     this.codeChangeSettings = codeChangeSettings;
+    this.hadAnalysis = false;
   }
 
   public final void setName(String name) {
     this.name = name;
     this.lowercaseName = name.toLowerCase();
+  }
+
+  public boolean hadAnalysis() {
+    return hadAnalysis;
   }
 }

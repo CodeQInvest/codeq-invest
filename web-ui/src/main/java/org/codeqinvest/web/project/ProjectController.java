@@ -18,6 +18,9 @@
  */
 package org.codeqinvest.web.project;
 
+import org.codeqinvest.quality.Project;
+import org.codeqinvest.quality.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +36,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/projects")
 class ProjectController {
 
+  private final ProjectRepository projectRepository;
+
+  @Autowired
+  ProjectController(ProjectRepository projectRepository) {
+    this.projectRepository = projectRepository;
+  }
+
   /**
    * This method prepares the main site of a project to be displayed.
    */
-  @RequestMapping("{projectId}")
+  @RequestMapping("/{projectId}")
   String showProject(@PathVariable long projectId, Model model) {
+    Project project = projectRepository.findOne(projectId);
     model.addAttribute("currentUrl", "/projects/" + projectId);
+    model.addAttribute("project", project);
     model.addAttribute("investmentOpportunitiesJson", "{ \"name\": \"No Data\", \"value\": 0, \"children\": []}");
     return "project";
   }

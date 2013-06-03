@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AnalyzerRunnableTest {
@@ -53,6 +54,20 @@ public class AnalyzerRunnableTest {
     inOrder.verify(projectRepository).findOne(1L);
     inOrder.verify(analyzerService).analyzeProject(project);
     inOrder.verifyNoMoreInteractions();
+  }
+
+  @Test
+  public void markProjectAsHadAnalysis() {
+    analyzerRunnable.run();
+    verify(project).setHadAnalysis(true);
+  }
+
+  @Test
+  public void executedProjectShouldBeSavedToDatabaseAfterMarkedAsHadAnalysis() {
+    analyzerRunnable.run();
+    InOrder inOrder = inOrder(project, projectRepository);
+    inOrder.verify(project).setHadAnalysis(true);
+    inOrder.verify(projectRepository).save(project);
   }
 
   @Test

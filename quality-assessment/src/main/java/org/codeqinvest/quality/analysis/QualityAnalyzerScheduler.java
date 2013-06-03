@@ -18,74 +18,28 @@
  */
 package org.codeqinvest.quality.analysis;
 
-import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
-import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.repository.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 /**
+ * This interface describes a component that can be used
+ * for executing and scheduling execution of analyzer runs.
+ *
  * @author fmueller
  */
-@Slf4j
-@Component
-public class QualityAnalyzerScheduler {
+public interface QualityAnalyzerScheduler {
 
-  private static final int DEFAULT_POOL_SIZE = 10;
+  /**
+   * Executes a quality analyzer run for the given project.
+   */
+  void executeAnalyzer(Project project);
 
-  private final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-
-  private final ProjectRepository projectRepository;
-  private final ViolationsCalculatorService violationsCalculatorService;
-  private final ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory;
-  private final CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory;
-  private final SecureChangeProbabilityCalculator secureChangeProbabilityCalculator;
-  private final QualityViolationCostsCalculator costsCalculator;
-  private final QualityAnalysisRepository qualityAnalysisRepository;
-
-  private final Set<Project> alreadyScheduledProjects = Sets.newCopyOnWriteArraySet();
-
-  @Autowired
-  public QualityAnalyzerScheduler(ProjectRepository projectRepository,
-                                  ViolationsCalculatorService violationsCalculatorService,
-                                  ScmAvailabilityCheckerServiceFactory scmAvailabilityCheckerServiceFactory,
-                                  CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory,
-                                  SecureChangeProbabilityCalculator secureChangeProbabilityCalculator, QualityViolationCostsCalculator costsCalculator,
-                                  QualityAnalysisRepository qualityAnalysisRepository) {
-    this.projectRepository = projectRepository;
-    this.violationsCalculatorService = violationsCalculatorService;
-    this.scmAvailabilityCheckerServiceFactory = scmAvailabilityCheckerServiceFactory;
-    this.codeChangeProbabilityCalculatorFactory = codeChangeProbabilityCalculatorFactory;
-    this.secureChangeProbabilityCalculator = secureChangeProbabilityCalculator;
-    this.costsCalculator = costsCalculator;
-    this.qualityAnalysisRepository = qualityAnalysisRepository;
-
-    scheduler.setPoolSize(DEFAULT_POOL_SIZE);
-    scheduler.initialize();
-  }
-
-  public boolean scheduleAnalyzer(Project project) {
-    if (alreadyScheduledProjects.contains(project)) {
-      log.info("Project {} is already scheduled!", project.getName());
-      return false;
-    }
-    alreadyScheduledProjects.add(project);
-
-    QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
-        scmAvailabilityCheckerServiceFactory,
-        codeChangeProbabilityCalculatorFactory,
-        secureChangeProbabilityCalculator,
-        costsCalculator,
-        qualityAnalysisRepository);
-
-    scheduler.schedule(new AnalyzerRunnable(project, projectRepository, qualityAnalyzerService), new CronTrigger(project.getCronExpression()));
-    log.info("Scheduled analyzer job for project {} with cron expression {}", project.getName(), project.getCronExpression());
-    return true;
-  }
+  /**
+   * This method tries to schedule a {@link QualityAnalyzerService} for the given
+   * project. The cron expression from the project is used as configuration for
+   * a cron trigger. A project can not be scheduled twice.
+   *
+   * @return {@code true} if the project was scheduled for analyzer runs,
+   *         {@code false} if the project could not be scheduled due it is already scheduled
+   */
+  boolean scheduleAnalyzer(Project project);
 }
