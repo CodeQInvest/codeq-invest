@@ -46,14 +46,14 @@ public class MetricCollectorServiceIntegrationTest {
     assertThat(metricCollectorService.collectMetricForResource(connectionSettings, defaultResourceKey, "ncloc")).isEqualTo(631.0);
   }
 
-  @Test(expected = ResourceNotFoundException.class)
-  public void shouldThrowResourceNotFoundExceptionWhenResourceIsNotAvailable() throws ResourceNotFoundException {
+  @Test
+  public void shouldReturnDefaultValueWhenResourceHasNoMeasurementForGivenMetric() throws ResourceNotFoundException {
     /*
      * TODO this is an ugly test: it can be easily broken by an update of the Sonar demo server
      * => replace this by usage of own sonar server for int test (puppet script + vagrant)
      */
     SonarConnectionSettings connectionSettings = new SonarConnectionSettings(defaultSonarHost, "abc");
-    metricCollectorService.collectMetricForResource(connectionSettings, "abc", "ncloc");
+    assertThat(metricCollectorService.collectMetricForResource(connectionSettings, "abc", "ncloc")).isEqualTo(MetricCollectorService.DEFAULT_VALUE);
   }
 
   @Test(expected = ResourceNotFoundException.class)

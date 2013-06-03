@@ -35,6 +35,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MetricCollectorService {
 
+  static final double DEFAULT_VALUE = 0.0;
+
   public double collectMetricForResource(SonarConnectionSettings connectionSettings, String resourceKey, String metricIdentifier) throws ResourceNotFoundException {
     if (!connectionSettings.hasProject()) {
       throw new IllegalArgumentException("you can only collect metric value for a resource with connection settings that has a project");
@@ -42,7 +44,8 @@ public class MetricCollectorService {
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
     Resource resource = sonar.find(ResourceQuery.create(resourceKey).setMetrics(metricIdentifier));
     if (resource == null) {
-      throw new ResourceNotFoundException("could not find resource with key: " + resourceKey);
+      log.info("Could not find measurement for metric {} at resource {}", metricIdentifier, resourceKey);
+      return DEFAULT_VALUE;
     }
     Double metricValue = resource.getMeasureValue(metricIdentifier);
     if (metricValue == null) {
