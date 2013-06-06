@@ -19,31 +19,24 @@
 package org.codeqinvest.web.project;
 
 import org.codeqinvest.web.AbstractFluentTestWithHtmlUnitDriver;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.codeqinvest.web.IntegrationTestHelper.PROJECT_SITE;
-import static org.codeqinvest.web.IntegrationTestHelper.addRandomProject;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
-  @BeforeClass
-  public static void addProject() throws IOException {
-    addRandomProject();
-  }
+  private static final String PROJECT_WITHOUT_ANALYSIS_SITE = PROJECT_SITE + "1";
 
   @Test
   public void currentProjectShouldBeActiveItemInNavigationMenu() {
-    goTo(PROJECT_SITE + "1");
+    goTo(PROJECT_WITHOUT_ANALYSIS_SITE);
     assertThat(find("#projectsMenuItem > .active > a").getAttribute("href")).endsWith("1");
   }
 
   @Test
   public void whenProjectHasNoAnalysisInfoBoxShouldBeVisible() {
-    goTo(PROJECT_SITE + "1");
+    goTo(PROJECT_WITHOUT_ANALYSIS_SITE);
     assertThat(find("#projectInvestmentInformation"))
         .as("When a project has no analysis the investment data boxes and forms should not be displayed.")
         .isEmpty();
