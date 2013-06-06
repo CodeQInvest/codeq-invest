@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import org.codeqinvest.quality.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -101,6 +102,11 @@ public class DummyQualityAnalysisRepository implements QualityAnalysisRepository
 
   @Override
   public <S extends QualityAnalysis> List<S> save(Iterable<S> entities) {
+    return null;
+  }
+
+  @Override
+  public List<QualityAnalysis> findByProjectOrderByCreatedDesc(Project project) {
     return null;
   }
 }

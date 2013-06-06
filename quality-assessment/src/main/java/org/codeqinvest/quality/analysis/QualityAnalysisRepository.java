@@ -18,10 +18,15 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import org.codeqinvest.quality.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 /**
  * @author fmueller
  */
-interface QualityAnalysisRepository extends JpaRepository<QualityAnalysis, Long> {
+public interface QualityAnalysisRepository extends JpaRepository<QualityAnalysis, Long> {
+
+  List<QualityAnalysis> findByProjectOrderByCreatedDesc(Project project);
 }

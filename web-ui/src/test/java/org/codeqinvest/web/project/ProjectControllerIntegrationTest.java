@@ -27,6 +27,8 @@ import static org.fest.assertions.Assertions.assertThat;
 public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
   private static final String PROJECT_WITHOUT_ANALYSIS_SITE = PROJECT_SITE + "1";
+  private static final String PROJECT_WITH_FIRST_ANALYSIS_IN_PROGRESS_SITE = PROJECT_SITE + "2";
+  private static final String PROJECT_WITH_MANY_ANALYSIS_SITE = PROJECT_SITE + "3";
 
   @Test
   public void currentProjectShouldBeActiveItemInNavigationMenu() {
@@ -37,11 +39,32 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
   @Test
   public void whenProjectHasNoAnalysisInfoBoxShouldBeVisible() {
     goTo(PROJECT_WITHOUT_ANALYSIS_SITE);
-    assertThat(find("#projectInvestmentInformation"))
+    assertThat(find("#projectQualityInvestment"))
         .as("When a project has no analysis the investment data boxes and forms should not be displayed.")
         .isEmpty();
     assertThat(find("#noAnalysisBox"))
         .as("When a project has no analysis the 'no analysis' info box should be displayed.")
         .isNotEmpty();
+    assertThat(find("#noAnalysisBox button"))
+        .as("When a project has no analysis a button to start the first analysis should be displayed.")
+        .isNotEmpty();
+  }
+
+  @Test
+  public void whenProjectHasNoFinishedAnalysisButFirstIsInProgressInfoTextShouldBeVisible() {
+    goTo(PROJECT_WITH_FIRST_ANALYSIS_IN_PROGRESS_SITE);
+    assertThat(find("#noAnalysisBox"))
+        .as("When a project has no analysis but the first analysis is running the 'no analysis' info box should be displayed.")
+        .isNotEmpty();
+    assertThat(find("#noAnalysisBox button"))
+        .as("The button to start the first analysis should not be visibile when first analysis is still running.")
+        .isEmpty();
+  }
+
+  @Test
+  public void whenProjectHasAnalysisDataQualityInvestmentDataBoxShouldBeVisible() {
+    goTo(PROJECT_WITH_MANY_ANALYSIS_SITE);
+    assertThat(find("#projectQualityInvestment")).isNotEmpty();
+    assertThat(find("#noAnalysisBox")).isEmpty();
   }
 }

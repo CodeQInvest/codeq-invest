@@ -19,12 +19,16 @@
 package org.codeqinvest.web.project;
 
 import org.codeqinvest.quality.Project;
+import org.codeqinvest.quality.analysis.QualityAnalysis;
+import org.codeqinvest.quality.analysis.QualityAnalysisRepository;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * This controller handle the request for detail view of
@@ -37,10 +41,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 class ProjectController {
 
   private final ProjectRepository projectRepository;
+  private final QualityAnalysisRepository qualityAnalysisRepository;
 
   @Autowired
-  ProjectController(ProjectRepository projectRepository) {
+  ProjectController(ProjectRepository projectRepository, QualityAnalysisRepository qualityAnalysisRepository) {
     this.projectRepository = projectRepository;
+    this.qualityAnalysisRepository = qualityAnalysisRepository;
   }
 
   /**
@@ -49,9 +55,18 @@ class ProjectController {
   @RequestMapping("/{projectId}")
   String showProject(@PathVariable long projectId, Model model) {
     Project project = projectRepository.findOne(projectId);
+    QualityAnalysis lastAnalysis = loadLastAnalysis(project);
     model.addAttribute("currentUrl", "/projects/" + projectId);
     model.addAttribute("project", project);
+    if (lastAnalysis != null) {
+      model.addAttribute("lastAnalysis", lastAnalysis);
+    }
     model.addAttribute("investmentOpportunitiesJson", "{ \"name\": \"No Data\", \"value\": 0, \"children\": []}");
     return "project";
+  }
+
+  private QualityAnalysis loadLastAnalysis(Project project) {
+    List<QualityAnalysis> allAnalysis = qualityAnalysisRepository.findByProjectOrderByCreatedDesc(project);
+    return (allAnalysis != null && !allAnalysis.isEmpty()) ? allAnalysis.get(0) : null;
   }
 }

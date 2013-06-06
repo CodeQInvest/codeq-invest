@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityViolation;
+import org.joda.time.DateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -56,6 +57,8 @@ public class QualityAnalysis implements Serializable {
   @JoinColumn(name = "PROJECT_ID", nullable = false, updatable = false)
   private Project project;
 
+  private DateTime created;
+
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "ANALYSIS_ID", nullable = false)
   private List<QualityViolation> violations;
@@ -73,6 +76,7 @@ public class QualityAnalysis implements Serializable {
     this.violations = violations;
     this.successful = successful;
     this.failureReason = failureReason;
+    created = DateTime.now();
   }
 
   public static QualityAnalysis success(Project project, List<QualityViolation> violations) {
