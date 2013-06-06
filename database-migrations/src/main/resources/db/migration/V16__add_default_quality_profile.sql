@@ -1,16 +1,16 @@
 INSERT INTO QUALITY_PROFILE (ID, NAME, LOWERCASENAME) VALUES (1, 'Default Profile', 'default profile');
 
-INSERT INTO QUALITY_REQUIREMENT (PROFILE_ID, REMEDIATIONCOSTS, NONREMEDIATIONCOSTS, METRICIDENTIFIER, OPERATOR,
+INSERT INTO QUALITY_REQUIREMENT (ID, PROFILE_ID, REMEDIATIONCOSTS, NONREMEDIATIONCOSTS, METRICIDENTIFIER, OPERATOR,
                                  THRESHOLD, WEIGHTINGMETRICVALUE, WEIGHTINGMETRICIDENTIFIER, AUTOMATICALLYFIXABLE)
   VALUES
-  (1, 5, 10, 'function_complexity', '<=', 5, 100, 'ncloc', FALSE),
-  (1, 3, 5, 'public_documented_api_density', '>=', 50, 100, 'ncloc', FALSE),
-  (1, 1, 2, 'comment_lines_density', '>=', 10, 100, 'ncloc', FALSE),
-  (1, 10, 30, 'coverage', '>', 80, 100, 'ncloc', FALSE),
-  (1, 20, 60, 'lcom4', '=', 1, 100, 'ncloc', FALSE),
-  (1, 5, 15, 'duplicated_lines_density', '=', 0, 100, 'ncloc', FALSE),
-  (1, 30, 45, 'dit', '<', 5, 100, 'ncloc', FALSE),
-  (1, 20, 30, 'rfc', '<=', 0, 100, 'ncloc', FALSE);
+  (1, 1, 5, 10, 'function_complexity', '<=', 5, 100, 'ncloc', FALSE),
+  (2, 1, 3, 5, 'public_documented_api_density', '>=', 50, 100, 'ncloc', FALSE),
+  (3, 1, 1, 2, 'comment_lines_density', '>=', 10, 100, 'ncloc', FALSE),
+  (4, 1, 10, 30, 'coverage', '>', 80, 100, 'ncloc', FALSE),
+  (5, 1, 20, 60, 'lcom4', '=', 1, 100, 'ncloc', FALSE),
+  (6, 1, 5, 15, 'duplicated_lines_density', '=', 0, 100, 'ncloc', FALSE),
+  (7, 1, 30, 45, 'dit', '<', 5, 100, 'ncloc', FALSE),
+  (8, 1, 20, 30, 'rfc', '<=', 0, 100, 'ncloc', FALSE);
 
 INSERT INTO CHANGE_RISK_FUNCTION (ID, PROFILE_ID, METRICIDENTIFIER) VALUES (1, 1, 'coverage');
 INSERT INTO RISK_CHARGE (RISK_FUNCTION_ID, OPERATOR, THRESHOLD, AMOUNT)

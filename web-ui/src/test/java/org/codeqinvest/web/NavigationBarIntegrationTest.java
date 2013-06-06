@@ -35,6 +35,8 @@ public class NavigationBarIntegrationTest extends AbstractFluentTestWithHtmlUnit
     goTo(IntegrationTestHelper.ADD_PROJECT_SITE);
     assertThat(find("#projectsMenuItem li"))
         .as("All projects should be listed in corresponding menu item.")
-        .hasSize(2 + 2); // + 2 because of addProject menu item and delimiter item
+        .hasSize(2 + 2 + 3);
+    // + 2 because of addProject menu item and delimiter item
+    // + 3 because there are 3 test projects in test data
   }
 }

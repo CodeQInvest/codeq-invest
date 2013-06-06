@@ -28,6 +28,17 @@
       <property name="password" value=""/>
     </bean>
 
+    <bean id="testDataLoader" class="org.codeqinvest.TestDataLoaderApplicationListener">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="scripts">
+        <set>
+          <value>testdata/project_without_analysis.sql</value>
+          <value>testdata/project_with_first_analysis_in_progress.sql</value>
+          <value>testdata/project_with_many_analysis.sql</value>
+        </set>
+      </property>
+    </bean>
+
     <import resource="persistence-context.xml"/>
   </beans>
 </beans>
