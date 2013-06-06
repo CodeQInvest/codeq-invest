@@ -13,21 +13,21 @@ INSERT INTO QUALITY_ANALYSIS (ID, PROJECT_ID, SUCCESSFUL) VALUES (3, 3, TRUE);
 
 INSERT INTO ARTEFACT (ID, NAME, SONARIDENTIFIER, CHANGEPROBABILITY, SECURECHANGEPROBABILITY)
   VALUES
-  (1, 'project.web.AbstractController', 'DUMMY', 0.12, 1.00),
-  (2, 'project.web.WebConfiguration', 'DUMMY', 0.32, 1.00),
-  (3, 'project.web.user.UserController', 'DUMMY', 0.78, 1.00),
-  (4, 'project.web.user.AdminController', 'DUMMY', 0.63, 1.00),
+  (1, 'project.web.AbstractController', 'DUMMY', 0.12, 1.03),
+  (2, 'project.web.WebConfiguration', 'DUMMY', 0.32, 1.02),
+  (3, 'project.web.user.UserController', 'DUMMY', 0.78, 1.04),
+  (4, 'project.web.user.AdminController', 'DUMMY', 0.63, 1.04),
   (5, 'project.web.user.User', 'DUMMY', 0.2, 1.00),
   (6, 'project.web.user.Admin', 'DUMMY', 0.1, 1.00),
   (7, 'project.web.user.Role', 'DUMMY', 0.03, 1.00),
-  (8, 'project.web.payment.BankController', 'DUMMY', 0.89, 1.00),
-  (9, 'project.web.payment.PaymentController', 'DUMMY', 0.91, 1.00),
-  (10, 'project.web.payment.Bank', 'DUMMY', 0.43, 1.00),
-  (11, 'project.web.payment.Payment', 'DUMMY', 0.65, 1.00),
-  (12, 'project.validation.UserValidator', 'DUMMY', 0.3, 1.00),
+  (8, 'project.web.payment.BankController', 'DUMMY', 0.89, 1.1),
+  (9, 'project.web.payment.PaymentController', 'DUMMY', 0.91, 1.13),
+  (10, 'project.web.payment.Bank', 'DUMMY', 0.43, 1.03),
+  (11, 'project.web.payment.Payment', 'DUMMY', 0.65, 1.03),
+  (12, 'project.validation.UserValidator', 'DUMMY', 0.3, 1.04),
   (13, 'project.validation.AdminValidator', 'DUMMY', 0.23, 1.00),
-  (14, 'project.validation.BankValidator', 'DUMMY', 0.41, 1.00),
-  (15, 'project.validation.PaymentValidator', 'DUMMY', 0.73, 1.00);
+  (14, 'project.validation.BankValidator', 'DUMMY', 0.41, 1.1),
+  (15, 'project.validation.PaymentValidator', 'DUMMY', 0.73, 1.04);
 
 INSERT INTO QUALITY_VIOLATION (ANALYSIS_ID, REQUIREMENT_ID, VIOLATION_ID, REMEDIATIONCOSTS, NONREMEDIATIONCOSTS)
   VALUES
