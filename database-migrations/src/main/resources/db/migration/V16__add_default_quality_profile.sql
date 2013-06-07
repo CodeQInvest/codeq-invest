@@ -10,7 +10,7 @@ INSERT INTO QUALITY_REQUIREMENT (ID, PROFILE_ID, REMEDIATIONCOSTS, NONREMEDIATIO
   (5, 1, 20, 60, 'lcom4', '=', 1, 100, 'ncloc', FALSE),
   (6, 1, 5, 15, 'duplicated_lines_density', '=', 0, 100, 'ncloc', FALSE),
   (7, 1, 30, 45, 'dit', '<', 5, 100, 'ncloc', FALSE),
-  (8, 1, 20, 30, 'rfc', '<=', 0, 100, 'ncloc', FALSE);
+  (8, 1, 20, 30, 'rfc', '<=', 50, 100, 'ncloc', FALSE);
 
 INSERT INTO CHANGE_RISK_FUNCTION (ID, PROFILE_ID, METRICIDENTIFIER) VALUES (1, 1, 'coverage');
 INSERT INTO RISK_CHARGE (RISK_FUNCTION_ID, OPERATOR, THRESHOLD, AMOUNT)
