@@ -30,6 +30,7 @@ final class ViolationOccurence {
 
   private final QualityRequirement requirement;
   private final Artefact artefact;
+  private final double weightingMetricValue;
 
   public String getSonarIdentifierOfArtefact() {
     return artefact.getSonarIdentifier();

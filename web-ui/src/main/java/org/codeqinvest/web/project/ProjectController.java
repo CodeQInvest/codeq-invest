@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.web.project;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.quality.analysis.QualityAnalysisRepository;
@@ -42,26 +43,33 @@ class ProjectController {
 
   private final ProjectRepository projectRepository;
   private final QualityAnalysisRepository qualityAnalysisRepository;
+  private final InvestmentOpportunitiesJsonGenerator investmentOpportunitiesJsonGenerator;
 
   @Autowired
-  ProjectController(ProjectRepository projectRepository, QualityAnalysisRepository qualityAnalysisRepository) {
+  ProjectController(ProjectRepository projectRepository,
+                    QualityAnalysisRepository qualityAnalysisRepository,
+                    InvestmentOpportunitiesJsonGenerator investmentOpportunitiesJsonGenerator) {
     this.projectRepository = projectRepository;
     this.qualityAnalysisRepository = qualityAnalysisRepository;
+    this.investmentOpportunitiesJsonGenerator = investmentOpportunitiesJsonGenerator;
   }
 
   /**
    * This method prepares the main site of a project to be displayed.
    */
   @RequestMapping("/{projectId}")
-  String showProject(@PathVariable long projectId, Model model) {
+  String showProject(@PathVariable long projectId, Model model) throws JsonProcessingException {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = loadLastAnalysis(project);
+
     model.addAttribute("currentUrl", "/projects/" + projectId);
     model.addAttribute("project", project);
+
     if (lastAnalysis != null) {
       model.addAttribute("lastAnalysis", lastAnalysis);
+      model.addAttribute("investmentOpportunitiesJson", investmentOpportunitiesJsonGenerator.generate(lastAnalysis));
     }
-    model.addAttribute("investmentOpportunitiesJson", "{ \"name\": \"No Data\", \"value\": 0, \"children\": []}");
+
     return "project";
   }
 

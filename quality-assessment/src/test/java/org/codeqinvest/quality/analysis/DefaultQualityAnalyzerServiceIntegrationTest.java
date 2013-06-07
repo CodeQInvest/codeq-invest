@@ -105,11 +105,11 @@ public class DefaultQualityAnalyzerServiceIntegrationTest {
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(
-            new ViolationOccurence(firstRequirement, artefactA),
-            new ViolationOccurence(secondRequirement, artefactA),
-            new ViolationOccurence(firstRequirement, artefactB),
-            new ViolationOccurence(firstRequirement, artefactC),
-            new ViolationOccurence(secondRequirement, artefactC))));
+            new ViolationOccurence(firstRequirement, artefactA, 0),
+            new ViolationOccurence(secondRequirement, artefactA, 0),
+            new ViolationOccurence(firstRequirement, artefactB, 0),
+            new ViolationOccurence(firstRequirement, artefactC, 0),
+            new ViolationOccurence(secondRequirement, artefactC, 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);

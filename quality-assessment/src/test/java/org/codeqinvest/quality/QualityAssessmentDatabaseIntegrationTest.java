@@ -100,8 +100,8 @@ public class QualityAssessmentDatabaseIntegrationTest {
     entityManager.persist(project);
     entityManager.persist(artefact);
 
-    QualityViolation firstViolation = new QualityViolation(artefact, secondRequirement, 0, 0);
-    QualityViolation secondViolation = new QualityViolation(artefact, firstRequirement, 0, 0);
+    QualityViolation firstViolation = new QualityViolation(artefact, secondRequirement, 0, 0, 0, "");
+    QualityViolation secondViolation = new QualityViolation(artefact, firstRequirement, 0, 0, 0, "");
 
     List<QualityViolation> violations = new LinkedList<QualityViolation>();
     violations.add(firstViolation);

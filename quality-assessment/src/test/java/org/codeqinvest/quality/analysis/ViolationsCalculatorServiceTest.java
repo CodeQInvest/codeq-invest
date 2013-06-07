@@ -107,8 +107,10 @@ public class ViolationsCalculatorServiceTest {
     FakeMetricCollectorService metricCollectorService = new FakeMetricCollectorService();
     metricCollectorService.addMetricValue("A", "cc", 11.0);
     metricCollectorService.addMetricValue("A", "ec", 14.0);
+    metricCollectorService.addMetricValue("A", "nloc", 1.0);
     metricCollectorService.addMetricValue("B", "cc", 20.0);
     metricCollectorService.addMetricValue("B", "ec", 2.0);
+    metricCollectorService.addMetricValue("B", "nloc", 1.0);
 
     ViolationsCalculatorService violationsCalculatorService = new ViolationsCalculatorService(connectionCheckerService,
         resourcesCollectorService, metricCollectorService);
@@ -127,8 +129,10 @@ public class ViolationsCalculatorServiceTest {
     FakeMetricCollectorService metricCollectorService = new FakeMetricCollectorService();
     metricCollectorService.addMetricValue("A", "cc", 11.0);
     metricCollectorService.addMetricValue("A", "ec", 14.0);
+    metricCollectorService.addMetricValue("A", "nloc", 5.0);
     metricCollectorService.addMetricValue("B", "cc", 10.0);
     metricCollectorService.addMetricValue("B", "ec", 15.0);
+    metricCollectorService.addMetricValue("B", "nloc", 50.0);
 
     ViolationsCalculatorService violationsCalculatorService = new ViolationsCalculatorService(connectionCheckerService,
         resourcesCollectorService, metricCollectorService);
@@ -136,8 +140,8 @@ public class ViolationsCalculatorServiceTest {
     ViolationsAnalysisResult analysisResult = violationsCalculatorService.calculateAllViolation(project);
     assertThat(analysisResult.isSuccessful()).isTrue();
     assertThat(analysisResult.getViolations()).containsOnly(
-        new ViolationOccurence(firstRequirement, new Artefact("B", "B")),
-        new ViolationOccurence(secondRequirement, new Artefact("B", "B"))
+        new ViolationOccurence(firstRequirement, new Artefact("B", "B"), 50.0),
+        new ViolationOccurence(secondRequirement, new Artefact("B", "B"), 50.0)
     );
   }
 
@@ -151,10 +155,13 @@ public class ViolationsCalculatorServiceTest {
     FakeMetricCollectorService metricCollectorService = new FakeMetricCollectorService();
     metricCollectorService.addMetricValue("A", "cc", 9.0);
     metricCollectorService.addMetricValue("A", "ec", 20.0);
+    metricCollectorService.addMetricValue("A", "nloc", 10.0);
     metricCollectorService.addMetricValue("B", "cc", 10.0);
     metricCollectorService.addMetricValue("B", "ec", 15.0);
+    metricCollectorService.addMetricValue("B", "nloc", 5.0);
     metricCollectorService.addMetricValue("C", "cc", 11.0);
     metricCollectorService.addMetricValue("C", "ec", 14.0);
+    metricCollectorService.addMetricValue("C", "nloc", 21.0);
 
     ViolationsCalculatorService violationsCalculatorService = new ViolationsCalculatorService(connectionCheckerService,
         resourcesCollectorService, metricCollectorService);
@@ -162,10 +169,10 @@ public class ViolationsCalculatorServiceTest {
     ViolationsAnalysisResult analysisResult = violationsCalculatorService.calculateAllViolation(project);
     assertThat(analysisResult.isSuccessful()).isTrue();
     assertThat(analysisResult.getViolations()).containsOnly(
-        new ViolationOccurence(firstRequirement, new Artefact("A", "A")),
-        new ViolationOccurence(secondRequirement, new Artefact("A", "A")),
-        new ViolationOccurence(firstRequirement, new Artefact("B", "B")),
-        new ViolationOccurence(secondRequirement, new Artefact("B", "B"))
+        new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 10.0),
+        new ViolationOccurence(secondRequirement, new Artefact("A", "A"), 10.0),
+        new ViolationOccurence(firstRequirement, new Artefact("B", "B"), 5.0),
+        new ViolationOccurence(secondRequirement, new Artefact("B", "B"), 5.0)
     );
   }
 }

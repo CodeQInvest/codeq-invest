@@ -154,7 +154,8 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
       int remediationCosts = costsCalculator.calculateRemediationCosts(sonarConnectionSettings, violation);
       int nonRemediationCosts = costsCalculator.calculateNonRemediationCosts(sonarConnectionSettings, violation);
-      qualityViolations.add(new QualityViolation(violation.getArtefact(), violation.getRequirement(), remediationCosts, nonRemediationCosts));
+      qualityViolations.add(new QualityViolation(violation.getArtefact(), violation.getRequirement(),
+          remediationCosts, nonRemediationCosts, violation.getWeightingMetricValue(), violation.getRequirement().getWeightingMetricIdentifier()));
     }
     return qualityViolations;
   }
@@ -162,7 +163,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
   private List<QualityViolation> zeroCostsForEachViolation(ViolationsAnalysisResult violationsAnalysisResult) {
     List<QualityViolation> qualityViolations = new ArrayList<QualityViolation>(violationsAnalysisResult.getViolations().size());
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
-      qualityViolations.add(new QualityViolation(violation.getArtefact(), violation.getRequirement(), 0, 0));
+      qualityViolations.add(new QualityViolation(violation.getArtefact(), violation.getRequirement(), 0, 0, 0, violation.getRequirement().getWeightingMetricIdentifier()));
     }
     return qualityViolations;
   }

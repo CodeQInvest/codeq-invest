@@ -74,8 +74,11 @@ class ViolationsCalculatorService {
     for (Resource resource : resourcesCollectorService.collectAllResourcesForProject(project.getSonarConnectionSettings())) {
       for (QualityRequirement qualityRequirement : project.getProfile().getRequirements()) {
 
+        final double weightingMetricValue;
         final double metricValue;
         try {
+          weightingMetricValue = metricCollectorService.collectMetricForResource(project.getSonarConnectionSettings(),
+              resource.getKey(), qualityRequirement.getWeightingMetricIdentifier());
           metricValue = metricCollectorService.collectMetricForResource(project.getSonarConnectionSettings(),
               resource.getKey(), qualityRequirement.getCriteria().getMetricIdentifier());
         } catch (ResourceNotFoundException e) {
@@ -95,7 +98,7 @@ class ViolationsCalculatorService {
 
           log.info("Create quality violation for artefact {} with violated requirement {}",
               artefact.getName(), qualityRequirement.getCriteria());
-          violations.add(new ViolationOccurence(qualityRequirement, artefact));
+          violations.add(new ViolationOccurence(qualityRequirement, artefact, weightingMetricValue));
         }
       }
     }

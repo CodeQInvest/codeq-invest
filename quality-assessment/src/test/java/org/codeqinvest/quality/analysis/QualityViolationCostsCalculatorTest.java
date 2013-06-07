@@ -53,7 +53,7 @@ public class QualityViolationCostsCalculatorTest {
   @Test
   public void calculateRemediationCostsProperlyForGreaterOperator() throws ResourceNotFoundException {
     QualityRequirement requirement = new QualityRequirement(qualityProfile, 20, 30, 100, "nloc", new QualityCriteria("metric", ">", 10.0));
-    ViolationOccurence violation = new ViolationOccurence(requirement, artefact);
+    ViolationOccurence violation = new ViolationOccurence(requirement, artefact, 0);
 
     // 20 * (abs(10.0 - 2.0) + 1) * (120.0 / 100.0) = 216 min
     assertThat(costsCalculator.calculateRemediationCosts(connectionSettings, violation)).isEqualTo(216);
@@ -62,7 +62,7 @@ public class QualityViolationCostsCalculatorTest {
   @Test
   public void calculateRemediationCostsProperlyForLessOperator() throws ResourceNotFoundException {
     QualityRequirement requirement = new QualityRequirement(qualityProfile, 20, 30, 100, "nloc", new QualityCriteria("metric", "<", 1.0));
-    ViolationOccurence violation = new ViolationOccurence(requirement, artefact);
+    ViolationOccurence violation = new ViolationOccurence(requirement, artefact, 0);
 
     // 20 * (abs(1.0 - 2.0) + 1) * (120.0 / 100.0) = 48 min
     assertThat(costsCalculator.calculateRemediationCosts(connectionSettings, violation)).isEqualTo(48);
@@ -71,7 +71,7 @@ public class QualityViolationCostsCalculatorTest {
   @Test
   public void calculateNonRemediationCostsProperlyForGreaterEqualsOperator() throws ResourceNotFoundException {
     QualityRequirement requirement = new QualityRequirement(qualityProfile, 20, 30, 100, "nloc", new QualityCriteria("metric", ">=", 5.0));
-    ViolationOccurence violation = new ViolationOccurence(requirement, artefact);
+    ViolationOccurence violation = new ViolationOccurence(requirement, artefact, 0);
 
     // 30 * abs(5.0 - 2.0) * (120.0 / 100.0) = 108 min
     assertThat(costsCalculator.calculateNonRemediationCosts(connectionSettings, violation)).isEqualTo(108);

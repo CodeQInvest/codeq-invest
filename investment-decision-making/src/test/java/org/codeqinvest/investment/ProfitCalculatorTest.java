@@ -24,7 +24,7 @@ public class ProfitCalculatorTest {
     artefact = mock(Artefact.class);
     when(artefact.getChangeProbability()).thenReturn(0.6);
     requirement = mock(QualityRequirement.class);
-    violation = new QualityViolation(artefact, requirement, 10, 20);
+    violation = new QualityViolation(artefact, requirement, 10, 20, 0, null);
   }
 
   @Test

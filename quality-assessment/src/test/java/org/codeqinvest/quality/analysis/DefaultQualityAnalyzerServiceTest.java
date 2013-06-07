@@ -90,10 +90,10 @@ public class DefaultQualityAnalyzerServiceTest {
   public void succeededAnalysisWithOneViolation() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     Artefact artefact = new Artefact("A", "A");
     QualityAnalyzerService qualityAnalyzerService = createMockedSystemWithArtefactsAndViolations(
-        Arrays.asList(new ViolationOccurence(firstRequirement, artefact)));
+        Arrays.asList(new ViolationOccurence(firstRequirement, artefact, 12)));
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
-    assertThatIsSuccessfulAndContainsOnlyGivenViolationsWithoutCostsComparison(analysis, new QualityViolation(artefact, firstRequirement, 0, 0));
+    assertThatIsSuccessfulAndContainsOnlyGivenViolationsWithoutCostsComparison(analysis, new QualityViolation(artefact, firstRequirement, 0, 0, 12, "nloc"));
   }
 
   @Test
@@ -102,19 +102,19 @@ public class DefaultQualityAnalyzerServiceTest {
     Artefact artefactB = new Artefact("B", "B");
     Artefact artefactC = new Artefact("C", "C");
     QualityAnalyzerService qualityAnalyzerService = createMockedSystemWithArtefactsAndViolations(
-        Arrays.asList(new ViolationOccurence(firstRequirement, artefactA),
-            new ViolationOccurence(secondRequirement, artefactA),
-            new ViolationOccurence(firstRequirement, artefactB),
-            new ViolationOccurence(firstRequirement, artefactC),
-            new ViolationOccurence(secondRequirement, artefactC)));
+        Arrays.asList(new ViolationOccurence(firstRequirement, artefactA, 12),
+            new ViolationOccurence(secondRequirement, artefactA, 1),
+            new ViolationOccurence(firstRequirement, artefactB, 22),
+            new ViolationOccurence(firstRequirement, artefactC, 45),
+            new ViolationOccurence(secondRequirement, artefactC, 67)));
 
     QualityAnalysis analysis = qualityAnalyzerService.analyzeProject(project);
     assertThatIsSuccessfulAndContainsOnlyGivenViolationsWithoutCostsComparison(analysis,
-        new QualityViolation(artefactA, firstRequirement, 0, 0),
-        new QualityViolation(artefactA, secondRequirement, 0, 0),
-        new QualityViolation(artefactB, firstRequirement, 0, 0),
-        new QualityViolation(artefactC, firstRequirement, 0, 0),
-        new QualityViolation(artefactC, secondRequirement, 0, 0));
+        new QualityViolation(artefactA, firstRequirement, 0, 0, 12, "nloc"),
+        new QualityViolation(artefactA, secondRequirement, 0, 0, 1, "nloc"),
+        new QualityViolation(artefactB, firstRequirement, 0, 0, 22, "nloc"),
+        new QualityViolation(artefactC, firstRequirement, 0, 0, 45, "nloc"),
+        new QualityViolation(artefactC, secondRequirement, 0, 0, 67, "nloc"));
   }
 
   @Test
@@ -122,8 +122,8 @@ public class DefaultQualityAnalyzerServiceTest {
     Artefact artefactA = new Artefact("A", "A");
     Artefact artefactB = new Artefact("B", "B");
 
-    ViolationOccurence violationA = new ViolationOccurence(firstRequirement, artefactA);
-    ViolationOccurence violationB = new ViolationOccurence(firstRequirement, artefactB);
+    ViolationOccurence violationA = new ViolationOccurence(firstRequirement, artefactA, 0);
+    ViolationOccurence violationB = new ViolationOccurence(firstRequirement, artefactB, 0);
 
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
@@ -147,8 +147,8 @@ public class DefaultQualityAnalyzerServiceTest {
     Artefact artefactA = new Artefact("A", "A");
     Artefact artefactB = new Artefact("B", "B");
 
-    ViolationOccurence violationA = new ViolationOccurence(firstRequirement, artefactA);
-    ViolationOccurence violationB = new ViolationOccurence(firstRequirement, artefactB);
+    ViolationOccurence violationA = new ViolationOccurence(firstRequirement, artefactA, 0);
+    ViolationOccurence violationB = new ViolationOccurence(firstRequirement, artefactB, 0);
 
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
@@ -176,7 +176,7 @@ public class DefaultQualityAnalyzerServiceTest {
   public void failedAnalysisWhenSecureChangeProbabilityCalculatorThrowsResourceNotFoundException()
       throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
 
-    ViolationOccurence violation = new ViolationOccurence(firstRequirement, new Artefact("A", "A"));
+    ViolationOccurence violation = new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0);
 
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
@@ -199,7 +199,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
   @Test
   public void takeCostsFromSuppliedCostCalculator() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
-    ViolationOccurence violation = new ViolationOccurence(firstRequirement, new Artefact("A", "A"));
+    ViolationOccurence violation = new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0);
 
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
@@ -270,7 +270,7 @@ public class DefaultQualityAnalyzerServiceTest {
   public void failedAnalysisWhenCostCalculatorThrowsResourceNotFoundExceptionOnRemediationCosts() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
-        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A")))));
+        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
@@ -289,7 +289,7 @@ public class DefaultQualityAnalyzerServiceTest {
   public void failedAnalysisWhenCostCalculatorThrowsResourceNotFoundExceptionOnNonRemediationCosts() throws CodeChurnCalculationException, ScmConnectionEncodingException, ResourceNotFoundException {
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
-        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A")))));
+        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
@@ -320,7 +320,7 @@ public class DefaultQualityAnalyzerServiceTest {
   private <T extends Exception> QualityAnalyzerService createMockedSystemThatThrowsExceptionInCodeChangeCalculation(Class<T> exception) throws CodeChurnCalculationException, ScmConnectionEncodingException {
     ViolationsCalculatorService violationsCalculatorService = mock(ViolationsCalculatorService.class);
     when(violationsCalculatorService.calculateAllViolation(any(Project.class)))
-        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A")))));
+        .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenThrow(exception);

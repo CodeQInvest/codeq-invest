@@ -62,13 +62,23 @@ public class QualityViolation implements Serializable {
   @Column(nullable = false)
   private int nonRemediationCosts;
 
+  @Column(nullable = false)
+  private double weightingMetricValue;
+
+  @Column(nullable = false, length = 50)
+  private String weightingMetricIdentifier;
+
   protected QualityViolation() {
   }
 
-  public QualityViolation(Artefact artefact, QualityRequirement requirement, int remediationCosts, int nonRemediationCosts) {
+  public QualityViolation(Artefact artefact, QualityRequirement requirement,
+                          int remediationCosts, int nonRemediationCosts,
+                          double weightingMetricValue, String weightingMetricIdentifier) {
     this.artefact = artefact;
     this.requirement = requirement;
     this.remediationCosts = remediationCosts;
     this.nonRemediationCosts = nonRemediationCosts;
+    this.weightingMetricValue = weightingMetricValue;
+    this.weightingMetricIdentifier = weightingMetricIdentifier;
   }
 }
