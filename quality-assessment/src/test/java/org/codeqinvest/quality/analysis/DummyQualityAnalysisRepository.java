@@ -109,4 +109,9 @@ public class DummyQualityAnalysisRepository implements QualityAnalysisRepository
   public List<QualityAnalysis> findByProjectOrderByCreatedDesc(Project project) {
     return null;
   }
+
+  @Override
+  public QualityAnalysis findOneByIdWithViolations(Long id) {
+    return null;
+  }
 }

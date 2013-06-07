@@ -75,6 +75,8 @@ class ProjectController {
 
   private QualityAnalysis loadLastAnalysis(Project project) {
     List<QualityAnalysis> allAnalysis = qualityAnalysisRepository.findByProjectOrderByCreatedDesc(project);
-    return (allAnalysis != null && !allAnalysis.isEmpty()) ? allAnalysis.get(0) : null;
+    return (allAnalysis != null && !allAnalysis.isEmpty())
+        ? qualityAnalysisRepository.findOneByIdWithViolations(allAnalysis.get(0).getId())
+        : null;
   }
 }

@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality;
 
+import com.google.common.base.Splitter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,5 +73,16 @@ public class Artefact implements Serializable {
       return "";
     }
     return name.replace('.', '/') + ".java";
+  }
+
+  /**
+   * Parses the class name out of the fully qualified class name and returns it.
+   */
+  public String getShortClassName() {
+    String className = null;
+    for (String packageName : Splitter.on('.').split(name)) {
+      className = packageName;
+    }
+    return className;
   }
 }

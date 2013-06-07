@@ -38,4 +38,19 @@ public class ArtefactTest {
   public void shouldConvertEmptyPackageNameToFilenameProperly() {
     assertThat(new Artefact("", "").getFilename()).isEqualTo("");
   }
+
+  @Test
+  public void shouldConvertFullyQualifiedClassNameToShortClassName() {
+    assertThat(new Artefact("org.util.MyClass", "").getShortClassName()).isEqualTo("MyClass");
+  }
+
+  @Test
+  public void shouldConvertFullyQualifiedClassNameWithoutPackagesToShortClassName() {
+    assertThat(new Artefact("Class123", "").getShortClassName()).isEqualTo("Class123");
+  }
+
+  @Test
+  public void shouldConvertEmptyFullyQualifiedClassNameToShortClassName() {
+    assertThat(new Artefact("", "").getShortClassName()).isEqualTo("");
+  }
 }
