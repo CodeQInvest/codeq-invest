@@ -26,14 +26,15 @@ import lombok.ToString;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * TODO javadoc
@@ -58,11 +59,11 @@ public class QualityProfile implements Serializable {
   @Column(nullable = false)
   private String lowercaseName;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
-  private List<QualityRequirement> requirements = new ArrayList<QualityRequirement>();
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile", fetch = FetchType.EAGER, orphanRemoval = true)
+  private Set<QualityRequirement> requirements = new HashSet<QualityRequirement>();
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile")
-  private List<ChangeRiskAssessmentFunction> changeRiskAssessmentFunctions = new ArrayList<ChangeRiskAssessmentFunction>();
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "profile", fetch = FetchType.EAGER, orphanRemoval = true)
+  private Set<ChangeRiskAssessmentFunction> changeRiskAssessmentFunctions = new HashSet<ChangeRiskAssessmentFunction>();
 
   public QualityProfile() {
     // only used by frameworks
@@ -77,8 +78,8 @@ public class QualityProfile implements Serializable {
     this.lowercaseName = name.toLowerCase();
   }
 
-  public List<QualityRequirement> getRequirements() {
-    return Collections.unmodifiableList(requirements);
+  public Set<QualityRequirement> getRequirements() {
+    return Collections.unmodifiableSet(requirements);
   }
 
   public void addRequirement(QualityRequirement requirement) {

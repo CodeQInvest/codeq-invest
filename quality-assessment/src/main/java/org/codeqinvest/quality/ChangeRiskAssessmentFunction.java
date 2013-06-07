@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ import java.util.Set;
  * @author fmueller
  */
 @Getter
-@EqualsAndHashCode(exclude = "profile")
+@EqualsAndHashCode(exclude = { "profile", "riskCharges" })
 @ToString(exclude = "profile")
 @Entity
 @Table(name = "CHANGE_RISK_FUNCTION")
@@ -54,8 +55,9 @@ public class ChangeRiskAssessmentFunction implements Serializable {
   @Column(nullable = false, length = 50)
   private String metricIdentifier;
 
-  @OneToMany(cascade = CascadeType.ALL)
-  private List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  @JoinColumn(name = "RISK_FUNCTION_ID", nullable = false, updatable = false)
+  private Set<RiskCharge> riskCharges = new HashSet<RiskCharge>();
 
   private static class SortRiskChargeByThresholdAscending implements Comparator<RiskCharge>, Serializable {
 
@@ -84,7 +86,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
   protected ChangeRiskAssessmentFunction() {
   }
 
-  public ChangeRiskAssessmentFunction(QualityProfile profile, String metricIdentifier, List<RiskCharge> riskCharges) {
+  public ChangeRiskAssessmentFunction(QualityProfile profile, String metricIdentifier, Set<RiskCharge> riskCharges) {
     if (riskCharges.isEmpty()) {
       throw new IllegalArgumentException();
     }
@@ -106,7 +108,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
     return currentRiskCharge != null ? currentRiskCharge.getAmount() : 0.0;
   }
 
-  private List<RiskCharge> sortByThreshold(List<RiskCharge> riskCharges) {
+  private List<RiskCharge> sortByThreshold(Set<RiskCharge> riskCharges) {
     List<RiskCharge> sortedRiskCharges = new ArrayList<RiskCharge>(riskCharges);
     String operator = getUsedOperatorOfRiskCharges(riskCharges);
     if (operator.equals("<") || operator.equals("<=")) {
@@ -117,17 +119,17 @@ public class ChangeRiskAssessmentFunction implements Serializable {
     return sortedRiskCharges;
   }
 
-  private String getUsedOperatorOfRiskCharges(List<RiskCharge> riskCharges) {
+  private String getUsedOperatorOfRiskCharges(Set<RiskCharge> riskCharges) {
     return riskCharges.iterator().next().getOperator();
   }
 
-  private void validateRiskCharges(List<RiskCharge> riskCharges) {
+  private void validateRiskCharges(Set<RiskCharge> riskCharges) {
     validateSameOperator(riskCharges);
     validateDifferentThresholds(riskCharges);
     validateAllowedOperator(riskCharges);
   }
 
-  private void validateSameOperator(List<RiskCharge> riskCharges) {
+  private void validateSameOperator(Set<RiskCharge> riskCharges) {
     String operator = null;
     for (RiskCharge riskCharge : riskCharges) {
       if (operator == null) {
@@ -138,7 +140,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
     }
   }
 
-  private void validateDifferentThresholds(List<RiskCharge> riskCharges) {
+  private void validateDifferentThresholds(Set<RiskCharge> riskCharges) {
     Set<Double> thresholds = Sets.newHashSet();
     for (RiskCharge riskCharge : riskCharges) {
       if (thresholds.contains(riskCharge.getThreshold())) {
@@ -148,7 +150,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
     }
   }
 
-  private void validateAllowedOperator(List<RiskCharge> riskCharges) {
+  private void validateAllowedOperator(Set<RiskCharge> riskCharges) {
     for (RiskCharge riskCharge : riskCharges) {
       if (riskCharge.getOperator().equals("=") || riskCharge.getOperator().equals("!=")) {
         throw new IllegalArgumentException();

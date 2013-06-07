@@ -24,7 +24,9 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -33,12 +35,13 @@ public class ChangeRiskAssessmentFunctionRiskChargeAmountBehaviorTest {
 
   private final QualityProfile dummyProfile = new QualityProfile("quality-profile");
 
-  private List<RiskCharge> riskCharges;
+  private Set<RiskCharge> riskCharges;
   private double currentMetricValue;
   private double expectedRiskChargeAmount;
 
   public ChangeRiskAssessmentFunctionRiskChargeAmountBehaviorTest(List<RiskCharge> riskCharges, double currentMetricValue, double expectedRiskChargeAmount) {
-    this.riskCharges = riskCharges;
+    this.riskCharges = new HashSet<RiskCharge>();
+    this.riskCharges.addAll(riskCharges);
     this.currentMetricValue = currentMetricValue;
     this.expectedRiskChargeAmount = expectedRiskChargeAmount;
   }

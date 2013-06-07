@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import com.google.common.collect.Sets;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.ChangeRiskAssessmentFunction;
 import org.codeqinvest.quality.QualityProfile;
@@ -26,8 +27,6 @@ import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -58,7 +57,7 @@ public class SecureChangeProbabilityCalculatorTest {
   public void profileWithOneChangeRiskAssessmentFunction() throws ResourceNotFoundException {
     metricCollectorService.addMetricValue("A", "metric", 9.0);
 
-    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric", Arrays.asList(new RiskCharge(0.2, "<", 10.0))));
+    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric", Sets.newHashSet(new RiskCharge(0.2, "<", 10.0))));
 
     assertThat(secureChangeProbabilityCalculator.calculateSecureChangeProbability(
         profile, mock(SonarConnectionSettings.class), artefact)).isEqualTo(1.2);
@@ -70,9 +69,9 @@ public class SecureChangeProbabilityCalculatorTest {
     metricCollectorService.addMetricValue("A", "metric2", -1.0);
     metricCollectorService.addMetricValue("A", "metric3", 0.0);
 
-    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric1", Arrays.asList(new RiskCharge(0.2, "<", 10.0))));
-    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric2", Arrays.asList(new RiskCharge(0.11, ">", -2.0))));
-    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric3", Arrays.asList(new RiskCharge(0.005, ">=", 0.0))));
+    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric1", Sets.newHashSet(new RiskCharge(0.2, "<", 10.0))));
+    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric2", Sets.newHashSet(new RiskCharge(0.11, ">", -2.0))));
+    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "metric3", Sets.newHashSet(new RiskCharge(0.005, ">=", 0.0))));
 
     assertThat(secureChangeProbabilityCalculator.calculateSecureChangeProbability(
         profile, mock(SonarConnectionSettings.class), artefact)).isEqualTo(1.315);

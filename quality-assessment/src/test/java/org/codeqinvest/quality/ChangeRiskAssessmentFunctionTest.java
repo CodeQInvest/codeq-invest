@@ -18,19 +18,26 @@
  */
 package org.codeqinvest.quality;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChangeRiskAssessmentFunctionTest {
 
   private final QualityProfile qualityProfile = new QualityProfile("quality-profile");
 
+  private Set<RiskCharge> riskCharges;
+
+  @Before
+  public void setUp() {
+    riskCharges = new HashSet<RiskCharge>();
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void allRiskChargesShouldHaveTheSameOperator() {
-    List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
     riskCharges.add(new RiskCharge(0.0, ">", 0.0));
@@ -39,28 +46,25 @@ public class ChangeRiskAssessmentFunctionTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void allRiskChargesShouldHaveDifferentThresholds() {
-    List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "<", 0.0));
     riskCharges.add(new RiskCharge(0.0, "<", 1.0));
-    riskCharges.add(new RiskCharge(0.0, "<", 0.0));
+    riskCharges.add(new RiskCharge(1.0, "<", 0.0));
     new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void riskChargesMustNotBeEmpty() {
-    new ChangeRiskAssessmentFunction(qualityProfile, "", Collections.<RiskCharge>emptyList());
+    new ChangeRiskAssessmentFunction(qualityProfile, "", Collections.<RiskCharge>emptySet());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void equalOperatorShouldNotBeAllowedInRiskCharges() {
-    List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "=", 0.0));
     new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void notEqualOperatorShouldNotBeAllowedInRiskCharges() {
-    List<RiskCharge> riskCharges = new ArrayList<RiskCharge>();
     riskCharges.add(new RiskCharge(0.0, "!=", 0.0));
     new ChangeRiskAssessmentFunction(qualityProfile, "", riskCharges);
   }

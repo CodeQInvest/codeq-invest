@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality;
 
+import com.google.common.collect.Sets;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.sonar.SonarConnectionSettings;
@@ -31,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,6 +55,8 @@ public class QualityAssessmentDatabaseIntegrationTest {
   private QualityProfile profile;
   private QualityRequirement firstRequirement;
   private QualityRequirement secondRequirement;
+  private ChangeRiskAssessmentFunction changeRiskAssessmentFunction;
+  private RiskCharge riskCharge;
   private Project project;
 
   @Before
@@ -62,9 +64,12 @@ public class QualityAssessmentDatabaseIntegrationTest {
     profile = new QualityProfile("quality-profile");
     firstRequirement = new QualityRequirement(profile, 100, 200, 10, "nloc", new QualityCriteria("cc", ">", 10));
     secondRequirement = new QualityRequirement(profile, 80, 300, 10, "nloc", new QualityCriteria("ec", "<", 15));
+    riskCharge = new RiskCharge(0.3, "<", 10.0);
+    changeRiskAssessmentFunction = new ChangeRiskAssessmentFunction(profile, "cc", Sets.newHashSet(riskCharge));
+
     profile.addRequirement(firstRequirement);
     profile.addRequirement(secondRequirement);
-    profile.addChangeRiskAssessmentFunction(new ChangeRiskAssessmentFunction(profile, "cc", Arrays.asList(new RiskCharge(0.3, "<", 10.0))));
+    profile.addChangeRiskAssessmentFunction(changeRiskAssessmentFunction);
 
     SonarConnectionSettings sonarConnectionSettings = new SonarConnectionSettings("http://localhost", "myProject::123");
     ScmConnectionSettings scmConnectionSettings = new ScmConnectionSettings("http://svn.localhost");
@@ -82,14 +87,32 @@ public class QualityAssessmentDatabaseIntegrationTest {
   }
 
   @Test
-  public void persistAndLoadQualityProfileEntityWithRequirements() {
+  public void updateProjectEntity() {
     entityManager.persist(profile);
+    entityManager.persist(project);
+
+    entityManager.flush();
+
+    Project projectFromDb = entityManager.find(Project.class, project.getId());
+    projectFromDb.setHadAnalysis(true);
+    entityManager.persist(projectFromDb);
+    assertThat(projectFromDb).isEqualTo(project);
+  }
+
+  @Test
+  public void persistAndLoadQualityProfileEntityWithRequirementsAndChangeRiskFunction() {
+    entityManager.persist(profile);
+
+    entityManager.flush();
+
     QualityProfile profileFromDb = entityManager.find(QualityProfile.class, profile.getId());
     assertThat(profileFromDb)
         .as("The loaded quality profile object from the database should be equal to the one from the memory.")
         .isEqualTo(profile);
-    assertThat(profile.getRequirements().contains(firstRequirement)).isTrue();
-    assertThat(profile.getRequirements().contains(secondRequirement)).isTrue();
+    assertThat(profile.getRequirements()).contains(firstRequirement);
+    assertThat(profile.getRequirements()).contains(secondRequirement);
+    assertThat(profile.getChangeRiskAssessmentFunctions()).containsOnly(changeRiskAssessmentFunction);
+    assertThat(profile.getChangeRiskAssessmentFunctions().iterator().next().getRiskCharges()).containsOnly(riskCharge);
   }
 
   @Test
@@ -109,6 +132,8 @@ public class QualityAssessmentDatabaseIntegrationTest {
 
     QualityAnalysis analysis = QualityAnalysis.success(project, violations);
     entityManager.persist(analysis);
+
+    entityManager.flush();
 
     QualityAnalysis analysisFromDb = entityManager.find(QualityAnalysis.class, analysis.getId());
 
