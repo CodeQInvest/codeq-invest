@@ -48,11 +48,11 @@ public class QualityViolation implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @ManyToOne(optional = false, cascade = CascadeType.ALL)
+  @ManyToOne(optional = false)
   @JoinColumn(name = "REQUIREMENT_ID", nullable = false, updatable = false)
   private QualityRequirement requirement;
 
-  @ManyToOne(optional = false, cascade = CascadeType.ALL)
+  @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "VIOLATION_ID", nullable = false, updatable = false)
   private Artefact artefact;
 

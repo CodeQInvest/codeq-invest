@@ -30,7 +30,6 @@ import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +44,7 @@ import java.util.List;
  *
  * @author fmueller
  */
+// TODO does this really have to be annotated with Service? and think about the class name
 @Slf4j
 @Service
 class DefaultQualityAnalyzerService implements QualityAnalyzerService {
@@ -73,7 +73,6 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
 
   // TODO IMPORTANT: refactor this into commmand pattern to get better structure
   @Override
-  @Transactional
   public QualityAnalysis analyzeProject(Project project) {
     ViolationsAnalysisResult violationsAnalysisResult = violationsCalculatorService.calculateAllViolation(project);
     if (!violationsAnalysisResult.isSuccessful()) {
