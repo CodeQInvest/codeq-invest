@@ -48,7 +48,7 @@ public class Artefact implements Serializable {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false)
   private String sonarIdentifier;
 
   @Setter
