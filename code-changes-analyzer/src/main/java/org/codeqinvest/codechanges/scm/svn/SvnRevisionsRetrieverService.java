@@ -29,8 +29,8 @@ import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * This services retrieves all revisions of a certain day in which
@@ -47,20 +47,24 @@ class SvnRevisionsRetrieverService {
    *
    * @throws SVNException if an error occurred during communication with the subversion server
    */
-  Collection<Long> getRevisions(final ScmConnectionSettings connectionSettings, final String file, final LocalDate day) throws SVNException {
+  Collection<SvnFileRevision> getRevisions(final ScmConnectionSettings connectionSettings, final String file, final LocalDate day) throws SVNException {
     final SVNRepository repository = SvnRepositoryFactory.create(connectionSettings);
     final DateTime startTime = day.toDateTimeAtStartOfDay();
     final long startRevision = repository.getDatedRevision(startTime.toDate());
     final long endRevision = repository.getDatedRevision(startTime.withTime(23, 59, 59, 999).toDate());
 
-    final Collection<Long> revisions = new LinkedList<Long>();
+    final Collection<SvnFileRevision> revisions = new ArrayList<SvnFileRevision>();
     repository.log(new String[]{file}, startRevision, endRevision, true, true, new ISVNLogEntryHandler() {
 
       @Override
       public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
         for (SVNLogEntryPath logEntryPath : logEntry.getChangedPaths().values()) {
           if (logEntryPath.getPath().endsWith(file)) {
-            revisions.add(logEntry.getRevision());
+            if (logEntryPath.getCopyPath() != null) {
+              revisions.add(new SvnFileRevision(logEntry.getRevision(), logEntryPath.getCopyPath(), logEntryPath.getPath()));
+            } else {
+              revisions.add(new SvnFileRevision(logEntry.getRevision(), logEntryPath.getPath(), logEntryPath.getPath()));
+            }
           }
         }
       }

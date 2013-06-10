@@ -28,13 +28,10 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.BasicAuthenticationManager;
 import org.tmatesoft.svn.core.internal.wc2.ng.SvnDiffGenerator;
-import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc2.SvnDiff;
 import org.tmatesoft.svn.core.wc2.SvnOperationFactory;
-import org.tmatesoft.svn.core.wc2.SvnTarget;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -69,11 +66,11 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
   @Override
   public DailyCodeChurn calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate day) throws CodeChurnCalculationException, ScmConnectionEncodingException {
     try {
-      final Collection<Long> revisions = revisionsRetrieverService.getRevisions(connectionSettings, file, day);
+      final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, file, day);
       List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
-      for (Long revision : revisions) {
-        long codeChurn = retrieveCodeChurn(connectionSettings, file, revision);
-        long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, file, revision - 1).countLines();
+      for (SvnFileRevision revision : revisions) {
+        long codeChurn = retrieveCodeChurn(connectionSettings, revision);
+        long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
         codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
       }
       return new DailyCodeChurn(day, codeChurnProportions);
@@ -86,9 +83,9 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
     }
   }
 
-  private long retrieveCodeChurn(ScmConnectionSettings connectionSettings, String file, long revision) throws SVNException, UnsupportedEncodingException {
+  private long retrieveCodeChurn(ScmConnectionSettings connectionSettings, SvnFileRevision fileRevision) throws SVNException, UnsupportedEncodingException {
     long codeChurn = 0L;
-    for (String line : retrieveDiffFromSvnServer(connectionSettings, file, revision).split(LINE_SEPARATOR)) {
+    for (String line : retrieveDiffFromSvnServer(connectionSettings, fileRevision).split(LINE_SEPARATOR)) {
       if ((line.startsWith("+") && !line.startsWith("+++")) || (line.startsWith("-") && !line.startsWith("---"))) {
         codeChurn++;
       }
@@ -96,7 +93,7 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
     return codeChurn;
   }
 
-  private String retrieveDiffFromSvnServer(ScmConnectionSettings connectionSettings, String file, long revision) throws SVNException, UnsupportedEncodingException {
+  private String retrieveDiffFromSvnServer(ScmConnectionSettings connectionSettings, SvnFileRevision fileRevision) throws SVNException, UnsupportedEncodingException {
     SvnOperationFactory operationFactory = null;
     try {
       operationFactory = new SvnOperationFactory();
@@ -111,8 +108,7 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
 
       ByteArrayOutputStream diffOutput = new ByteArrayOutputStream();
       SvnDiff diff = operationFactory.createDiff();
-      diff.setSource(SvnTarget.fromURL(SVNURL.parseURIEncoded(connectionSettings.getUrl() + file)),
-          SVNRevision.create(revision - 1), SVNRevision.create(revision));
+      diff.setSources(fileRevision.getOldSvnTarget(connectionSettings), fileRevision.getNewSvnTarget(connectionSettings));
       diff.setDiffGenerator(diffGenerator);
       diff.setOutput(diffOutput);
       diff.run();

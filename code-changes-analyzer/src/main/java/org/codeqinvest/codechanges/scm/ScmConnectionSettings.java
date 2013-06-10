@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.codechanges.scm;
 
+import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,5 +79,16 @@ public class ScmConnectionSettings implements Serializable {
 
   public boolean hasUsername() {
     return username != null;
+  }
+
+  public String getUrl() {
+    if (Strings.isNullOrEmpty(url)) {
+      return url;
+    }
+
+    if (!url.endsWith("/")) {
+      return url + "/";
+    }
+    return url;
   }
 }
