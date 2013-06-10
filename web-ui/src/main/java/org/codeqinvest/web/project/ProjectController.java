@@ -19,6 +19,7 @@
 package org.codeqinvest.web.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.quality.analysis.QualityAnalysisRepository;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ import java.util.List;
  *
  * @author fmueller
  */
+@Slf4j
 @Controller
 @RequestMapping("/projects")
 class ProjectController {
@@ -57,7 +60,7 @@ class ProjectController {
   /**
    * This method prepares the main site of a project to be displayed.
    */
-  @RequestMapping("/{projectId}")
+  @RequestMapping(value = "/{projectId}", method = RequestMethod.GET)
   String showProject(@PathVariable long projectId, Model model) throws JsonProcessingException {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = loadLastAnalysis(project);
@@ -70,6 +73,7 @@ class ProjectController {
       model.addAttribute("investmentOpportunitiesJson", investmentOpportunitiesJsonGenerator.generate(lastAnalysis));
     }
 
+    log.debug("Show project {}", project.getName());
     return "project";
   }
 

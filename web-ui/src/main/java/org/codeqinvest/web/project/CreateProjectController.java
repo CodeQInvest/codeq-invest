@@ -41,6 +41,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.util.List;
@@ -86,10 +88,10 @@ class CreateProjectController {
    * This methods handles the submitted form for creating a new project.
    */
   @RequestMapping(value = "/create", method = RequestMethod.POST)
-  String create(@ModelAttribute Project project,
-                BindingResult bindingResult,
-                @ModelAttribute("retrievedSonarProjectsAsJson") String sonarProjects,
-                Model model) {
+  ModelAndView create(@ModelAttribute Project project,
+                      BindingResult bindingResult,
+                      @ModelAttribute("retrievedSonarProjectsAsJson") String sonarProjects,
+                      Model model) {
 
     projectConnectionsValidator.validate(project, bindingResult);
     if (bindingResult.hasErrors()) {
@@ -101,14 +103,16 @@ class CreateProjectController {
       }
       addDeserializedSonarProjectsToModel(sonarProjects, model);
       model.addAttribute("fieldErrors", bindingResult.getFieldErrors());
-      return "createProject";
+      return new ModelAndView("createProject");
     }
 
     Project addedProject = projectRepository.save(project);
     analyzerScheduler.scheduleAnalyzer(addedProject);
-    model.addAttribute("project", addedProject);
     log.info("Created project {} and scheduled its quality analysis", project.getName());
-    return "project";
+
+    RedirectView redirect = new RedirectView("/projects/" + addedProject.getId());
+    redirect.setExposeModelAttributes(false);
+    return new ModelAndView(redirect);
   }
 
   @ModelAttribute("currentUrl")

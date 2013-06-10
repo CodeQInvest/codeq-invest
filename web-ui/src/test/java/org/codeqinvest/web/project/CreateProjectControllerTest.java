@@ -21,10 +21,11 @@ package org.codeqinvest.web.project;
 import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
+import org.codeqinvest.quality.CodeChangeSettings;
 import org.codeqinvest.quality.Project;
+import org.codeqinvest.quality.analysis.QualityAnalyzerScheduler;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.quality.repository.QualityProfileRepository;
-import org.codeqinvest.quality.analysis.QualityAnalyzerScheduler;
 import org.codeqinvest.sonar.SonarConnectionCheckerService;
 import org.codeqinvest.sonar.SonarConnectionSettings;
 import org.junit.Before;
@@ -55,6 +56,9 @@ public class CreateProjectControllerTest {
   @Before
   public void setUp() {
     projectRepository = mock(ProjectRepository.class);
+    Project projectWithId = new Project("", "", null, new SonarConnectionSettings(), new ScmConnectionSettings(), new CodeChangeSettings());
+    projectWithId.setId(1L);
+    when(projectRepository.save(any(Project.class))).thenReturn(projectWithId);
     analyzerScheduler = mock(QualityAnalyzerScheduler.class);
 
     sonarConnectionCheckerService = mock(SonarConnectionCheckerService.class);
@@ -87,7 +91,7 @@ public class CreateProjectControllerTest {
 
   @Test
   public void notAddNewProjectToDatabaseWhenParametersAreNotValid() throws Exception {
-    performInValidCreateProjectRequest();
+    performInvalidCreateProjectRequest();
     verify(projectRepository, never()).save(any(Project.class));
   }
 
@@ -107,10 +111,10 @@ public class CreateProjectControllerTest {
         .param("scmSettings.url", "scm:svnhttp://svn.localhost")
         .param("codeChangeSettings.method", "1")
         .param("codeChangeSettings.days", "30"))
-        .andExpect(status().isOk());
+        .andExpect(status().isMovedTemporarily());
   }
 
-  private void performInValidCreateProjectRequest() throws Exception {
+  private void performInvalidCreateProjectRequest() throws Exception {
     mockMvc.perform(post("/projects/create")
         .param("name", "MyProject")
         .param("profile.id", "1")
