@@ -21,6 +21,10 @@ label {
     margin-bottom: 10px;
 }
 
+.small-well {
+    padding: 10px;
+}
+
 .no-border {
     border: 0px;
 }

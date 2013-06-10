@@ -5,9 +5,9 @@
     <title>CodeQ Invest</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <link rel="stylesheet" href="../../resources/css/main.css"/>
     <link rel="stylesheet" href="../../resources/css/libs/bootstrap-2.3.2.min.css"/>
     <link rel="stylesheet" href="../../resources/css/libs/bootstrap-responsive-2.3.2.min.css"/>
+    <link rel="stylesheet" href="../../resources/css/main.css"/>
 </head>
 
 <body>
@@ -60,19 +60,15 @@
         </div>
         <div id="projectQualityInvestment" th:if="${lastAnalysis}">
             <div class="row-fluid">
-                <div class="span12 text-right">
-                    Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile <a href="#" th:remove="all">Configure</a>
-                </div>
-            </div>
-            <div class="row-fluid">
-                <div class="span12">
-                    <ul class="breadcrumb with-border">
-                        <li><a href="#">My Project</a> <span class="divider">/</span></li>
-                        <li><a href="#">org</a> <span class="divider">/</span></li>
-                        <li><a href="#">java</a> <span class="divider">/</span></li>
-                        <li><a href="#">subpackage</a> <span class="divider">/</span></li>
-                        <li class="active">util</li>
-                    </ul>
+                <div class="well small-well">
+                    <div>
+                        <strong th:text="${project.name}">My Project</strong>
+                        <div class="pull-right">
+                            <span th:text="#{project.lastAnalysis.info(${lastAnalysis.created.toString('yyyy-MM-dd HH:mm:ss')}, ${project.profile.name})}">
+                                Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile
+                            </span> <a href="#" th:remove="all">Configure</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row-fluid">
