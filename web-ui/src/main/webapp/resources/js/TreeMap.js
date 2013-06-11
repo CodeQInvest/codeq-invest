@@ -168,7 +168,7 @@ var TreeMap = (function() {
 
         function name(d) {
             return d.parent
-                ? name(d.parent) + "." + d.name
+                ? name(d.parent) + " / " + d.name
                 : d.name;
         }
     }
