@@ -56,7 +56,7 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   }
 
   @Test
-  public void shouldHandleRenamedFilesProperly() throws CodeChurnCalculationException, ScmConnectionEncodingException {
+  public void shouldHandleRenamedFilesProperlyForOneCommit() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/configuration/trunk/src/main/java");
     Collection<DailyCodeChurn> codeChurns = codeChurnCalculator.calculateCodeChurn(connectionSettings,
         "org/apache/commons/configuration/reloading/ManagedReloadingDetector.java", new LocalDate(2013, 4, 4), 0);
@@ -65,5 +65,30 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
     DailyCodeChurn codeChurn = codeChurns.iterator().next();
     assertThat(codeChurn.getCodeChurnProportions()).hasSize(1);
     assertThat(codeChurn.getCodeChurnProportions().get(0)).isEqualTo(0.1126, Delta.delta(0.0001));
+  }
+
+  @Test
+  public void shouldHandleRenamedFilesProperlyOverSeveralCommits() throws CodeChurnCalculationException, ScmConnectionEncodingException {
+    ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/configuration/trunk/src/main/java");
+    Collection<DailyCodeChurn> codeChurns = codeChurnCalculator.calculateCodeChurn(connectionSettings,
+        "org/apache/commons/configuration/reloading/ManagedReloadingDetector.java", new LocalDate(2013, 5, 6), 36); // until 2013-04-01
+    assertThat(codeChurns).hasSize(37);
+
+    DailyCodeChurn fifthMay = getCodeChurnByDay(codeChurns, new LocalDate(2013, 5, 5));
+    assertThat(fifthMay.getCodeChurnProportions()).hasSize(1);
+    assertThat(fifthMay.getCodeChurnProportions().get(0)).isEqualTo(0.0563, Delta.delta(0.0001));
+
+    DailyCodeChurn forthApril = getCodeChurnByDay(codeChurns, new LocalDate(2013, 4, 4));
+    assertThat(forthApril.getCodeChurnProportions()).hasSize(1);
+    assertThat(forthApril.getCodeChurnProportions().get(0)).isEqualTo(0.1126, Delta.delta(0.0001));
+  }
+
+  private DailyCodeChurn getCodeChurnByDay(Collection<DailyCodeChurn> codeChurns, LocalDate day) {
+    for (DailyCodeChurn codeChurn : codeChurns) {
+      if (codeChurn.getDay().equals(day)) {
+        return codeChurn;
+      }
+    }
+    return null;
   }
 }

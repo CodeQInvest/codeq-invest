@@ -53,6 +53,7 @@ class SvnRevisionsRetrieverService {
     final long startRevision = repository.getDatedRevision(startTime.toDate());
     final long endRevision = repository.getDatedRevision(startTime.withTime(23, 59, 59, 999).toDate());
 
+    log.debug("Start retrieving revisions for file {} on day {}", file, day);
     final Collection<SvnFileRevision> revisions = new ArrayList<SvnFileRevision>();
     repository.log(new String[]{file}, startRevision, endRevision, true, true, new ISVNLogEntryHandler() {
 
@@ -61,7 +62,6 @@ class SvnRevisionsRetrieverService {
         for (SVNLogEntryPath logEntryPath : logEntry.getChangedPaths().values()) {
           if (logEntryPath.getPath().endsWith(file)) {
             if (logEntryPath.getCopyPath() != null) {
-              // TODO spawn get revisions request afterwards for new file name due it's possible that there are revision for it
               revisions.add(new SvnFileRevision(logEntry.getRevision(), logEntryPath.getCopyPath(), logEntryPath.getPath()));
             } else {
               revisions.add(new SvnFileRevision(logEntry.getRevision(), logEntryPath.getPath(), logEntryPath.getPath()));

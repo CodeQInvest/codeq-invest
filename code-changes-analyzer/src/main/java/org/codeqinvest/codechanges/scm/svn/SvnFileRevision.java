@@ -50,6 +50,34 @@ class SvnFileRevision {
     return SvnTarget.fromURL(buildUri(connectionSettings, newPath), SVNRevision.create(revision));
   }
 
+  String getFilePartOfOldPath(ScmConnectionSettings connectionSettings) throws SVNException {
+    SVNURL svnurl = SVNURL.parseURIEncoded(connectionSettings.getUrl());
+
+    List<String> splittedBasePath = splitUrl(svnurl.getPath());
+    List<String> splittedOldPath = splitUrl(oldPath);
+    int i = 0;
+    boolean foundBeginningOfSomeCommonParts = false;
+    for (String s : splittedBasePath) {
+      if (!foundBeginningOfSomeCommonParts && s.equalsIgnoreCase(splittedOldPath.get(0))) {
+        foundBeginningOfSomeCommonParts = true;
+      }
+      if (foundBeginningOfSomeCommonParts) {
+        i++;
+      }
+    }
+
+    StringBuilder filePart = new StringBuilder();
+    boolean isFirst = true;
+    for (; i < splittedOldPath.size(); i++) {
+      if (!isFirst) {
+        filePart.append('/');
+      }
+      filePart.append(splittedOldPath.get(i));
+      isFirst = false;
+    }
+    return filePart.toString();
+  }
+
   private SVNURL buildUri(ScmConnectionSettings connectionSettings, String path) throws SVNException {
     SVNURL svnurl = SVNURL.parseURIEncoded(connectionSettings.getUrl());
     return SVNURL.create(svnurl.getProtocol(), svnurl.getUserInfo(), svnurl.getHost(), svnurl.getPort(), buildPath(svnurl.getPath(), path), true);

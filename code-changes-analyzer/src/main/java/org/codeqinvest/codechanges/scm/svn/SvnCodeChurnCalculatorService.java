@@ -69,16 +69,30 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
   public Collection<DailyCodeChurn> calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate startDay, int numberOfDays)
       throws CodeChurnCalculationException, ScmConnectionEncodingException {
 
+    String currentFilePath = file;
+    int currentNumberOfDay;
     Set<DailyCodeChurn> codeChurns = Sets.newHashSet();
     for (int i = 0; i <= numberOfDays; i++) {
+      currentNumberOfDay = i;
       final LocalDate day = startDay.minusDays(i);
       try {
-        final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, file, day);
+        final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, currentFilePath, day);
         List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
         for (SvnFileRevision revision : revisions) {
           long codeChurn = retrieveCodeChurn(connectionSettings, revision);
           long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
           codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
+
+          if (!revision.getOldPath().equalsIgnoreCase(revision.getNewPath())) {
+            // file was moved or renamed => change the currentFilePath for next revision retrieving requests
+            currentFilePath = revision.getFilePartOfOldPath(connectionSettings);
+
+            // spawn get revisions request afterwards for new file name due it's possible that there are revision for it on the current day
+            if (existRevisionsForFileOnDay(connectionSettings, currentFilePath, day) && i - 1 == currentNumberOfDay - 1) {
+              // to prevent that the day index is incremented more than once when there are more renamed revision on the current day
+              i = currentNumberOfDay - 1;
+            }
+          }
         }
 
         codeChurns.add(new DailyCodeChurn(day, codeChurnProportions));
@@ -91,6 +105,14 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
       }
     }
     return codeChurns;
+  }
+
+  private boolean existRevisionsForFileOnDay(ScmConnectionSettings connectionSettings, String file, LocalDate day) {
+    try {
+      return !revisionsRetrieverService.getRevisions(connectionSettings, file, day).isEmpty();
+    } catch (SVNException e) {
+      return false;
+    }
   }
 
   private long retrieveCodeChurn(ScmConnectionSettings connectionSettings, SvnFileRevision fileRevision) throws SVNException, UnsupportedEncodingException {
