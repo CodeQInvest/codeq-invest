@@ -18,7 +18,6 @@
  */
 package org.codeqinvest.codechanges;
 
-import com.google.common.collect.Sets;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
@@ -27,8 +26,7 @@ import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 import org.joda.time.LocalDate;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Helper base class for {@code CodeChangeProbabilityCalculator} implementations
@@ -60,23 +58,11 @@ abstract class AbstractCodeChangeProbabilityCalculator implements CodeChangeProb
     final CodeChurnCalculator codeChurnCalculator = codeChurnCalculatorFactory.create(connectionSettings);
     final LocalDate startDay = LocalDate.now();
 
-    Set<DailyCodeChurn> codeChurns = Sets.newHashSet();
-    for (int i = 0; i <= days; i++) {
-      codeChurns.add(retrieveCodeChurnWithZeroAsDefault(codeChurnCalculator, connectionSettings, file, startDay.minusDays(i)));
-    }
+    final double computedChangeProbability = computeChangeProbability(days,
+        codeChurnCalculator.calculateCodeChurn(connectionSettings, file, startDay, days));
 
-    return Math.min(1.0, computeChangeProbability(days, codeChurns));
+    return Math.min(1.0, computedChangeProbability);
   }
 
-  private DailyCodeChurn retrieveCodeChurnWithZeroAsDefault(CodeChurnCalculator codeChurnCalculator, ScmConnectionSettings connectionSettings, String file, LocalDate day) {
-    try {
-      return codeChurnCalculator.calculateCodeChurn(connectionSettings, file, day);
-    } catch (CodeChurnCalculationException e) {
-      return new DailyCodeChurn(day, Collections.<Double>emptyList());
-    } catch (ScmConnectionEncodingException e) {
-      return new DailyCodeChurn(day, Collections.<Double>emptyList());
-    }
-  }
-
-  protected abstract double computeChangeProbability(int days, Set<DailyCodeChurn> codeChurns);
+  protected abstract double computeChangeProbability(int days, Collection<DailyCodeChurn> codeChurns);
 }

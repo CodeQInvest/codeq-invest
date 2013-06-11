@@ -19,6 +19,7 @@
 package org.codeqinvest.codechanges;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
@@ -26,8 +27,10 @@ import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.joda.time.LocalDate;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 class FakeCodeChurnCalculator implements CodeChurnCalculator {
 
@@ -41,11 +44,19 @@ class FakeCodeChurnCalculator implements CodeChurnCalculator {
   }
 
   @Override
-  public DailyCodeChurn calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate day)
+  public Collection<DailyCodeChurn> calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate day, int numberOfDays)
       throws CodeChurnCalculationException, ScmConnectionEncodingException {
     if (!codeChurnByFileAndDay.containsKey(file) || !codeChurnByFileAndDay.get(file).containsKey(day)) {
       throw new CodeChurnCalculationException();
     }
-    return codeChurnByFileAndDay.get(file).get(day);
+
+    Set<DailyCodeChurn> codeChurns = Sets.newHashSet();
+    for (int i = 0; i <= numberOfDays; i++) {
+      DailyCodeChurn currentCodeChurn = codeChurnByFileAndDay.get(file).get(day.minusDays(i));
+      if (currentCodeChurn != null) {
+        codeChurns.add(currentCodeChurn);
+      }
+    }
+    return codeChurns;
   }
 }

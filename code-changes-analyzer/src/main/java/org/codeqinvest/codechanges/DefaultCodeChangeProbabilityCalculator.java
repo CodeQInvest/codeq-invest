@@ -21,6 +21,7 @@ package org.codeqinvest.codechanges;
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -41,7 +42,7 @@ public class DefaultCodeChangeProbabilityCalculator extends AbstractCodeChangePr
    * {@inheritDoc}
    */
   @Override
-  protected double computeChangeProbability(int days, Set<DailyCodeChurn> codeChurns) {
+  protected double computeChangeProbability(int days, Collection<DailyCodeChurn> codeChurns) {
     final double numberOfDays = days + 1.0;
     double changeProbability = 0.0;
     for (DailyCodeChurn codeChurn : codeChurns) {

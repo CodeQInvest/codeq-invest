@@ -61,6 +61,7 @@ class SvnRevisionsRetrieverService {
         for (SVNLogEntryPath logEntryPath : logEntry.getChangedPaths().values()) {
           if (logEntryPath.getPath().endsWith(file)) {
             if (logEntryPath.getCopyPath() != null) {
+              // TODO spawn get revisions request afterwards for new file name due it's possible that there are revision for it
               revisions.add(new SvnFileRevision(logEntry.getRevision(), logEntryPath.getCopyPath(), logEntryPath.getPath()));
             } else {
               revisions.add(new SvnFileRevision(logEntry.getRevision(), logEntryPath.getPath(), logEntryPath.getPath()));

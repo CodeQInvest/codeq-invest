@@ -20,6 +20,8 @@ package org.codeqinvest.codechanges.scm;
 
 import org.joda.time.LocalDate;
 
+import java.util.Collection;
+
 /**
  * Implementations of this interface calculate the daily
  * code churn proportion of one file for one day. The code
@@ -30,13 +32,13 @@ import org.joda.time.LocalDate;
 public interface CodeChurnCalculator {
 
   /**
-   * Calculates the code churn proportions of one file on one day. The code churn proportion
-   * is the portion of code that has changed by commits in comparison to the whole file.
+   * Calculates the code churn proportions of one file for a number of days in the past starting from
+   * a specified start date. The code churn proportion is the portion of code that has changed by commits in comparison to the whole file.
    *
-   * @return all code churn proportions (of all commits) of the given day
+   * @return all code churn proportions for the given days
    * @throws CodeChurnCalculationException  if an error with scm server communication or calculation happens
    * @throws ScmConnectionEncodingException if an error with the supplied encoding of the {@code connectionSettings} happens
    */
-  DailyCodeChurn calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate day)
+  Collection<DailyCodeChurn> calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate startDay, int numberOfDays)
       throws CodeChurnCalculationException, ScmConnectionEncodingException;
 }

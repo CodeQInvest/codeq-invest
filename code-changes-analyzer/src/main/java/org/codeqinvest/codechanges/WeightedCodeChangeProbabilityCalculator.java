@@ -24,6 +24,7 @@ import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -47,7 +48,7 @@ public class WeightedCodeChangeProbabilityCalculator extends AbstractCodeChangeP
    * {@inheritDoc}
    */
   @Override
-  protected double computeChangeProbability(int days, Set<DailyCodeChurn> codeChurns) {
+  protected double computeChangeProbability(int days, Collection<DailyCodeChurn> codeChurns) {
     if (codeChurns.isEmpty()) {
       return 0.0;
     }
@@ -67,7 +68,7 @@ public class WeightedCodeChangeProbabilityCalculator extends AbstractCodeChangeP
     return changeProbability;
   }
 
-  private SortedSet<DailyCodeChurn> sortDescendingByDay(Set<DailyCodeChurn> codeChurns) {
+  private SortedSet<DailyCodeChurn> sortDescendingByDay(Collection<DailyCodeChurn> codeChurns) {
     SortedSet<DailyCodeChurn> sortedCodeChurn = Sets.newTreeSet(new Comparator<DailyCodeChurn>() {
 
       @Override

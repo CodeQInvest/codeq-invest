@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collection;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,9 +45,12 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   public void shouldCalculateAllCodeChurnProportionsForOneDayAndOneFile() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     // TODO improve this test with vagrant and puppet and own svn repository server via vm
     ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://rapla.googlecode.com/svn/trunk/src/");
-    DailyCodeChurn codeChurn = codeChurnCalculator.calculateCodeChurn(connectionSettings,
+    Collection<DailyCodeChurn> codeChurns = codeChurnCalculator.calculateCodeChurn(connectionSettings,
         "org/rapla/server/internal/SecurityManager.java",
-        new LocalDate(2013, 5, 17));
+        new LocalDate(2013, 5, 17), 0);
+    assertThat(codeChurns).hasSize(1);
+
+    DailyCodeChurn codeChurn = codeChurns.iterator().next();
     assertThat(codeChurn.getCodeChurnProportions().get(0)).isEqualTo(0.0719, Delta.delta(0.0001));
     assertThat(codeChurn.getCodeChurnProportions().get(1)).isEqualTo(0.0111, Delta.delta(0.0001));
   }
@@ -53,8 +58,11 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   @Test
   public void shouldHandleRenamedFilesProperly() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/configuration/trunk/src/main/java");
-    DailyCodeChurn codeChurn = codeChurnCalculator.calculateCodeChurn(connectionSettings,
-        "org/apache/commons/configuration/reloading/ManagedReloadingDetector.java", new LocalDate(2013, 4, 4));
+    Collection<DailyCodeChurn> codeChurns = codeChurnCalculator.calculateCodeChurn(connectionSettings,
+        "org/apache/commons/configuration/reloading/ManagedReloadingDetector.java", new LocalDate(2013, 4, 4), 0);
+    assertThat(codeChurns).hasSize(1);
+
+    DailyCodeChurn codeChurn = codeChurns.iterator().next();
     assertThat(codeChurn.getCodeChurnProportions()).hasSize(1);
     assertThat(codeChurn.getCodeChurnProportions().get(0)).isEqualTo(0.1126, Delta.delta(0.0001));
   }

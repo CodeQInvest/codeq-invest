@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.codechanges.scm.svn;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
@@ -39,6 +40,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Calculates the code churn for files in a SVN repository.
@@ -64,23 +66,31 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
    * {@inheritDoc}
    */
   @Override
-  public DailyCodeChurn calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate day) throws CodeChurnCalculationException, ScmConnectionEncodingException {
-    try {
-      final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, file, day);
-      List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
-      for (SvnFileRevision revision : revisions) {
-        long codeChurn = retrieveCodeChurn(connectionSettings, revision);
-        long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
-        codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
+  public Collection<DailyCodeChurn> calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate startDay, int numberOfDays)
+      throws CodeChurnCalculationException, ScmConnectionEncodingException {
+
+    Set<DailyCodeChurn> codeChurns = Sets.newHashSet();
+    for (int i = 0; i <= numberOfDays; i++) {
+      final LocalDate day = startDay.minusDays(i);
+      try {
+        final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, file, day);
+        List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
+        for (SvnFileRevision revision : revisions) {
+          long codeChurn = retrieveCodeChurn(connectionSettings, revision);
+          long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
+          codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
+        }
+
+        codeChurns.add(new DailyCodeChurn(day, codeChurnProportions));
+      } catch (SVNException e) {
+        log.error("Error with svn server communication occurred!", e);
+        throw new CodeChurnCalculationException(e);
+      } catch (UnsupportedEncodingException e) {
+        log.error("An error with encoding settings of scm connection occurred! (settings: " + connectionSettings.toString() + ")", e);
+        throw new ScmConnectionEncodingException(e);
       }
-      return new DailyCodeChurn(day, codeChurnProportions);
-    } catch (SVNException e) {
-      log.error("Error with svn server communication occurred!", e);
-      throw new CodeChurnCalculationException(e);
-    } catch (UnsupportedEncodingException e) {
-      log.error("An error with encoding settings of scm connection occurred! (settings: " + connectionSettings.toString() + ")", e);
-      throw new ScmConnectionEncodingException(e);
     }
+    return codeChurns;
   }
 
   private long retrieveCodeChurn(ScmConnectionSettings connectionSettings, SvnFileRevision fileRevision) throws SVNException, UnsupportedEncodingException {
