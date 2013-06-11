@@ -116,7 +116,7 @@ public class QualityAssessmentDatabaseIntegrationTest {
   }
 
   @Test
-  public void persistAndLoadQualityAnalsisEntity() {
+  public void persistAndLoadQualityAnalysisEntity() {
     Artefact artefact = new Artefact("MyFile", "0123456");
 
     entityManager.persist(profile);
