@@ -26,7 +26,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.Getter;
-import org.codeqinvest.investment.WeightedProfitCalculator;
+import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.quality.analysis.QualityAnalysis;

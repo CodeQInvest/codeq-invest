@@ -16,8 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.investment;
+package org.codeqinvest.investment.profit;
 
+import org.codeqinvest.investment.profit.ProfitCalculator;
+import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.QualityViolation;
 import org.fest.assertions.Delta;
 import org.junit.Test;

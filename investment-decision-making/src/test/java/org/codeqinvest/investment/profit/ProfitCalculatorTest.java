@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.investment;
+package org.codeqinvest.investment.profit;
 
+import org.codeqinvest.investment.profit.ProfitCalculator;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.quality.QualityViolation;

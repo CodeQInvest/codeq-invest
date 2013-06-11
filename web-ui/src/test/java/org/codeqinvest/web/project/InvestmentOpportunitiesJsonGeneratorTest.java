@@ -20,7 +20,7 @@ package org.codeqinvest.web.project;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.codeqinvest.investment.WeightedProfitCalculator;
+import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityViolation;
