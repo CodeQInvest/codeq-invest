@@ -77,6 +77,7 @@
                         <legend class="no-border">Investment Opportunities</legend>
                         <div class="row-fluid">
                             <div id="treemap" class="span12"></div>
+                            <div id="treemapNoInvestments" class="alert alert-info" th:text="#{treemap.no.invest}">There are no investment opportunities with the current change probabilities. You can change this by giving CodeQ Invest some hints with manual estimates.</div>
                         </div>
                         <div class="row-fluid">
                             <div class="span7">
@@ -335,14 +336,25 @@
             left: 0
         };
 
-        var treemapContainer = $('#treemap');
-        TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
-            return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
-        }, JSON.parse($('#investmentOpportunities').text()));
+        var investmentOpportunitiesJson = JSON.parse($('#investmentOpportunities').text());
+        if (investmentOpportunitiesJson.children.length > 0) {
+            $('#treemap').show();
+            $('.treemap-legend').show();
+            $('#treemapNoInvestments').hide();
 
-        ColorScale.createWithDefaultSize('#colorScale', function(d) {
-            return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
-        });
+            var treemapContainer = $('#treemap');
+            TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
+                return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
+            }, investmentOpportunitiesJson);
+
+            ColorScale.createWithDefaultSize('#colorScale', function(d) {
+                return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
+            });
+        } else {
+            $('#treemapNoInvestments').show();
+            $('#treemap').hide();
+            $('.treemap-legend').hide();
+        }
 
         /*
          * The following functions are used to resize the treemap according to
