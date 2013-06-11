@@ -31,7 +31,7 @@
     <property name="suffix" value=".html"/>
     <property name="templateMode" value="HTML5"/>
     <!-- for development: switch off the cache to enable auto-reload -->
-    <property name="cacheable" value="false"/>
+    <property name="cacheable" value="true"/>
   </bean>
 
   <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
