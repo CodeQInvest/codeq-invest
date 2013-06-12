@@ -52,7 +52,7 @@ public class QualityInvestmentPlanService {
   public QualityInvestmentPlan computeInvestmentPlan(QualityAnalysis analysis, String basePackage, int investmentInMinutes) {
     double overallProfit = 0.0f;
     Multimap<Integer, QualityViolation> violationsByRemediationCosts = ArrayListMultimap.create();
-    for (QualityViolation violation : analysis.getViolations()) {
+    for (QualityViolation violation : filterViolationsByArtefactNameStartingWith(basePackage, analysis.getViolations())) {
       violationsByRemediationCosts.put(violation.getRemediationCosts(), violation);
     }
 
@@ -93,6 +93,16 @@ public class QualityInvestmentPlanService {
     }
 
     return new QualityInvestmentPlan(basePackage, invested, (int) Math.round(overallProfit), calculateRoi(analysis, overallProfit), investmentPlanEntries);
+  }
+
+  private Collection<QualityViolation> filterViolationsByArtefactNameStartingWith(String basePackage, List<QualityViolation> violations) {
+    Collection<QualityViolation> filteredViolations = new ArrayList<QualityViolation>();
+    for (QualityViolation violation : violations) {
+      if (violation.getArtefact().getName().startsWith(basePackage)) {
+        filteredViolations.add(violation);
+      }
+    }
+    return filteredViolations;
   }
 
   private QualityViolation getViolationWithMostProfit(Collection<QualityViolation> violations) {

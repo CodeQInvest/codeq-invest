@@ -45,8 +45,8 @@ public class QualityInvestmentPlanServiceTest {
     ProfitCalculator profitCalculator = mock(ProfitCalculator.class);
     investmentPlanService = new QualityInvestmentPlanService(profitCalculator);
 
-    QualityViolation violation1 = new QualityViolation(new Artefact("A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 10, 0, 0.0, "ncloc");
-    QualityViolation violation2 = new QualityViolation(new Artefact("B", ""), createRequirementOnlyWithCriteria(new QualityCriteria("rfc", "<=", 50.0)), 60, 0, 0.0, "ncloc");
+    QualityViolation violation1 = new QualityViolation(new Artefact("org.A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 10, 0, 0.0, "ncloc");
+    QualityViolation violation2 = new QualityViolation(new Artefact("org.project.B", ""), createRequirementOnlyWithCriteria(new QualityCriteria("rfc", "<=", 50.0)), 60, 0, 0.0, "ncloc");
     QualityViolation violation3 = new QualityViolation(new Artefact("C", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cov", ">", 80.0)), 10, 0, 0.0, "ncloc");
     analysis = QualityAnalysis.success(null, Arrays.asList(violation1, violation2, violation3));
     // overall rc = 10 + 40 + 30 = 80
@@ -96,7 +96,7 @@ public class QualityInvestmentPlanServiceTest {
   @Test
   public void calculatesRoiBasedOnRemediationCostsAndProfit() {
     QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 80);
-    assertThat(qualityInvestmentPlan.getRoi()).isEqualTo(375); // 300 / 80
+    assertThat(qualityInvestmentPlan.getRoi()).isEqualTo(375); // 300 / 80 * 100
   }
 
   @Test
@@ -105,7 +105,14 @@ public class QualityInvestmentPlanServiceTest {
     QualityInvestmentPlanEntry[] investments = qualityInvestmentPlan.getEntries().toArray(new QualityInvestmentPlanEntry[0]);
     assertThat(investments).hasSize(3);
     assertThat(investments[0].getArtefact()).isEqualTo("C");
-    assertThat(investments[1].getArtefact()).isEqualTo("A");
-    assertThat(investments[2].getArtefact()).isEqualTo("B");
+    assertThat(investments[1].getArtefact()).isEqualTo("org.A");
+    assertThat(investments[2].getArtefact()).isEqualTo("org.project.B");
+  }
+
+  @Test
+  public void shouldOnlyConsiderArtefactThatStartWithBasePackageName() {
+    QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "org.project", 80);
+    assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("org.project.B");
   }
 }
