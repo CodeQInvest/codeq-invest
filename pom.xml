@@ -73,7 +73,7 @@
     <fest.assert.version>1.4</fest.assert.version>
     <fluentlenium.version>0.7.8</fluentlenium.version>
     <thucydides.version>0.9.116</thucydides.version>
-    <rest.assured.version>1.7.2</rest.assured.version>
+    <rest.assured.version>1.8.1</rest.assured.version>
     <json.path.version>0.8.1</json.path.version>
     <hsql.version>2.2.9</hsql.version>
   </properties>
