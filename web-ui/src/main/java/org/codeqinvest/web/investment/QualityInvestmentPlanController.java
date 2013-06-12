@@ -27,11 +27,14 @@ import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author fmueller
@@ -44,23 +47,44 @@ class QualityInvestmentPlanController {
   private final LastQualityAnalysisService lastQualityAnalysisService;
   private final QualityInvestmentPlanService investmentPlanService;
   private final InvestmentAmountParser investmentAmountParser;
+  private final InvestmentPlanRequestValidator investmentPlanRequestValidator;
 
   @Autowired
   QualityInvestmentPlanController(ProjectRepository projectRepository,
                                   LastQualityAnalysisService lastQualityAnalysisService,
                                   QualityInvestmentPlanService investmentPlanService,
-                                  InvestmentAmountParser investmentAmountParser) {
+                                  InvestmentAmountParser investmentAmountParser, InvestmentPlanRequestValidator investmentPlanRequestValidator) {
     this.projectRepository = projectRepository;
     this.lastQualityAnalysisService = lastQualityAnalysisService;
     this.investmentPlanService = investmentPlanService;
     this.investmentAmountParser = investmentAmountParser;
+    this.investmentPlanRequestValidator = investmentPlanRequestValidator;
   }
 
   @RequestMapping(value = "/projects/{projectId}/investment", method = RequestMethod.PUT)
   @ResponseBody
-  QualityInvestmentPlan generateInvestmentPlan(@PathVariable long projectId, @RequestBody InvestmentPlanRequest investmentPlanRequest) throws InvestmentParsingException {
+  QualityInvestmentPlan generateInvestmentPlan(@PathVariable long projectId,
+                                               @RequestBody InvestmentPlanRequest investmentPlanRequest,
+                                               BindingResult errors,
+                                               HttpServletResponse response) throws InvestmentParsingException {
+    investmentPlanRequestValidator.validate(investmentPlanRequest, errors);
+    if (errors.hasErrors()) {
+      response.setStatus(400);
+      return null;
+    }
+
     Project project = projectRepository.findOne(projectId);
+    if (project == null) {
+      response.setStatus(400);
+      return null;
+    }
+
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
+    if (lastAnalysis == null) {
+      response.setStatus(400);
+      return null;
+    }
+
     int investmentInMinutes = investmentAmountParser.parseMinutes(investmentPlanRequest.getInvestment());
     return investmentPlanService.computeInvestmentPlan(lastAnalysis, investmentPlanRequest.getBasePackage(), investmentInMinutes);
   }

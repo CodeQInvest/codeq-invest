@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -50,16 +51,11 @@ public class QualityInvestmentPlanControllerTest {
   private QualityInvestmentPlanService investmentPlanService;
 
   @Before
-  public void setUp() {
+  public void setUpMockedSystem() {
     projectRepository = mock(ProjectRepository.class);
     lastQualityAnalysisService = mock(LastQualityAnalysisService.class);
     investmentPlanService = mock(QualityInvestmentPlanService.class);
-    mockMvc = MockMvcBuilders.standaloneSetup(new QualityInvestmentPlanController(projectRepository,
-        lastQualityAnalysisService, investmentPlanService, new InvestmentAmountParser())).build();
-  }
 
-  @Test
-  public void shouldReturnTheCalculatedQualityInvestmentPlan() throws Exception {
     QualityInvestmentPlan dummyInvestmentPlan = new QualityInvestmentPlan("", 90, 110, 122, Sets.<QualityInvestmentPlanEntry>newTreeSet());
 
     Project mockedProject = mock(Project.class);
@@ -69,6 +65,15 @@ public class QualityInvestmentPlanControllerTest {
     when(lastQualityAnalysisService.retrieveLastAnalysis(mockedProject)).thenReturn(mockedAnalysis);
     when(investmentPlanService.computeInvestmentPlan(eq(mockedAnalysis), anyString(), anyInt())).thenReturn(dummyInvestmentPlan);
 
+    mockMvc = MockMvcBuilders.standaloneSetup(new QualityInvestmentPlanController(projectRepository,
+        lastQualityAnalysisService,
+        investmentPlanService,
+        new InvestmentAmountParser(),
+        new InvestmentPlanRequestValidator(new InvestmentAmountParser()))).build();
+  }
+
+  @Test
+  public void shouldReturnTheCalculatedQualityInvestmentPlan() throws Exception {
     mockMvc.perform(put("/projects/1/investment")
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"basePackage\": \"\", \"investment\": \"1h 30m\"}"))
@@ -77,5 +82,46 @@ public class QualityInvestmentPlanControllerTest {
         .andExpect(jsonPath("$.investmentInMinutes").value(90))
         .andExpect(jsonPath("$.profitInMinutes").value(110))
         .andExpect(jsonPath("$.roi").value(122));
+  }
+
+  @Test
+  public void jsonShouldBeValid() throws Exception {
+    mockMvc.perform(put("/projects/1/investment")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("nojson"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void basePackageShouldBeValidString() throws Exception {
+    mockMvc.perform(put("/projects/1/investment")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"basePackage\": null, \"investment\": \"1h 30m\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void investmentAmountShouldBeValid() throws Exception {
+    mockMvc.perform(put("/projects/1/investment")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"basePackage\": \"\", \"investment\": \"abc\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void projectShouldExists() throws Exception {
+    mockMvc.perform(put("/projects/123/investment")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"basePackage\": \"\", \"investment\": \"1h\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void projectShouldHaveLastSuccessfulAnalysis() throws Exception {
+    when(lastQualityAnalysisService.retrieveLastAnalysis(any(Project.class))).thenReturn(null);
+    mockMvc.perform(put("/projects/1/investment")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"basePackage\": \"\", \"investment\": \"1h\"}"))
+        .andExpect(status().isBadRequest());
   }
 }
