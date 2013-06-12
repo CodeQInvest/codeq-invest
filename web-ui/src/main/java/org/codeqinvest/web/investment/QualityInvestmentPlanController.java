@@ -16,62 +16,52 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web.project;
+package org.codeqinvest.web.investment;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
+import org.codeqinvest.investment.QualityInvestmentPlan;
+import org.codeqinvest.investment.QualityInvestmentPlanService;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.analysis.LastQualityAnalysisService;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * This controller handle the request for detail view of
- * a given project.
- *
  * @author fmueller
  */
 @Slf4j
 @Controller
-@RequestMapping("/projects")
-class ProjectController {
+class QualityInvestmentPlanController {
 
   private final ProjectRepository projectRepository;
   private final LastQualityAnalysisService lastQualityAnalysisService;
-  private final InvestmentOpportunitiesJsonGenerator investmentOpportunitiesJsonGenerator;
+  private final QualityInvestmentPlanService investmentPlanService;
+  private final InvestmentAmountParser investmentAmountParser;
 
   @Autowired
-  ProjectController(ProjectRepository projectRepository,
-                    LastQualityAnalysisService lastQualityAnalysisService,
-                    InvestmentOpportunitiesJsonGenerator investmentOpportunitiesJsonGenerator) {
+  QualityInvestmentPlanController(ProjectRepository projectRepository,
+                                  LastQualityAnalysisService lastQualityAnalysisService,
+                                  QualityInvestmentPlanService investmentPlanService,
+                                  InvestmentAmountParser investmentAmountParser) {
     this.projectRepository = projectRepository;
     this.lastQualityAnalysisService = lastQualityAnalysisService;
-    this.investmentOpportunitiesJsonGenerator = investmentOpportunitiesJsonGenerator;
+    this.investmentPlanService = investmentPlanService;
+    this.investmentAmountParser = investmentAmountParser;
   }
 
-  /**
-   * This method prepares the main site of a project to be displayed.
-   */
-  @RequestMapping(value = "/{projectId}", method = RequestMethod.GET)
-  String showProject(@PathVariable long projectId, Model model) throws JsonProcessingException {
+  @RequestMapping(value = "/projects/{projectId}/investment", method = RequestMethod.PUT)
+  @ResponseBody
+  QualityInvestmentPlan generateInvestmentPlan(@PathVariable long projectId, @RequestBody InvestmentPlanRequest investmentPlanRequest) throws InvestmentParsingException {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
-
-    model.addAttribute("currentUrl", "/projects/" + projectId);
-    model.addAttribute("project", project);
-
-    if (lastAnalysis != null) {
-      model.addAttribute("lastAnalysis", lastAnalysis);
-      model.addAttribute("investmentOpportunitiesJson", investmentOpportunitiesJsonGenerator.generate(lastAnalysis));
-    }
-
-    log.debug("Show project {}", project.getName());
-    return "project";
+    int investmentInMinutes = investmentAmountParser.parseMinutes(investmentPlanRequest.getInvestment());
+    return investmentPlanService.computeInvestmentPlan(lastAnalysis, investmentPlanRequest.getBasePackage(), investmentInMinutes);
   }
 }

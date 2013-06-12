@@ -18,7 +18,6 @@
  */
 package org.codeqinvest.web;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -36,12 +35,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public final class IntegrationTestHelper {
 
   public static final String PROJECT_SITE = getUriWithHost("/projects/");
   public static final String ADD_PROJECT_SITE = getUriWithHost("/projects/create");
   public static final String ADD_QUALITY_PROFILE_SITE = getUriWithHost("/qualityprofiles/create");
+
+  private static final Random RANDOM = new Random();
 
   private IntegrationTestHelper() {
   }
@@ -58,7 +60,7 @@ public final class IntegrationTestHelper {
     QualityProfile profile = new QualityProfile();
     profile.setId(1L);
 
-    Project project = new Project("Project-" + RandomUtils.nextInt(),
+    Project project = new Project("Project-" + RANDOM.nextInt(),
         "* * 3 * * *",
         profile,
         new SonarConnectionSettings("http://nemo.sonarsource.org", "org.apache.cloudstack:cloudstack"),
