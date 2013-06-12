@@ -24,11 +24,26 @@ import lombok.Data;
  * @author fmueller
  */
 @Data
-public class QualityInvestmentPlanEntry {
+public class QualityInvestmentPlanEntry implements Comparable<QualityInvestmentPlanEntry> {
 
   private final String requirementCode;
   private final String violatedConstraint;
   private final String artefact;
   private final int profitInMinutes;
   private final int remediationCostsInMinutes;
+
+  @Override
+  public int compareTo(QualityInvestmentPlanEntry other) {
+    if (profitInMinutes < other.getProfitInMinutes()) {
+      return 1;
+    } else if (profitInMinutes > other.getProfitInMinutes()) {
+      return -1;
+    } else if (remediationCostsInMinutes < other.getRemediationCostsInMinutes()) {
+      return 1;
+    } else if (remediationCostsInMinutes > other.getRemediationCostsInMinutes()) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
 }

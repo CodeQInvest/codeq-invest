@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.investment.profit.ProfitCalculator;
+import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -49,50 +51,65 @@ public class QualityInvestmentPlanService {
     this.profitCalculator = profitCalculator;
   }
 
+  // TODO clean up this mess
   public QualityInvestmentPlan computeInvestmentPlan(QualityAnalysis analysis, String basePackage, int investmentInMinutes) {
-    double overallProfit = 0.0f;
-    Multimap<Integer, QualityViolation> violationsByRemediationCosts = ArrayListMultimap.create();
+    Multimap<Double, QualityViolation> violationsByProfit = ArrayListMultimap.create();
     for (QualityViolation violation : filterViolationsByArtefactNameStartingWith(basePackage, analysis.getViolations())) {
-      violationsByRemediationCosts.put(violation.getRemediationCosts(), violation);
-    }
-
-    List<Integer> allRemediationCosts = new ArrayList<Integer>();
-    for (Integer remediationCost : violationsByRemediationCosts.keySet()) {
-      int numberOfViolations = violationsByRemediationCosts.get(remediationCost).size();
-      for (int i = 0; i < numberOfViolations; i++) {
-        allRemediationCosts.add(remediationCost);
+      double profit = profitCalculator.calculateProfit(violation);
+      if (profit > 0.0) {
+        violationsByProfit.put(profit, violation);
       }
     }
-    Collections.sort(allRemediationCosts, new IntegerDescendingComparator());
 
-    SortedSet<QualityInvestmentPlanEntry> investmentPlanEntries = Sets.newTreeSet(new InvestmentPlanEntryByProfitAndCostsComparator());
+    List<Double> allProfits = new ArrayList<Double>();
+    for (Double profit : violationsByProfit.keySet()) {
+      int numberOfViolations = violationsByProfit.get(profit).size();
+      for (int i = 0; i < numberOfViolations; i++) {
+        allProfits.add(profit);
+      }
+    }
+    Collections.sort(allProfits, new DoubleDescendingComparator());
 
+    SortedSet<QualityInvestmentPlanEntry> investmentPlanEntries = Sets.newTreeSet();
     int toInvest = investmentInMinutes;
     int invested = 0;
-    for (int remediationCost : allRemediationCosts) {
-      if (remediationCost <= toInvest) {
 
-        invested += remediationCost;
-        toInvest -= remediationCost;
+    for (double profit : allProfits) {
+      List<QualityViolation> violations = new ArrayList<QualityViolation>(violationsByProfit.get(profit));
+      Collections.sort(violations, new ViolationByProfitAndRemediationCostsComparator(profitCalculator));
 
-        Collection<QualityViolation> violations = violationsByRemediationCosts.get(remediationCost);
-        QualityViolation violationWithMostProfit = getViolationWithMostProfit(violations);
+      for (QualityViolation violation : violations) {
+        int remediationCost = violation.getRemediationCosts();
+        if (remediationCost <= toInvest) {
 
-        int profit = (int) Math.round(profitCalculator.calculateProfit(violationWithMostProfit));
-        overallProfit += profit;
+          invested += remediationCost;
+          toInvest -= remediationCost;
 
-        investmentPlanEntries.add(new QualityInvestmentPlanEntry(
-            violationWithMostProfit.getRequirement().getMetricIdentifier(),
-            violationWithMostProfit.getRequirement().getOperator() + " " + violationWithMostProfit.getRequirement().getThreshold(),
-            violationWithMostProfit.getArtefact().getName(),
-            profit,
-            violationWithMostProfit.getRemediationCosts()));
-
-        violationsByRemediationCosts.get(remediationCost).remove(violationWithMostProfit);
+          QualityRequirement requirement = violation.getRequirement();
+          investmentPlanEntries.add(new QualityInvestmentPlanEntry(
+              requirement.getMetricIdentifier(),
+              requirement.getOperator() + " " + requirement.getThreshold(),
+              violation.getArtefact().getName(),
+              (int) Math.round(profit),
+              remediationCost));
+        }
       }
     }
 
-    return new QualityInvestmentPlan(basePackage, invested, (int) Math.round(overallProfit), calculateRoi(analysis, overallProfit), investmentPlanEntries);
+    int overallProfit = calculateOverallProfit(investmentPlanEntries);
+    return new QualityInvestmentPlan(basePackage,
+        invested,
+        overallProfit,
+        calculateRoi(investmentPlanEntries, overallProfit),
+        investmentPlanEntries);
+  }
+
+  private int calculateOverallProfit(SortedSet<QualityInvestmentPlanEntry> investmentPlanEntries) {
+    int overallProfit = 0;
+    for (QualityInvestmentPlanEntry investmentPlanEntry : investmentPlanEntries) {
+      overallProfit += investmentPlanEntry.getProfitInMinutes();
+    }
+    return overallProfit;
   }
 
   private Collection<QualityViolation> filterViolationsByArtefactNameStartingWith(String basePackage, List<QualityViolation> violations) {
@@ -105,50 +122,46 @@ public class QualityInvestmentPlanService {
     return filteredViolations;
   }
 
-  private QualityViolation getViolationWithMostProfit(Collection<QualityViolation> violations) {
-    QualityViolation mostProfit = null;
-    double profitOfMostProfit = 0.0;
-    for (QualityViolation violation : violations) {
-      double profitOfCurrentViolation = profitCalculator.calculateProfit(violation);
-      if (mostProfit == null || profitOfMostProfit < profitOfCurrentViolation) {
-        mostProfit = violation;
-        profitOfMostProfit = profitOfCurrentViolation;
-      }
-    }
-    return mostProfit;
-  }
-
-  private int calculateRoi(QualityAnalysis analysis, double overallProfit) {
+  private int calculateRoi(Set<QualityInvestmentPlanEntry> investmentPlanEntries, int overallProfit) {
+    // TODO this method could be refactored into own service class
     int overallRemediationCosts = 0;
-    for (QualityViolation violation : analysis.getViolations()) {
-      overallRemediationCosts += violation.getRemediationCosts();
+    for (QualityInvestmentPlanEntry investmentPlanEntry : investmentPlanEntries) {
+      overallRemediationCosts += investmentPlanEntry.getRemediationCostsInMinutes();
     }
     return (int) Math.round(overallProfit / (double) overallRemediationCosts * 100);
   }
 
-  private static class InvestmentPlanEntryByProfitAndCostsComparator implements Comparator<QualityInvestmentPlanEntry> {
+  private static class DoubleDescendingComparator implements Comparator<Double> {
 
     @Override
-    public int compare(QualityInvestmentPlanEntry entry, QualityInvestmentPlanEntry otherEntry) {
-      if (entry.getProfitInMinutes() < otherEntry.getProfitInMinutes()) {
-        return 1;
-      } else if (entry.getProfitInMinutes() > otherEntry.getProfitInMinutes()) {
-        return -1;
-      } else if (entry.getRemediationCostsInMinutes() < otherEntry.getRemediationCostsInMinutes()) {
-        return 1;
-      } else if (entry.getRemediationCostsInMinutes() > otherEntry.getRemediationCostsInMinutes()) {
-        return -1;
-      } else {
-        return 0;
-      }
+    public int compare(Double thisValue, Double other) {
+      return -1 * thisValue.compareTo(other);
     }
   }
 
-  private static class IntegerDescendingComparator implements Comparator<Integer> {
+  private static class ViolationByProfitAndRemediationCostsComparator implements Comparator<QualityViolation> {
+
+    private final ProfitCalculator profitCalculator;
+
+    private ViolationByProfitAndRemediationCostsComparator(ProfitCalculator profitCalculator) {
+      this.profitCalculator = profitCalculator;
+    }
 
     @Override
-    public int compare(Integer integer, Integer other) {
-      return -1 * integer.compareTo(other);
+    public int compare(QualityViolation violation, QualityViolation otherViolation) {
+      double profit = profitCalculator.calculateProfit(violation);
+      double otherProfit = profitCalculator.calculateProfit(otherViolation);
+      if (profit < otherProfit) {
+        return 1;
+      } else if (profit > otherProfit) {
+        return -1;
+      } else if (violation.getRemediationCosts() < otherViolation.getRemediationCosts()) {
+        return -1;
+      } else if (violation.getRemediationCosts() > otherViolation.getRemediationCosts()) {
+        return 1;
+      } else {
+        return 0;
+      }
     }
   }
 }

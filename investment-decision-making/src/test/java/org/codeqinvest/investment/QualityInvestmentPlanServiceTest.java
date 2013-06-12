@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,11 +39,12 @@ public class QualityInvestmentPlanServiceTest {
 
   private QualityInvestmentPlanService investmentPlanService;
 
+  private ProfitCalculator profitCalculator;
   private QualityAnalysis analysis;
 
   @Before
   public void setUp() {
-    ProfitCalculator profitCalculator = mock(ProfitCalculator.class);
+    profitCalculator = mock(ProfitCalculator.class);
     investmentPlanService = new QualityInvestmentPlanService(profitCalculator);
 
     QualityViolation violation1 = new QualityViolation(new Artefact("org.A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 10, 0, 0.0, "ncloc");
@@ -114,5 +116,41 @@ public class QualityInvestmentPlanServiceTest {
     QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "org.project", 80);
     assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
     assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("org.project.B");
+  }
+
+  @Test
+  public void shouldChooseViolationsWithMoreProfit() {
+    QualityViolation violation1 = new QualityViolation(new Artefact("org.A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violation2 = new QualityViolation(new Artefact("org.project.B", ""), createRequirementOnlyWithCriteria(new QualityCriteria("rfc", "<=", 50.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violation3 = new QualityViolation(new Artefact("C", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cov", ">", 80.0)), 10, 0, 0.0, "ncloc");
+    analysis = QualityAnalysis.success(null, Arrays.asList(violation1, violation2, violation3));
+
+    QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 50);
+    assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("C");
+  }
+
+  @Test
+  public void shouldChooseViolationWithBiggerRoiWhenProfitIsTheSame() {
+    QualityViolation violationWithSmallerRoi = new QualityViolation(new Artefact("org.A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violationWithBiggerRoi = new QualityViolation(new Artefact("B", ""), createRequirementOnlyWithCriteria(new QualityCriteria("rfc", "<=", 50.0)), 40, 0, 0.0, "ncloc");
+    analysis = QualityAnalysis.success(null, Arrays.asList(violationWithSmallerRoi, violationWithBiggerRoi));
+
+    when(profitCalculator.calculateProfit(violationWithSmallerRoi)).thenReturn(100.0);
+    when(profitCalculator.calculateProfit(violationWithBiggerRoi)).thenReturn(100.0);
+
+    QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 50);
+    assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("B");
+  }
+
+  @Test
+  public void shouldNotConsiderViolationsWithNegativeProfit() {
+    when(profitCalculator.calculateProfit(any(QualityViolation.class))).thenReturn(-0.1);
+
+    QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 50);
+    assertThat(qualityInvestmentPlan.getProfitInMinutes()).isZero();
+    assertThat(qualityInvestmentPlan.getRoi()).isZero();
+    assertThat(qualityInvestmentPlan.getEntries()).isEmpty();
   }
 }
