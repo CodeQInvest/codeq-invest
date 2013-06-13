@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -48,17 +49,21 @@ class QualityInvestmentPlanController {
   private final QualityInvestmentPlanService investmentPlanService;
   private final InvestmentAmountParser investmentAmountParser;
   private final InvestmentPlanRequestValidator investmentPlanRequestValidator;
+  private final RequirementCodeConverter requirementCodeConverter;
 
   @Autowired
   QualityInvestmentPlanController(ProjectRepository projectRepository,
                                   LastQualityAnalysisService lastQualityAnalysisService,
                                   QualityInvestmentPlanService investmentPlanService,
-                                  InvestmentAmountParser investmentAmountParser, InvestmentPlanRequestValidator investmentPlanRequestValidator) {
+                                  InvestmentAmountParser investmentAmountParser,
+                                  InvestmentPlanRequestValidator investmentPlanRequestValidator,
+                                  RequirementCodeConverter requirementCodeConverter) {
     this.projectRepository = projectRepository;
     this.lastQualityAnalysisService = lastQualityAnalysisService;
     this.investmentPlanService = investmentPlanService;
     this.investmentAmountParser = investmentAmountParser;
     this.investmentPlanRequestValidator = investmentPlanRequestValidator;
+    this.requirementCodeConverter = requirementCodeConverter;
   }
 
   @RequestMapping(value = "/projects/{projectId}/investment", method = RequestMethod.PUT)
@@ -66,6 +71,7 @@ class QualityInvestmentPlanController {
   QualityInvestmentPlan generateInvestmentPlan(@PathVariable long projectId,
                                                @RequestBody InvestmentPlanRequest investmentPlanRequest,
                                                BindingResult errors,
+                                               HttpServletRequest request,
                                                HttpServletResponse response) throws InvestmentParsingException {
     investmentPlanRequestValidator.validate(investmentPlanRequest, errors);
     if (errors.hasErrors()) {
@@ -86,6 +92,8 @@ class QualityInvestmentPlanController {
     }
 
     int investmentInMinutes = investmentAmountParser.parseMinutes(investmentPlanRequest.getInvestment());
-    return investmentPlanService.computeInvestmentPlan(lastAnalysis, investmentPlanRequest.getBasePackage(), investmentInMinutes);
+    QualityInvestmentPlan investmentPlan = investmentPlanService.computeInvestmentPlan(lastAnalysis, investmentPlanRequest.getBasePackage(), investmentInMinutes);
+    requirementCodeConverter.convertRequirementCodeToLocalizedMessage(request, investmentPlan);
+    return investmentPlan;
   }
 }

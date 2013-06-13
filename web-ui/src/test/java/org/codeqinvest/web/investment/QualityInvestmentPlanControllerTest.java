@@ -69,7 +69,8 @@ public class QualityInvestmentPlanControllerTest {
         lastQualityAnalysisService,
         investmentPlanService,
         new InvestmentAmountParser(),
-        new InvestmentPlanRequestValidator(new InvestmentAmountParser()))).build();
+        new InvestmentPlanRequestValidator(new InvestmentAmountParser()),
+        mock(RequirementCodeConverter.class))).build();
   }
 
   @Test

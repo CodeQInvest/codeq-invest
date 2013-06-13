@@ -45,6 +45,11 @@ class InvestmentPlanRequestValidator implements Validator {
       errors.rejectValue("basePackage", "null");
     }
 
+    if (request.getInvestment() == null
+        || !(request.getInvestment().endsWith("h") || request.getInvestment().endsWith("m"))) {
+      errors.rejectValue("investment", "not.valid");
+    }
+
     try {
       investmentAmountParser.parseMinutes(request.getInvestment());
     } catch (InvestmentParsingException e) {

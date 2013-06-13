@@ -26,11 +26,23 @@ import lombok.Data;
 @Data
 public class QualityInvestmentPlanEntry implements Comparable<QualityInvestmentPlanEntry> {
 
-  private final String requirementCode;
+  private String requirementCode;
+
   private final String violatedConstraint;
-  private final String artefact;
+  private final String artefactLongName;
+  private final String artefactShortName;
   private final int profitInMinutes;
   private final int remediationCostsInMinutes;
+
+  public QualityInvestmentPlanEntry(String requirementCode, String violatedConstraint, String artefactLongName,
+                                    String artefactShortName, int profitInMinutes, int remediationCostsInMinutes) {
+    this.requirementCode = requirementCode;
+    this.violatedConstraint = violatedConstraint;
+    this.artefactLongName = artefactLongName;
+    this.artefactShortName = artefactShortName;
+    this.profitInMinutes = profitInMinutes;
+    this.remediationCostsInMinutes = remediationCostsInMinutes;
+  }
 
   @Override
   public int compareTo(QualityInvestmentPlanEntry other) {

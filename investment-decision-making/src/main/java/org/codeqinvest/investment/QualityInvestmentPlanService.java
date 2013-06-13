@@ -90,6 +90,7 @@ public class QualityInvestmentPlanService {
               requirement.getMetricIdentifier(),
               requirement.getOperator() + " " + requirement.getThreshold(),
               violation.getArtefact().getName(),
+              violation.getArtefact().getShortClassName(),
               (int) Math.round(profit),
               remediationCost));
         }

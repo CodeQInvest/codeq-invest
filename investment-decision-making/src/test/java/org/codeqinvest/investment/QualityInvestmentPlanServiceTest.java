@@ -106,16 +106,16 @@ public class QualityInvestmentPlanServiceTest {
     QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 80);
     QualityInvestmentPlanEntry[] investments = qualityInvestmentPlan.getEntries().toArray(new QualityInvestmentPlanEntry[0]);
     assertThat(investments).hasSize(3);
-    assertThat(investments[0].getArtefact()).isEqualTo("C");
-    assertThat(investments[1].getArtefact()).isEqualTo("org.A");
-    assertThat(investments[2].getArtefact()).isEqualTo("org.project.B");
+    assertThat(investments[0].getArtefactLongName()).isEqualTo("C");
+    assertThat(investments[1].getArtefactLongName()).isEqualTo("org.A");
+    assertThat(investments[2].getArtefactLongName()).isEqualTo("org.project.B");
   }
 
   @Test
   public void shouldOnlyConsiderArtefactThatStartWithBasePackageName() {
     QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "org.project", 80);
     assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
-    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("org.project.B");
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefactLongName()).isEqualTo("org.project.B");
   }
 
   @Test
@@ -127,7 +127,7 @@ public class QualityInvestmentPlanServiceTest {
 
     QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 50);
     assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
-    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("C");
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefactLongName()).isEqualTo("C");
   }
 
   @Test
@@ -141,7 +141,7 @@ public class QualityInvestmentPlanServiceTest {
 
     QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "", 50);
     assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
-    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefact()).isEqualTo("B");
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefactLongName()).isEqualTo("B");
   }
 
   @Test
