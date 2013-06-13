@@ -140,7 +140,7 @@ public class QualityInvestmentPlanService {
     }
   }
 
-  private static class ViolationByProfitAndRemediationCostsComparator implements Comparator<QualityViolation> {
+  private static final class ViolationByProfitAndRemediationCostsComparator implements Comparator<QualityViolation> {
 
     private final ProfitCalculator profitCalculator;
 

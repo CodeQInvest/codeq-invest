@@ -19,4 +19,11 @@
 package org.codeqinvest.web.investment;
 
 class InvestmentParsingException extends Exception {
+
+  InvestmentParsingException() {
+  }
+
+  InvestmentParsingException(Exception e) {
+    super(e);
+  }
 }

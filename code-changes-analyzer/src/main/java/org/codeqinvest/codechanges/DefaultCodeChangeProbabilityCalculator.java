@@ -22,7 +22,6 @@ import org.codeqinvest.codechanges.scm.DailyCodeChurn;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * This {@code CodeChangeProbabilityCalculator} implementation uses

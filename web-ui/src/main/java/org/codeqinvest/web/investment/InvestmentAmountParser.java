@@ -59,7 +59,7 @@ class InvestmentAmountParser {
         return parsedValue;
       }
     } catch (StringIndexOutOfBoundsException e) {
-      throw new InvestmentParsingException();
+      throw new InvestmentParsingException(e);
     }
   }
 }

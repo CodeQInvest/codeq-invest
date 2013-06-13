@@ -26,7 +26,6 @@ import org.joda.time.LocalDate;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**

@@ -127,16 +127,16 @@ class InvestmentOpportunitiesJsonGenerator {
 
   private List<String> getAllPackageNamesReversed(Artefact artefact) {
     List<String> packages = new ArrayList<String>();
-    String packagePath = "";
+    StringBuilder packagePath = new StringBuilder();
     for (String packageName : PACKAGE_SPLITTER.split(artefact.getName())) {
       if (packageName.equals(artefact.getShortClassName())) {
         break;
       }
-      if (!packagePath.isEmpty()) {
-        packagePath += ".";
+      if (packagePath.length() > 0) {
+        packagePath.append('.');
       }
-      packagePath += packageName;
-      packages.add(packagePath);
+      packagePath.append(packageName);
+      packages.add(packagePath.toString());
     }
     Collections.reverse(packages);
     return packages;
