@@ -33,4 +33,8 @@ public class DailyCodeChurn {
 
   private final LocalDate day;
   private final List<Double> codeChurnProportions;
+
+  public void addCodeChurnProportions(List<Double> codeChurnProportions) {
+    this.codeChurnProportions.addAll(codeChurnProportions);
+  }
 }

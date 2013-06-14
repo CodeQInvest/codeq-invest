@@ -23,6 +23,7 @@ import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.CodeChangeSettings;
@@ -115,6 +116,7 @@ public class DefaultQualityAnalyzerServiceIntegrationTest {
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    when(codeChangeProbabilityCalculatorFactory.getCodeChurnCalculatorFactory()).thenReturn(mock(CodeChurnCalculatorFactory.class));
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     SecureChangeProbabilityCalculator secureChangeProbabilityCalculator = mock(SecureChangeProbabilityCalculator.class);

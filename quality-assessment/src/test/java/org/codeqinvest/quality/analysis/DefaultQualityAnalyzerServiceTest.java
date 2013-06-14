@@ -23,6 +23,7 @@ import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.ScmAvailabilityCheckerService;
 import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 import org.codeqinvest.codechanges.scm.factory.ScmAvailabilityCheckerServiceFactory;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.CodeChangeSettings;
@@ -132,7 +133,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.2);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
@@ -157,7 +158,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
@@ -185,7 +186,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     when(secureChangeProbabilityCalculator.calculateSecureChangeProbability(any(QualityProfile.class),
@@ -208,7 +209,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     QualityAnalyzerService qualityAnalyzerService = new DefaultQualityAnalyzerService(violationsCalculatorService,
@@ -275,7 +276,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     when(costsCalculator.calculateRemediationCosts(any(SonarConnectionSettings.class), any(ViolationOccurence.class))).thenThrow(ResourceNotFoundException.class);
@@ -294,7 +295,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     when(costsCalculator.calculateNonRemediationCosts(any(SonarConnectionSettings.class), any(ViolationOccurence.class))).thenThrow(ResourceNotFoundException.class);
@@ -311,7 +312,7 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
     return new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
@@ -325,10 +326,16 @@ public class DefaultQualityAnalyzerServiceTest {
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
     when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenThrow(exception);
-    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
     return new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,
         codeChangeProbabilityCalculatorFactory, secureChangeProbabilityCalculator, costsCalculator, qualityAnalysisRepository);
+  }
+
+  private CodeChangeProbabilityCalculatorFactory createMockedCodeChangeProbabilityCalculatorFactory() {
+    CodeChangeProbabilityCalculatorFactory factory = mock(CodeChangeProbabilityCalculatorFactory.class);
+    when(factory.getCodeChurnCalculatorFactory()).thenReturn(mock(CodeChurnCalculatorFactory.class));
+    return factory;
   }
 
   private void assertThatIsSuccessfulAndContainsOnlyGivenViolationsWithoutCostsComparison(QualityAnalysis analysis, QualityViolation... qualityViolations) {

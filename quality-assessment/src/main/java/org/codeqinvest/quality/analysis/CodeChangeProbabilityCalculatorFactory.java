@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import lombok.Getter;
 import org.codeqinvest.codechanges.CodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.DefaultCodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.WeightedCodeChangeProbabilityCalculator;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 class CodeChangeProbabilityCalculatorFactory {
 
+  @Getter
   private final CodeChurnCalculatorFactory codeChurnCalculatorFactory;
 
   @Autowired

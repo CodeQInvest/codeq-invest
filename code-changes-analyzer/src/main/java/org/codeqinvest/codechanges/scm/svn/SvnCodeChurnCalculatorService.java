@@ -18,7 +18,7 @@
  */
 package org.codeqinvest.codechanges.scm.svn;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
@@ -40,7 +40,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Calculates the code churn for files in a SVN repository.
@@ -53,11 +53,11 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
 
   private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
-  private final SvnRevisionsRetrieverService revisionsRetrieverService;
+  private final SvnRevisionsRetriever revisionsRetrieverService;
   private final SvnFileRetrieverService fileRetrieverService;
 
   @Autowired
-  public SvnCodeChurnCalculatorService(SvnRevisionsRetrieverService revisionsRetrieverService, SvnFileRetrieverService fileRetrieverService) {
+  public SvnCodeChurnCalculatorService(SvnRevisionsRetriever revisionsRetrieverService, SvnFileRetrieverService fileRetrieverService) {
     this.revisionsRetrieverService = revisionsRetrieverService;
     this.fileRetrieverService = fileRetrieverService;
   }
@@ -71,7 +71,8 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
 
     String currentFilePath = file;
     int currentNumberOfDay;
-    Set<DailyCodeChurn> codeChurns = Sets.newHashSet();
+    long lastRevision = -1;
+    Map<LocalDate, DailyCodeChurn> codeChurns = Maps.newHashMap();
     for (int i = 0; i <= numberOfDays; i++) {
       currentNumberOfDay = i;
       final LocalDate day = startDay.minusDays(i);
@@ -79,6 +80,12 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
         final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, currentFilePath, day);
         List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
         for (SvnFileRevision revision : revisions) {
+
+          if (lastRevision != -1 && revision.getRevision() == lastRevision) {
+            lastRevision = -1;
+            continue;
+          }
+
           long codeChurn = retrieveCodeChurn(connectionSettings, revision);
           long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
           codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
@@ -91,11 +98,16 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
             if (existRevisionsForFileOnDay(connectionSettings, currentFilePath, day) && i - 1 == currentNumberOfDay - 1) {
               // to prevent that the day index is incremented more than once when there are more renamed revision on the current day
               i = currentNumberOfDay - 1;
+              lastRevision = revision.getRevision();
             }
           }
         }
 
-        codeChurns.add(new DailyCodeChurn(day, codeChurnProportions));
+        if (codeChurns.containsKey(day)) {
+          codeChurns.get(day).addCodeChurnProportions(codeChurnProportions);
+        } else {
+          codeChurns.put(day, new DailyCodeChurn(day, codeChurnProportions));
+        }
       } catch (SVNException e) {
         log.error("Error with svn server communication occurred!", e);
         throw new CodeChurnCalculationException(e);
@@ -104,7 +116,15 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
         throw new ScmConnectionEncodingException(e);
       }
     }
-    return codeChurns;
+    return codeChurns.values();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void reset() {
+    revisionsRetrieverService.evictCache();
   }
 
   private boolean existRevisionsForFileOnDay(ScmConnectionSettings connectionSettings, String file, LocalDate day) {

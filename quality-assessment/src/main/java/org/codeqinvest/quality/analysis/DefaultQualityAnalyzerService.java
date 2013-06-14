@@ -120,6 +120,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
             "Error with supplied scm connection encoding.");
       }
     }
+    codeChangeProbabilityCalculatorFactory.getCodeChurnCalculatorFactory().reset(project.getScmSettings());
 
     try {
       return QualityAnalysis.success(project, calculateCostsForEachViolation(project.getSonarConnectionSettings(), violationsAnalysisResult));

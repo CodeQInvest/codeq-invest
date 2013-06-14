@@ -44,6 +44,14 @@ public class CodeChurnCalculatorFactory {
    * and the saved SCM type in these settings.
    */
   public CodeChurnCalculator create(ScmConnectionSettings connectionSettings) {
+    return getCodeChurnCalculator(connectionSettings);
+  }
+
+  public void reset(ScmConnectionSettings connectionSettings) {
+    getCodeChurnCalculator(connectionSettings).reset();
+  }
+
+  private CodeChurnCalculator getCodeChurnCalculator(ScmConnectionSettings connectionSettings) {
     if (connectionSettings.getType() == SupportedScmSystem.SVN.getType()) {
       return svnCodeChurnCalculator;
     }

@@ -94,7 +94,7 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   @Test
   public void revisionRetrieverShouldBeCalledForEachDay() throws CodeChurnCalculationException, ScmConnectionEncodingException, SVNException {
     ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/logging/trunk/src/main/java/");
-    SvnRevisionsRetrieverService revisionsRetrieverService = spy(new SvnRevisionsRetrieverService());
+    SvnRevisionsRetriever revisionsRetrieverService = spy(new SvnRevisionsRetriever());
     SvnCodeChurnCalculatorService codeChurnCalculatorWithSpy = new SvnCodeChurnCalculatorService(revisionsRetrieverService, mock(SvnFileRetrieverService.class));
     codeChurnCalculatorWithSpy.calculateCodeChurn(connectionSettings, "org/apache/commons/logging/Log.java", new LocalDate(2013, 6, 14), 30);
     verify(revisionsRetrieverService, times(31)).getRevisions(eq(connectionSettings), anyString(), any(LocalDate.class));
