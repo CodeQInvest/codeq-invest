@@ -52,12 +52,10 @@ abstract class AbstractCodeChangeProbabilityCalculator implements CodeChangeProb
    * {@inheritDoc}
    */
   @Override
-  public final double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file)
+  public final double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file, LocalDate startDay)
       throws CodeChurnCalculationException, ScmConnectionEncodingException {
 
     final CodeChurnCalculator codeChurnCalculator = codeChurnCalculatorFactory.create(connectionSettings);
-    final LocalDate startDay = LocalDate.now();
-
     final double computedChangeProbability = computeChangeProbability(days,
         codeChurnCalculator.calculateCodeChurn(connectionSettings, file, startDay, days));
 

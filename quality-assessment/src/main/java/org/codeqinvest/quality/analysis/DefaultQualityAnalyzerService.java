@@ -28,6 +28,7 @@ import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,11 +101,12 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
   private QualityAnalysis addChangeProbabilityToEachArtifact(Project project, ViolationsAnalysisResult violationsAnalysisResult) {
     log.info("Starting calculation of change probability for each artefact of project {}", project.getName());
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = codeChangeProbabilityCalculatorFactory.create(project.getCodeChangeSettings());
+    LocalDate startDay = LocalDate.now();
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
       Artefact artefact = violation.getArtefact();
       final double changeProbability;
       try {
-        changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename());
+        changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename(), startDay);
         artefact.setChangeProbability(changeProbability);
       } catch (CodeChurnCalculationException e) {
         logFailedAnalysis(project, e);

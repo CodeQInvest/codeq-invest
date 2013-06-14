@@ -32,6 +32,7 @@ import org.codeqinvest.quality.QualityProfile;
 import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,7 +113,7 @@ public class DefaultQualityAnalyzerServiceIntegrationTest {
             new ViolationOccurence(secondRequirement, artefactC, 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
