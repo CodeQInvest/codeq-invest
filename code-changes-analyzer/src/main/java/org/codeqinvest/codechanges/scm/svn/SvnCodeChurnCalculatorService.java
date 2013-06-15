@@ -137,6 +137,7 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
 
   private long retrieveCodeChurn(ScmConnectionSettings connectionSettings, SvnFileRevision fileRevision) throws SVNException, UnsupportedEncodingException {
     long codeChurn = 0L;
+    log.debug("Retrieve code churn for revision {}", fileRevision);
     for (String line : retrieveDiffFromSvnServer(connectionSettings, fileRevision).split(LINE_SEPARATOR)) {
       if ((line.startsWith("+") && !line.startsWith("+++")) || (line.startsWith("-") && !line.startsWith("---"))) {
         codeChurn++;

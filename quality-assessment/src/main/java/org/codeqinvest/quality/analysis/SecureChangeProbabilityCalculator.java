@@ -43,6 +43,7 @@ class SecureChangeProbabilityCalculator {
   }
 
   public double calculateSecureChangeProbability(QualityProfile qualityProfile, SonarConnectionSettings sonarConnectionSettings, Artefact artefact) throws ResourceNotFoundException {
+    log.info("Calculate secure change probability for artefact {}", artefact.getName());
     double secureChangeProbability = 1.0;
     for (ChangeRiskAssessmentFunction riskAssessmentFunction : qualityProfile.getChangeRiskAssessmentFunctions()) {
       final double metricValueForArtefact = metricCollectorService.collectMetricForResource(sonarConnectionSettings,
