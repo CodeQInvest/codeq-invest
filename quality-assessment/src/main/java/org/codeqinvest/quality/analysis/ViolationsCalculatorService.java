@@ -71,7 +71,10 @@ class ViolationsCalculatorService {
     log.info("Start violation analysis for project {}", project.getName());
     Map<String, Artefact> artefactsThatHaveAtLeastOneViolation = Maps.newHashMap();
     List<ViolationOccurence> violations = new ArrayList<ViolationOccurence>();
+    long violationsOfCurrentArtefact = 0;
     for (Resource resource : resourcesCollectorService.collectAllResourcesForProject(project.getSonarConnectionSettings())) {
+      log.info("Analyzing resource {}", resource.getLongName());
+      violationsOfCurrentArtefact = 0;
       for (QualityRequirement qualityRequirement : project.getProfile().getRequirements()) {
 
         final double weightingMetricValue;
@@ -96,11 +99,13 @@ class ViolationsCalculatorService {
             artefactsThatHaveAtLeastOneViolation.put(resource.getKey(), artefact);
           }
 
-          log.info("Create quality violation for artefact {} with violated requirement {}",
+          log.debug("Create quality violation for artefact {} with violated requirement {}",
               artefact.getName(), qualityRequirement.getCriteria());
           violations.add(new ViolationOccurence(qualityRequirement, artefact, weightingMetricValue));
+          violationsOfCurrentArtefact++;
         }
       }
+      log.info("Found {} violations at resource {}", violationsOfCurrentArtefact, resource.getLongName());
     }
 
     log.info("Successfully analysed project {} and found {} quality violations in {} artefacts",
