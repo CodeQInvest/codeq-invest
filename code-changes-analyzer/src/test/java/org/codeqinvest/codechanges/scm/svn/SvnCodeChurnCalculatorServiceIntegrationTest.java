@@ -29,18 +29,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.tmatesoft.svn.core.SVNException;
 
 import java.util.Collection;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/module-context.xml")
@@ -89,15 +81,6 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
     DailyCodeChurn forthApril = getCodeChurnByDay(codeChurns, new LocalDate(2013, 4, 4));
     assertThat(forthApril.getCodeChurnProportions()).hasSize(1);
     assertThat(forthApril.getCodeChurnProportions().get(0)).isEqualTo(0.1126, Delta.delta(0.0001));
-  }
-
-  @Test
-  public void revisionRetrieverShouldBeCalledForEachDay() throws CodeChurnCalculationException, ScmConnectionEncodingException, SVNException {
-    ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/logging/trunk/src/main/java/");
-    SvnRevisionsRetriever revisionsRetrieverService = spy(new SvnRevisionsRetriever());
-    SvnCodeChurnCalculatorService codeChurnCalculatorWithSpy = new SvnCodeChurnCalculatorService(revisionsRetrieverService, mock(SvnFileRetrieverService.class));
-    codeChurnCalculatorWithSpy.calculateCodeChurn(connectionSettings, "org/apache/commons/logging/Log.java", new LocalDate(2013, 6, 14), 30);
-    verify(revisionsRetrieverService, times(31)).getRevisions(eq(connectionSettings), anyString(), any(LocalDate.class));
   }
 
   private DailyCodeChurn getCodeChurnByDay(Collection<DailyCodeChurn> codeChurns, LocalDate day) {

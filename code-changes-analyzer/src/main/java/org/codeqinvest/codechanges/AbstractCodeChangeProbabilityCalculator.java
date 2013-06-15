@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.codechanges;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
@@ -34,6 +35,7 @@ import java.util.Collection;
  *
  * @author fmueller
  */
+@Slf4j
 abstract class AbstractCodeChangeProbabilityCalculator implements CodeChangeProbabilityCalculator {
 
   private final CodeChurnCalculatorFactory codeChurnCalculatorFactory;
@@ -54,6 +56,8 @@ abstract class AbstractCodeChangeProbabilityCalculator implements CodeChangeProb
   @Override
   public final double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file, LocalDate startDay)
       throws CodeChurnCalculationException, ScmConnectionEncodingException {
+
+    log.info("Calculate code change probability for file {}", file);
 
     final CodeChurnCalculator codeChurnCalculator = codeChurnCalculatorFactory.create(connectionSettings);
     final double computedChangeProbability = computeChangeProbability(days,
