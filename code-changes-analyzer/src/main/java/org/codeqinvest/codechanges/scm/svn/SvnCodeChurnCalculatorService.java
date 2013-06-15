@@ -87,8 +87,13 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
           }
 
           long codeChurn = retrieveCodeChurn(connectionSettings, revision);
-          long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
-          codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
+          try {
+            long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
+            codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
+          } catch (SVNException e) {
+            // file could not be found for revision - 1 which means it was created and that means a code churn proportion of 1.0
+            codeChurnProportions.add(1.0);
+          }
 
           if (!revision.getOldPath().equalsIgnoreCase(revision.getNewPath())) {
             // file was moved or renamed => change the currentFilePath for next revision retrieving requests
