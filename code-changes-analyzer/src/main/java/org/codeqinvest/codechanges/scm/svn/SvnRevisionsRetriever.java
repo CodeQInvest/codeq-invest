@@ -19,6 +19,7 @@
 package org.codeqinvest.codechanges.scm.svn;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.Data;
@@ -35,8 +36,8 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * This component retrieves all revisions of a certain day in which
@@ -48,7 +49,8 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 class SvnRevisionsRetriever {
 
-  private final ConcurrentMap<CachedRevisionKey, Collection<SvnFileRevision>> cachedRevisions = Maps.newConcurrentMap();
+  private final Map<CachedRevisionKey, Collection<SvnFileRevision>> cachedRevisions = Maps.newHashMap();
+  private final List<LocalDate> scannedDays = Lists.newLinkedList();
 
   /**
    * Retrieves all revision numbers of one day where the specified file was changed.
@@ -56,22 +58,28 @@ class SvnRevisionsRetriever {
    * @throws SVNException if an error occurred during communication with the subversion server
    */
   Collection<SvnFileRevision> getRevisions(final ScmConnectionSettings connectionSettings, final String file, final LocalDate day) throws SVNException {
+    log.debug("Retrieve revisions for {} on day {}", file, day);
     CachedRevisionKey revisionKey = new CachedRevisionKey(connectionSettings.getUrl(), file, day);
     Collection<SvnFileRevision> cached = findCachedRevisions(revisionKey);
     if (cached != null) {
       return cached;
+    } else if (scannedDays.contains(day)) {
+      return new ArrayList<SvnFileRevision>();
     } else {
       Multimap<String, SvnFileRevision> revisions = retrieveRevisionsFromSubversionServer(connectionSettings, day);
       Collection<SvnFileRevision> foundRevisions = new ArrayList<SvnFileRevision>();
       for (Map.Entry<String, SvnFileRevision> fileRevisionEntry : revisions.entries()) {
         CachedRevisionKey key = new CachedRevisionKey(connectionSettings.getUrl(), fileRevisionEntry.getKey(), day);
-        cachedRevisions.putIfAbsent(key, new ArrayList<SvnFileRevision>());
+        if (!cachedRevisions.containsKey(key)) {
+          cachedRevisions.put(key, new ArrayList<SvnFileRevision>());
+        }
         cachedRevisions.get(key).add(fileRevisionEntry.getValue());
 
         if (fileRevisionEntry.getKey().endsWith(file)) {
           foundRevisions.add(fileRevisionEntry.getValue());
         }
       }
+      scannedDays.add(day);
       return foundRevisions;
     }
   }
@@ -82,7 +90,7 @@ class SvnRevisionsRetriever {
           && revisionKey.getUrl().equals(key.getUrl())
           && revisionKey.getDay().equals(key.getDay())) {
 
-        log.info("Return cashed revision for {}", key);
+        log.debug("Return cashed revision for {}", key);
         return cachedRevisions.get(revisionKey);
       }
     }
@@ -95,7 +103,6 @@ class SvnRevisionsRetriever {
     final long startRevision = repository.getDatedRevision(startTime.toDate());
     final long endRevision = repository.getDatedRevision(startTime.withTime(23, 59, 59, 999).toDate());
 
-    log.info("Start retrieving revisions for day {} with connection {}", day, connectionSettings);
     final Multimap<String, SvnFileRevision> revisions = ArrayListMultimap.create();
     repository.log(null, startRevision, endRevision, true, true, new ISVNLogEntryHandler() {
 
@@ -111,7 +118,7 @@ class SvnRevisionsRetriever {
       }
     });
 
-    log.info("Found {} changes for day {} with connection {}", revisions.values().size(), day, connectionSettings);
+    log.debug("Found {} changes for day {} with connection {}", revisions.values().size(), day, connectionSettings);
     return revisions;
   }
 
