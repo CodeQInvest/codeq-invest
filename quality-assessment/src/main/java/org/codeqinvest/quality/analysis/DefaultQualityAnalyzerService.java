@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.CodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is the main service of the quality assessment module. It
@@ -102,12 +104,18 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
     log.info("Starting calculation of change probability for each artefact of project {}", project.getName());
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = codeChangeProbabilityCalculatorFactory.create(project.getCodeChangeSettings());
     LocalDate startDay = LocalDate.now();
+    Set<String> computedArtefacts = Sets.newHashSet();
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
       Artefact artefact = violation.getArtefact();
+      if (computedArtefacts.contains(violation.getArtefact().getSonarIdentifier())) {
+        continue;
+      }
+
       final double changeProbability;
       try {
         changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename(), startDay);
         artefact.setChangeProbability(changeProbability);
+        computedArtefacts.add(artefact.getSonarIdentifier());
       } catch (CodeChurnCalculationException e) {
         logFailedAnalysis(project, e);
         return QualityAnalysis.failed(project,
@@ -132,12 +140,18 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
 
   private QualityAnalysis addSecureChangeProbabilityToEachArtifact(Project project, QualityAnalysis qualityAnalysis) {
     log.info("Starting calculation of secure change probability for each artefact of project {}", project.getName());
+    Set<String> computedArtefacts = Sets.newHashSet();
     for (QualityViolation violation : qualityAnalysis.getViolations()) {
+      if (computedArtefacts.contains(violation.getArtefact().getSonarIdentifier())) {
+        continue;
+      }
+
       try {
         Artefact artefact = violation.getArtefact();
         double secureChangeProbability = secureChangeProbabilityCalculator.calculateSecureChangeProbability(project.getProfile(),
             project.getSonarConnectionSettings(), artefact);
         artefact.setSecureChangeProbability(secureChangeProbability);
+        computedArtefacts.add(artefact.getSonarIdentifier());
       } catch (ResourceNotFoundException e) {
         logFailedAnalysis(project, e);
         return QualityAnalysis.failed(project, qualityAnalysis.getViolations(), "Resource not found during secure change calculation");
