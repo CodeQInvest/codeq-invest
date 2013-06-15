@@ -38,6 +38,8 @@ import java.io.UnsupportedEncodingException;
 @Service
 class SvnFileRetrieverService {
 
+  private static final String DEFAULT_LINE_SEPARATOR = "\n";
+
   /**
    * Loads a given version (revision) of a file from a svn server.
    *
@@ -57,14 +59,15 @@ class SvnFileRetrieverService {
   }
 
   private String getLineSeparator(String eolStyle) {
-    if (eolStyle.equals(SVNProperty.EOL_STYLE_CR)) {
-      return "\r";
-    } else if (eolStyle.equals(SVNProperty.EOL_STYLE_LF)) {
-      return "\n";
-    } else if (eolStyle.equals(SVNProperty.EOL_STYLE_CRLF)) {
-      return "\r\n";
-    } else {
-      return System.getProperty("line.separator", "\n");
+    if (eolStyle != null) {
+      if (eolStyle.equals(SVNProperty.EOL_STYLE_CR)) {
+        return "\r";
+      } else if (eolStyle.equals(SVNProperty.EOL_STYLE_LF)) {
+        return "\n";
+      } else if (eolStyle.equals(SVNProperty.EOL_STYLE_CRLF)) {
+        return "\r\n";
+      }
     }
+    return DEFAULT_LINE_SEPARATOR;
   }
 }
