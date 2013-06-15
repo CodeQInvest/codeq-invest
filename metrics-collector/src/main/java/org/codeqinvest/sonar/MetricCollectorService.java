@@ -44,13 +44,15 @@ public class MetricCollectorService {
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
     Resource resource = sonar.find(ResourceQuery.create(resourceKey).setMetrics(metricIdentifier));
     if (resource == null) {
-      log.info("Could not find measurement for metric {} at resource {}", metricIdentifier, resourceKey);
+      log.debug("Could not find measurement for metric {} at resource {}", metricIdentifier, resourceKey);
       return DEFAULT_VALUE;
     }
     Double metricValue = resource.getMeasureValue(metricIdentifier);
     if (metricValue == null) {
-      throw new ResourceNotFoundException("could not find metric with identifier: " + metricIdentifier);
+      log.error("Metric identifier " + metricIdentifier + " is not supported by the given Sonar server at " + connectionSettings.toString());
+      throw new ResourceNotFoundException("Could not find metric with identifier: " + metricIdentifier);
     }
+    log.debug("{} = {} for {}", metricIdentifier, metricValue, resourceKey);
     return metricValue;
   }
 }
