@@ -67,6 +67,7 @@
     <svnkit.version>1.7.8</svnkit.version>
     <joda.version>2.2</joda.version>
     <usertype.version>3.0.0.GA</usertype.version>
+    <ehcache.version>2.6.6</ehcache.version>
 
     <junit.version>4.11</junit.version>
     <mockito.version>1.9.5</mockito.version>
@@ -195,6 +196,11 @@
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
 
       <!-- templating engine -->
       <dependency>
@@ -278,6 +284,12 @@
         <groupId>org.jadira.usertype</groupId>
         <artifactId>usertype.core</artifactId>
         <version>${usertype.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache-core</artifactId>
+        <version>${ehcache.version}</version>
       </dependency>
 
       <!-- for TESTS -->

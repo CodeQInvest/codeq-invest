@@ -77,7 +77,7 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
       currentNumberOfDay = i;
       final LocalDate day = startDay.minusDays(i);
       try {
-        final Collection<SvnFileRevision> revisions = revisionsRetrieverService.getRevisions(connectionSettings, currentFilePath, day);
+        final Collection<SvnFileRevision> revisions = revisionsRetrieverService.retrieveRevisions(connectionSettings, day).getRevisions(currentFilePath);
         List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
         for (SvnFileRevision revision : revisions) {
 
@@ -124,17 +124,9 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
     return codeChurns.values();
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void reset() {
-    revisionsRetrieverService.evictCache();
-  }
-
   private boolean existRevisionsForFileOnDay(ScmConnectionSettings connectionSettings, String file, LocalDate day) {
     try {
-      return !revisionsRetrieverService.getRevisions(connectionSettings, file, day).isEmpty();
+      return !revisionsRetrieverService.retrieveRevisions(connectionSettings, day).getRevisions(file).isEmpty();
     } catch (SVNException e) {
       return false;
     }

@@ -41,10 +41,4 @@ public interface CodeChurnCalculator {
    */
   Collection<DailyCodeChurn> calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate startDay, int numberOfDays)
       throws CodeChurnCalculationException, ScmConnectionEncodingException;
-
-  /**
-   * Once a code churn calculation for one project has finished,
-   * this method should be called to clean up eventually allocated resources.
-   */
-  void reset();
 }

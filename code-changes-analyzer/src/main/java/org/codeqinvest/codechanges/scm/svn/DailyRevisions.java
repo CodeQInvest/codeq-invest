@@ -18,23 +18,30 @@
  */
 package org.codeqinvest.codechanges.scm.svn;
 
-import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
+import com.google.common.collect.Multimap;
+import lombok.Data;
 import org.joda.time.LocalDate;
-import org.tmatesoft.svn.core.SVNException;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * This component retrieves all revisions of a subversion repository for a certain day.
- *
  * @author fmueller
  */
-interface SvnRevisionsRetriever {
+@Data
+class DailyRevisions {
 
+  private static final Collection<SvnFileRevision> NO_REVISIONS = new ArrayList<SvnFileRevision>();
 
-  /**
-   * Retrieves all revisions of a subversion repository for one specified day.
-   *
-   * @throws org.tmatesoft.svn.core.SVNException
-   *          if an error occurred during communication with the subversion server
-   */
-  DailyRevisions retrieveRevisions(ScmConnectionSettings connectionSettings, LocalDate day) throws SVNException;
+  private final LocalDate day;
+  private final Multimap<String, SvnFileRevision> revisions;
+
+  Collection<SvnFileRevision> getRevisions(String file) {
+    for (String currentFile : revisions.keySet()) {
+      if (currentFile.endsWith(file)) {
+        return revisions.get(currentFile);
+      }
+    }
+    return NO_REVISIONS;
+  }
 }

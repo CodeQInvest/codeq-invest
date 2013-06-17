@@ -59,8 +59,4 @@ class FakeCodeChurnCalculator implements CodeChurnCalculator {
     }
     return codeChurns;
   }
-
-  @Override
-  public void reset() {
-  }
 }
