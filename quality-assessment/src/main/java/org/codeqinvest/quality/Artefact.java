@@ -56,6 +56,9 @@ public class Artefact implements Serializable {
   private double changeProbability;
 
   @Setter
+  private Double manualEstimate;
+
+  @Setter
   @Column(nullable = false)
   private double secureChangeProbability = 1.0;
 
