@@ -20,6 +20,7 @@ package org.codeqinvest.web.project;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
@@ -59,7 +60,7 @@ public class InvestmentOpportunitiesJsonGeneratorTest {
   @Test
   public void emptyAnalysis() throws IOException {
     QualityAnalysis analysis = QualityAnalysis.success(project, Collections.<QualityViolation>emptyList());
-    String expectedJson = "{ \"name\": \"Dummy Project\", \"children\": []}";
+    String expectedJson = "{ \"name\": \"Dummy Project\", \"allChildren\": [], \"children\": []}";
     assertThat(generate(analysis).toString()).isEqualTo(mapper.readTree(expectedJson).toString());
   }
 
@@ -72,15 +73,10 @@ public class InvestmentOpportunitiesJsonGeneratorTest {
 
     when(weightedProfitCalculator.calculateWeightedProfit(violation)).thenReturn(1234.0);
 
-    String expectedJson =
-    "{ \"name\": \"Dummy Project\", \"children\": ["
-      + "{ \"name\": \"org\", \"changeProbability\": 60, \"children\": ["
-        + "{ \"name\": \"project\", \"changeProbability\": 60, \"children\": ["
-          + "{ \"name\": \"MyClass\", \"value\": 1234.0, \"changeProbability\": 60 }"
-        + "]}"
-      + "]}"
-    + "]}";
-    assertThat(generate(analysis).toString()).isEqualTo(mapper.readTree(expectedJson).toString());
+    JsonNode generatedJson = generate(analysis);
+    ArrayNode rootPackagNode = (ArrayNode) generatedJson.get("children");
+    assertThat(rootPackagNode.get(0).get("changeProbability").asInt()).isEqualTo(60);
+    assertThat(rootPackagNode.get(0).get("children").get(0).get("children").get(0).get("value").asDouble()).isEqualTo(1234.0);
   }
 
   @Test
@@ -112,21 +108,9 @@ public class InvestmentOpportunitiesJsonGeneratorTest {
     when(weightedProfitCalculator.calculateWeightedProfit(violation4)).thenReturn(40.0);
     when(weightedProfitCalculator.calculateWeightedProfit(violation5)).thenReturn(50.0);
 
-    String expectedJson =
-    "{ \"name\": \"Dummy Project\", \"children\": ["
-      + "{ \"name\": \"project\", \"changeProbability\": 22, \"children\": ["
-        + "{ \"name\": \"A\", \"value\": 10.0, \"changeProbability\": 10 },"
-        + "{ \"name\": \"B\", \"value\": 20.0, \"changeProbability\": 20 },"
-        + "{ \"name\": \"test\", \"changeProbability\": 35, \"children\": ["
-          + "{ \"name\": \"util\", \"changeProbability\": 35, \"children\": ["
-            + "{ \"name\": \"C\", \"value\": 30.0, \"changeProbability\": 30 },"
-            + "{ \"name\": \"D\", \"value\": 40.0, \"changeProbability\": 40 }"
-          + "]}"
-        + "]}"
-      + "]},"
-      + "{ \"name\": \"E\", \"value\": 50.0, \"changeProbability\": 50 }"
-    + "]}";
-    assertThat(generate(analysis).toString()).isEqualTo(mapper.readTree(expectedJson).toString());
+    JsonNode generatedJson = generate(analysis);
+    ArrayNode rootPackagNode = (ArrayNode) generatedJson.get("children");
+    assertThat(rootPackagNode.get(1).get("changeProbability").asInt()).isEqualTo(22);
   }
 
   private JsonNode generate(QualityAnalysis analysis) throws IOException {

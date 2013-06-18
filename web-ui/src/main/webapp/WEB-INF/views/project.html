@@ -82,7 +82,7 @@
                         <div class="row-fluid">
                             <div class="span7">
                                 <div class="treemap-legend muted">
-                                    <span class="colorScale-legend-left">Color: Change Probability 0%</span>
+                                    <span class="colorScale-legend-left">Color: Manual Estimate / Change Probability 0%</span>
                                     <span id="colorScale"></span>
                                     <span class="colorScale-legend-right">100%</span>
                                 </div>
@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                         </div>
-                        <fieldset th:remove="all">
+                        <fieldset id="manualEstimationsContainer" th:class="'hide'">
                             <table class="table table-condensed">
                                 <thead>
                                     <tr>
@@ -102,7 +102,7 @@
                                         <th>Manual Estimate</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="manualEstimations" th:remove="body">
                                 <tr>
                                     <td>animate</td>
                                     <td>
@@ -418,6 +418,25 @@
             left: 0
         };
 
+        function updateManualEstimatesTable(data) {
+            var estimationRows = '';
+            $.each(data.allChildren, function(index, value) {
+                estimationRows += '<tr>' +
+                        '<td>' + value.name + '</td>' +
+                        '<td><div class="progress"><div class="bar" style="width: ' + value.changeProbability + '%;"></div></div></td>' +
+                        '<td><select><option value="0">none</option>' +
+                        '<option value="10">very low</option>' +
+                        '<option value="25">low</option>' +
+                        '<option value="50">normal</option>' +
+                        '<option value="75">high</option>' +
+                        '<option value="90">very high</option></select></td>' +
+                        '<div class="hide">' + value.longName + '</div>' +
+                        '</tr>';
+            });
+            $('#manualEstimations').empty().append(estimationRows);
+            $('#manualEstimationsContainer').show();
+        }
+
         var investmentOpportunitiesJson = JSON.parse($('#investmentOpportunities').text());
         if (investmentOpportunitiesJson.children.length > 0) {
             $('#treemap').show();
@@ -427,15 +446,20 @@
             var treemapContainer = $('#treemap');
             TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
                 return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
+            }, function(data) {
+                updateManualEstimatesTable(data);
             }, investmentOpportunitiesJson);
 
             ColorScale.createWithDefaultSize('#colorScale', function(d) {
                 return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
             });
+            updateManualEstimatesTable(investmentOpportunitiesJson);
+
         } else {
             $('#treemapNoInvestments').show();
             $('#treemap').hide();
             $('.treemap-legend').hide();
+            $('#manualEstimationsContainer').hide();
         }
 
         /*

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.Artefact;
@@ -35,9 +36,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The geneator produces the necessary json tree for the
@@ -68,8 +72,8 @@ class InvestmentOpportunitiesJsonGenerator {
       addArtefact(violation, rootNode, alreadyAddedArtefacts, nodeLookupTable);
     }
 
+    rootNode.filterProfitableChildren();
     for (PackageNode packageNode : nodeLookupTable.values()) {
-      // TODO can be optimized: only update the top packages
       packageNode.updateChangeProbability();
     }
     return MAPPER.writeValueAsString(rootNode);
@@ -78,9 +82,6 @@ class InvestmentOpportunitiesJsonGenerator {
   private void addArtefact(QualityViolation violation, Node root, Set<String> alreadyAddedArtefacts, Map<String, PackageNode> nodeLookupTable) {
     Artefact artefact = violation.getArtefact();
     double weightedProfit = weightedProfitCalculator.calculateWeightedProfit(violation);
-    if (weightedProfit <= 0.0) {
-      return;
-    }
 
     if (!alreadyAddedArtefacts.contains(artefact.getName())) {
 
@@ -98,7 +99,7 @@ class InvestmentOpportunitiesJsonGenerator {
           }
           return;
         } else {
-          PackageNode packageNode = new PackageNode(getLastPackageName(packageName));
+          PackageNode packageNode = new PackageNode(getLastPackageName(packageName), packageName);
           nodeLookupTable.put(packageName, packageNode);
           if (currentPackageNode != null) {
             packageNode.addChildren(currentPackageNode);
@@ -143,33 +144,69 @@ class InvestmentOpportunitiesJsonGenerator {
   }
 
   @Getter
+  @EqualsAndHashCode
   private static class Node {
 
     private final String name;
-    private final List<Node> children = new ArrayList<Node>();
+    private final SortedSet<Node> allChildren = new TreeSet<Node>(new ByNameComparator());
+    private final SortedSet<Node> children = new TreeSet<Node>(new ByNameComparator());
 
     Node(String name) {
       this.name = name;
     }
 
     void addChildren(Node node) {
-      children.add(node);
+      allChildren.add(node);
+    }
+
+    void filterProfitableChildren() {
+      for (Node child : getAllChildren()) {
+        child.filterProfitableChildren();
+
+        if (child instanceof ArtefactNode) {
+          ArtefactNode artefactNode = (ArtefactNode) child;
+          if (artefactNode.getValue() > 0.0) {
+            children.add(child);
+          }
+        } else if (child instanceof PackageNode) {
+          PackageNode packageNode = (PackageNode) child;
+          if (packageNode.aggregateProfit() > 0.0) {
+            children.add(child);
+          }
+        }
+      }
     }
   }
 
   @Getter
-  @JsonPropertyOrder({"name", "changeProbability", "children"})
+  @EqualsAndHashCode
+  @JsonPropertyOrder({"name", "longName", "changeProbability", "allChildren", "children"})
   private static class PackageNode extends Node {
 
+    private final String longName;
     private long changeProbability;
 
-    PackageNode(String name) {
+    PackageNode(String name, String longName) {
       super(name);
+      this.longName = longName;
     }
 
-    PackageNode(String name, long changeProbability) {
+    PackageNode(String name, String longName, long changeProbability) {
       super(name);
+      this.longName = longName;
       this.changeProbability = changeProbability;
+    }
+
+    double aggregateProfit() {
+      double profit = 0.0;
+      for (Node child : getAllChildren()) {
+        if (child instanceof ArtefactNode) {
+          profit += ((ArtefactNode) child).getValue();
+        } else if (child instanceof PackageNode) {
+          profit += ((PackageNode) child).aggregateProfit();
+        }
+      }
+      return profit;
     }
 
     void updateChangeProbability() {
@@ -186,14 +223,15 @@ class InvestmentOpportunitiesJsonGenerator {
   }
 
   @Getter
-  @JsonPropertyOrder({"name", "value", "changeProbability"})
-  @JsonIgnoreProperties("children")
+  @EqualsAndHashCode
+  @JsonPropertyOrder({"name", "longName", "value", "changeProbability"})
+  @JsonIgnoreProperties({"allChildren", "children"})
   private static class ArtefactNode extends PackageNode {
 
     private final double value;
 
     ArtefactNode(Artefact artefact, double value) {
-      super(artefact.getShortClassName(), Math.round(artefact.getChangeProbability() * 100L));
+      super(artefact.getShortClassName(), artefact.getName(), Math.round(artefact.getChangeProbability() * 100L));
       this.value = value;
     }
 
@@ -205,6 +243,14 @@ class InvestmentOpportunitiesJsonGenerator {
     @Override
     void updateChangeProbability() {
       // do nothing
+    }
+  }
+
+  private static final class ByNameComparator implements Comparator<Node> {
+
+    @Override
+    public int compare(Node node, Node otherNode) {
+      return node.getName().compareToIgnoreCase(otherNode.getName());
     }
   }
 }

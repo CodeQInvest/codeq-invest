@@ -2,7 +2,7 @@ var TreeMap = (function() {
 
     var me = {};
 
-    me.create = function(uiElement, uiElementSelector, margin, colorFunction, data) {
+    me.create = function(uiElement, uiElementSelector, margin, colorFunction, clickHandler, data) {
 
         var width = uiElement.width() - margin.left - margin.right,
             height = (width / 2) - margin.top - margin.bottom,
@@ -82,7 +82,7 @@ var TreeMap = (function() {
         function display(d) {
             grandparent
                 .datum(d.parent)
-                .on("click", transition)
+                .on("click", function(d) { transition(d); clickHandler(d); })
                 .select("text")
                 .text(name(d));
 
@@ -96,7 +96,7 @@ var TreeMap = (function() {
 
             g.filter(function(d) { return d.children; })
                 .classed("treemap-children", true)
-                .on("click", transition);
+                .on("click", function(d) { transition(d); clickHandler(d); });
 
             g.selectAll(".child")
                 .data(function(d) { return d.children || [d]; })
