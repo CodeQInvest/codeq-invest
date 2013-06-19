@@ -30,7 +30,10 @@ import org.springframework.stereotype.Component;
 public class ProfitCalculator {
 
   public double calculateProfit(QualityViolation violation) {
-    double nonRemediationCosts = violation.getNonRemediationCosts() * violation.getArtefact().getChangeProbability();
+    double nonRemediationCosts = violation.getNonRemediationCosts() * (violation.getArtefact().hasManualEstimate()
+        ? violation.getArtefact().getManualEstimate() / 100.0
+        : violation.getArtefact().getChangeProbability());
+
     return violation.getRequirement().isAutomaticallyFixable()
         ? nonRemediationCosts - violation.getRemediationCosts()
         : nonRemediationCosts - violation.getRemediationCosts() * violation.getArtefact().getSecureChangeProbability();

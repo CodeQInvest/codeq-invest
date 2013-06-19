@@ -142,8 +142,8 @@
                                 </tbody>
                             </table>
                             <div class="form-actions">
-                                <a class="btn btn-primary" href="#">Apply manual estimates</a>
-                                <a class="btn btn-danger" style="float: right;" href="#">Delete manual estimates</a>
+                                <a id="applyManualEstimates" class="btn btn-primary" href="#">Apply manual estimates</a>
+                                <a id="deleteManualEstimates" class="btn btn-danger" style="float: right;" href="#">Delete manual estimates</a>
                             </div>
                         </fieldset>
                     </form>
@@ -338,20 +338,64 @@
 <script type="text/javascript" tiles:fragment="javascriptFragments">//<![CDATA[
     (function() {
 
+        var margin = {
+            top: 20,
+            right: 0,
+            bottom: 10,
+            left: 0
+        };
+
+        var treemapContainer = $('#treemap');
+        var investmentOpportunitiesJson = JSON.parse($('#investmentOpportunities').text());
+        createTreeMap(investmentOpportunitiesJson);
+
+        $('#applyManualEstimates').click(function(event) {
+            var estimates = [];
+            $('#manualEstimations tr').each(function(index, element) {
+                var selectedEstimate = $(element).find('select :selected').val();
+                var artefactName = $(element).find('td :first > div').text();
+                if (selectedEstimate === 'none') {
+                    estimates.push({
+                        artefact: artefactName,
+                        estimate: null
+                    });
+                } else {
+                    estimates.push({
+                        artefact: artefactName,
+                        estimate: selectedEstimate
+                    });
+                }
+            });
+
+            $.ajax({
+                type: 'put',
+                url: '/projects/' + $('#projectId').text() + '/estimates',
+                contentType: 'application/json',
+                dataType: 'json',
+                processData: false,
+                data: JSON.stringify(estimates)
+            }).done(function (data) {
+                var selectedNode = findNodeWithName(data, getBasePackageName());
+                treemapContainer.empty();
+                createTreeMap(data, selectedNode);
+            }).fail(function() {
+                // TODO implement error handling
+            });
+
+            event.preventDefault();
+        });
+
+        $('#deleteManualEstimates').click(function(event) {
+            // TODO implement
+            event.preventDefault();
+        });
+
         // handle investment plan request
         $('#calculateInvestment').click(function(event) {
 
             // parse base package name out of treemap headline
-            var packageParts = $('.treemap-grandparent text').text().split(' / ');
-            var basePackage = '';
-            for (var i = 1; i < packageParts.length; i++) {
-                if (i !== 1) {
-                    basePackage += '.';
-                }
-                basePackage += packageParts[i];
-            }
             var investmentPlanRequest = {};
-            investmentPlanRequest.basePackage = basePackage;
+            investmentPlanRequest.basePackage = getBasePackageName();
             investmentPlanRequest.investment = $('#amount').val();
 
             $.ajax({
@@ -362,42 +406,132 @@
                 processData: false,
                 data: JSON.stringify(investmentPlanRequest)
             }).done(function (data) {
-                if (data.profitInMinutes === 0) {
-                    $('#investmentPlanErrorLabel').hide();
-                    $('#investmentPlanInfo').hide();
-                    $('#investmentPlanTable').hide();
-                    $('#investmentPlanWithoutProfitLabel').show();
-                    $('#investmentPlanContainer').show();
-                } else {
-                    $('#investmentPlanInfo').text(timeToString(data.profitInMinutes) + ' Profit with ROI of ' + data.roi + '%');
+                        if (data.profitInMinutes === 0) {
+                            $('#investmentPlanErrorLabel').hide();
+                            $('#investmentPlanInfo').hide();
+                            $('#investmentPlanTable').hide();
+                            $('#investmentPlanWithoutProfitLabel').show();
+                            $('#investmentPlanContainer').show();
+                        } else {
+                            $('#investmentPlanInfo').text(timeToString(data.profitInMinutes) + ' Profit with ROI of ' + data.roi + '%');
 
-                    var investmentPlanTableRows = '';
-                    $.each(data.entries, function(index, value) {
-                        investmentPlanTableRows += '<tr>' +
-                                '<td>' + value.requirementCode + ' ' + value.violatedConstraint +  '</td>' +
-                                '<td title="' + value.artefactLongName + '">' + value.artefactShortName + '</td>' +
-                                '<td>' + timeToString(value.remediationCostsInMinutes) + '</td>' +
-                                '<td>' + timeToString(value.profitInMinutes) + '</td>' +
-                                '</tr>';
+                            var investmentPlanTableRows = '';
+                            $.each(data.entries, function(index, value) {
+                                investmentPlanTableRows += '<tr>' +
+                                        '<td>' + value.requirementCode + ' ' + value.violatedConstraint +  '</td>' +
+                                        '<td title="' + value.artefactLongName + '">' + value.artefactShortName + '</td>' +
+                                        '<td>' + timeToString(value.remediationCostsInMinutes) + '</td>' +
+                                        '<td>' + timeToString(value.profitInMinutes) + '</td>' +
+                                        '</tr>';
+                            });
+                            $('#investmentPlan').empty().append(investmentPlanTableRows);
+
+                            $('#investmentPlanWithoutProfitLabel').hide();
+                            $('#investmentPlanErrorLabel').hide();
+                            $('#investmentPlanInfo').show();
+                            $('#investmentPlanTable').show();
+                            $('#investmentPlanContainer').show();
+                        }
+                    }).fail(function() {
+                        $('#investmentPlanInfo').hide();
+                        $('#investmentPlanTable').hide();
+                        $('#investmentPlanWithoutProfitLabel').hide();
+                        $('#investmentPlanErrorLabel').show();
+                        $('#investmentPlanContainer').show();
                     });
-                    $('#investmentPlan').empty().append(investmentPlanTableRows);
-
-                    $('#investmentPlanWithoutProfitLabel').hide();
-                    $('#investmentPlanErrorLabel').hide();
-                    $('#investmentPlanInfo').show();
-                    $('#investmentPlanTable').show();
-                    $('#investmentPlanContainer').show();
-                }
-            }).fail(function() {
-                $('#investmentPlanInfo').hide();
-                $('#investmentPlanTable').hide();
-                $('#investmentPlanWithoutProfitLabel').hide();
-                $('#investmentPlanErrorLabel').show();
-                $('#investmentPlanContainer').show();
-            })
 
             event.preventDefault();
         });
+
+        function createTreeMap(data, selectedNode) {
+            if (data.children.length > 0) {
+                $('#treemap').show();
+                $('.treemap-legend').show();
+                $('#treemapNoInvestments').hide();
+
+                var treemap = TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
+                    return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
+                }, function(data) {
+                    updateManualEstimatesTable(data);
+                }, data, selectedNode);
+
+                $('#colorScale').empty();
+                ColorScale.createWithDefaultSize('#colorScale', function(d) {
+                    return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
+                });
+            } else {
+                $('#treemapNoInvestments').show();
+                $('#treemap').hide();
+                $('.treemap-legend').hide();
+                $('#manualEstimationsContainer').hide();
+            }
+            updateManualEstimatesTable(selectedNode ? selectedNode : data);
+        }
+
+        function updateManualEstimatesTable(data) {
+            if (data) {
+                var estimationRows = '';
+                $.each(data.allChildren, function(index, value) {
+                    estimationRows += '<tr>' +
+                            '<td>' + value.name + '<div class="hide">' + value.longName + '</div></td>' +
+                            '<td><div class="progress"><div class="bar" style="width: ' + value.automaticChangeProbability + '%;"></div></div></td>' +
+                            '<td>' + getSelectForManualEstimate(value.manualEstimate) +'</td>' +
+                            '</tr>';
+                });
+                $('#manualEstimations').empty().append(estimationRows);
+                $('#manualEstimationsContainer').show();
+            }
+
+            function getSelectForManualEstimate(manualEstimate) {
+                return '<select><option value="none"' + selectedIf(null, manualEstimate) + '>none</option>' +
+                        '<option value="0"' + selectedIf(0, manualEstimate) + '>won\'t be changed</option>' +
+                        '<option value="10"' + selectedIf(10, manualEstimate) + '>very low</option>' +
+                        '<option value="25"' + selectedIf(25, manualEstimate) + '>low</option>' +
+                        '<option value="50"' + selectedIf(50, manualEstimate) + '>normal</option>' +
+                        '<option value="75"' + selectedIf(75, manualEstimate) + '>high</option>' +
+                        '<option value="90"' + selectedIf(90, manualEstimate) + '>very high</option>' +
+                        '<option value="100"' + selectedIf(100, manualEstimate) + '>definitely</option></select>';
+            }
+
+            function selectedIf(expected, actual) {
+                return expected === actual ? 'selected="selected"' : '';
+            }
+        }
+
+        function getBasePackageName() {
+            var packageParts = $('.treemap-grandparent text').text().split(' / ');
+            var basePackage = '';
+            for (var i = 1; i < packageParts.length; i++) {
+                if (i !== 1) {
+                    basePackage += '.';
+                }
+                basePackage += packageParts[i];
+            }
+            return basePackage;
+        }
+
+        function findNodeWithName(data, name) {
+            if (data.longName === name) {
+                return data;
+            }
+
+            if (data.children) {
+                var resultOfChildren = [];
+                for (var i = 0; i < data.children.length; i++) {
+                    if (data.children[i].longName === name) {
+                        return data.children[i];
+                    }
+                    resultOfChildren.push(findNodeWithName(data.children[i], name));
+                }
+
+                for (var i = 0; i < resultOfChildren.length; i++) {
+                    if (resultOfChildren[i] !== null) {
+                        return resultOfChildren[i];
+                    }
+                }
+            }
+            return null;
+        }
 
         function timeToString(time) {
             var hours = Math.floor(time / 60);
@@ -409,57 +543,6 @@
             } else {
                 return minutes + 'm';
             }
-        }
-
-        var margin = {
-            top: 20,
-            right: 0,
-            bottom: 10,
-            left: 0
-        };
-
-        function updateManualEstimatesTable(data) {
-            var estimationRows = '';
-            $.each(data.allChildren, function(index, value) {
-                estimationRows += '<tr>' +
-                        '<td>' + value.name + '</td>' +
-                        '<td><div class="progress"><div class="bar" style="width: ' + value.changeProbability + '%;"></div></div></td>' +
-                        '<td><select><option value="0">none</option>' +
-                        '<option value="10">very low</option>' +
-                        '<option value="25">low</option>' +
-                        '<option value="50">normal</option>' +
-                        '<option value="75">high</option>' +
-                        '<option value="90">very high</option></select></td>' +
-                        '<div class="hide">' + value.longName + '</div>' +
-                        '</tr>';
-            });
-            $('#manualEstimations').empty().append(estimationRows);
-            $('#manualEstimationsContainer').show();
-        }
-
-        var investmentOpportunitiesJson = JSON.parse($('#investmentOpportunities').text());
-        if (investmentOpportunitiesJson.children.length > 0) {
-            $('#treemap').show();
-            $('.treemap-legend').show();
-            $('#treemapNoInvestments').hide();
-
-            var treemapContainer = $('#treemap');
-            TreeMap.create(treemapContainer, '#treemap', margin, function (data) {
-                return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
-            }, function(data) {
-                updateManualEstimatesTable(data);
-            }, investmentOpportunitiesJson);
-
-            ColorScale.createWithDefaultSize('#colorScale', function(d) {
-                return tinycolor('hsv(' + (120 - (d * 1.2)) + ', 100%, 100%)').toHexString();
-            });
-            updateManualEstimatesTable(investmentOpportunitiesJson);
-
-        } else {
-            $('#treemapNoInvestments').show();
-            $('#treemap').hide();
-            $('.treemap-legend').hide();
-            $('#manualEstimationsContainer').hide();
         }
 
         /*

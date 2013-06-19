@@ -56,7 +56,7 @@ public class Artefact implements Serializable {
   private double changeProbability;
 
   @Setter
-  private Double manualEstimate;
+  private Integer manualEstimate;
 
   @Setter
   @Column(nullable = false)
@@ -87,5 +87,9 @@ public class Artefact implements Serializable {
       className = packageName;
     }
     return className;
+  }
+
+  public boolean hasManualEstimate() {
+    return manualEstimate != null;
   }
 }

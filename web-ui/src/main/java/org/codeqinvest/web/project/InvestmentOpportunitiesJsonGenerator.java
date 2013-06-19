@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityViolation;
@@ -44,14 +45,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * The geneator produces the necessary json tree for the
- * investment oppotunities that are displayed on the project template
+ * The generator produces the necessary json tree for the
+ * investment opportunities that are displayed on the project template
  * in a tree map.
  *
  * @author fmueller
  */
 @Component
-class InvestmentOpportunitiesJsonGenerator {
+public class InvestmentOpportunitiesJsonGenerator {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
   private static final Splitter PACKAGE_SPLITTER = Splitter.on('.');
@@ -74,7 +75,10 @@ class InvestmentOpportunitiesJsonGenerator {
 
     rootNode.filterProfitableChildren();
     for (PackageNode packageNode : nodeLookupTable.values()) {
-      packageNode.updateChangeProbability();
+      packageNode.updateChangeProbabilityOfProfitableChildren();
+    }
+    for (PackageNode packageNode : nodeLookupTable.values()) {
+      packageNode.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
     }
     return MAPPER.writeValueAsString(rootNode);
   }
@@ -179,22 +183,24 @@ class InvestmentOpportunitiesJsonGenerator {
   }
 
   @Getter
-  @EqualsAndHashCode
-  @JsonPropertyOrder({"name", "longName", "changeProbability", "allChildren", "children"})
+  @EqualsAndHashCode(callSuper = true)
+  @JsonPropertyOrder({"name", "longName", "changeProbability", "automaticChangeProbability", "manualEstimate", "allChildren", "children"})
   private static class PackageNode extends Node {
 
     private final String longName;
-    private long changeProbability;
+
+    @Setter
+    private int changeProbability;
+
+    @Setter
+    private int automaticChangeProbability;
+
+    @Setter
+    private Integer manualEstimate;
 
     PackageNode(String name, String longName) {
       super(name);
       this.longName = longName;
-    }
-
-    PackageNode(String name, String longName, long changeProbability) {
-      super(name);
-      this.longName = longName;
-      this.changeProbability = changeProbability;
     }
 
     double aggregateProfit() {
@@ -209,30 +215,70 @@ class InvestmentOpportunitiesJsonGenerator {
       return profit;
     }
 
-    void updateChangeProbability() {
-      double sumOfChangeProbabilities = 0.0;
+    void updateChangeProbabilityOfProfitableChildren() {
+      float sumOfChangeProbabilities = 0.0f;
       for (Node node : getChildren()) {
+
         if (node instanceof PackageNode) {
           PackageNode packageNode = ((PackageNode) node);
-          packageNode.updateChangeProbability();
+          packageNode.updateChangeProbabilityOfProfitableChildren();
+
           sumOfChangeProbabilities += packageNode.getChangeProbability();
         }
       }
-      changeProbability = Math.round(sumOfChangeProbabilities / (double) getChildren().size());
+      changeProbability = Math.round(sumOfChangeProbabilities / (float) getChildren().size());
+    }
+
+    void updateAutomaticChangeProbabilityAndEstimateOfAllChildren() {
+      float sumOfAutomaticChangeProbabilities = 0.0f;
+
+      Integer manualEstimateOfOneChildren = null;
+      boolean hasEachChildrenSameManualEstimate = true;
+
+      for (Node node : getAllChildren()) {
+
+        if (node instanceof PackageNode) {
+          PackageNode packageNode = ((PackageNode) node);
+          packageNode.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
+
+          if (manualEstimateOfOneChildren == null) {
+            manualEstimateOfOneChildren = packageNode.getManualEstimate();
+          } else if (!manualEstimateOfOneChildren.equals(packageNode.getManualEstimate())) {
+            hasEachChildrenSameManualEstimate = false;
+          }
+
+          sumOfAutomaticChangeProbabilities += packageNode.getAutomaticChangeProbability();
+        }
+      }
+      automaticChangeProbability = Math.round(sumOfAutomaticChangeProbabilities / (float) getAllChildren().size());
+
+      if (hasEachChildrenSameManualEstimate && manualEstimateOfOneChildren != null) {
+        manualEstimate = manualEstimateOfOneChildren;
+      }
     }
   }
 
   @Getter
-  @EqualsAndHashCode
-  @JsonPropertyOrder({"name", "longName", "value", "changeProbability"})
+  @EqualsAndHashCode(callSuper = true)
+  @JsonPropertyOrder({"name", "longName", "value", "changeProbability", "automaticChangeProbability", "manualEstimate"})
   @JsonIgnoreProperties({"allChildren", "children"})
   private static class ArtefactNode extends PackageNode {
 
     private final double value;
 
     ArtefactNode(Artefact artefact, double value) {
-      super(artefact.getShortClassName(), artefact.getName(), Math.round(artefact.getChangeProbability() * 100L));
+      super(artefact.getShortClassName(), artefact.getName());
       this.value = value;
+
+      final int automaticChangeProbability = (int) Math.round(artefact.getChangeProbability() * 100);
+      setManualEstimate(artefact.getManualEstimate());
+      setAutomaticChangeProbability(automaticChangeProbability);
+
+      if (artefact.hasManualEstimate()) {
+        setChangeProbability(artefact.getManualEstimate());
+      } else {
+        setChangeProbability(automaticChangeProbability);
+      }
     }
 
     @Override
@@ -241,7 +287,12 @@ class InvestmentOpportunitiesJsonGenerator {
     }
 
     @Override
-    void updateChangeProbability() {
+    void updateChangeProbabilityOfProfitableChildren() {
+      // do nothing
+    }
+
+    @Override
+    void updateAutomaticChangeProbabilityAndEstimateOfAllChildren() {
       // do nothing
     }
   }

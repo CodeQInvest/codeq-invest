@@ -18,7 +18,6 @@
  */
 package org.codeqinvest.investment.profit;
 
-import org.codeqinvest.investment.profit.ProfitCalculator;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.quality.QualityViolation;
@@ -57,5 +56,13 @@ public class ProfitCalculatorTest {
     when(requirement.isAutomaticallyFixable()).thenReturn(false);
     when(artefact.getSecureChangeProbability()).thenReturn(1.1);
     assertThat(calculator.calculateProfit(violation)).isEqualTo(1.0);
+  }
+
+  @Test
+  public void profitForViolationWhereArtefactHasManualEstimate() {
+    when(requirement.isAutomaticallyFixable()).thenReturn(true);
+    when(artefact.getManualEstimate()).thenReturn(80);
+    when(artefact.hasManualEstimate()).thenReturn(true);
+    assertThat(calculator.calculateProfit(violation)).isEqualTo(6.0);
   }
 }

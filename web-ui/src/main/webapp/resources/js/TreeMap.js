@@ -2,7 +2,7 @@ var TreeMap = (function() {
 
     var me = {};
 
-    me.create = function(uiElement, uiElementSelector, margin, colorFunction, clickHandler, data) {
+    me.create = function(uiElement, uiElementSelector, margin, colorFunction, clickHandler, data, selectedNode) {
 
         var width = uiElement.width() - margin.left - margin.right,
             height = (width / 2) - margin.top - margin.bottom,
@@ -50,7 +50,14 @@ var TreeMap = (function() {
         initialize(data);
         accumulate(data);
         layout(data);
-        display(data);
+
+        if (selectedNode) {
+            x.domain([selectedNode.x, selectedNode.x + selectedNode.dx]);
+            y.domain([selectedNode.y, selectedNode.y + selectedNode.dy]);
+            display(selectedNode);
+        } else {
+            display(data);
+        }
 
         function initialize(root) {
             root.x = root.y = 0;
@@ -82,7 +89,7 @@ var TreeMap = (function() {
         function display(d) {
             grandparent
                 .datum(d.parent)
-                .on("click", function(d) { transition(d); clickHandler(d); })
+                .on("click", function(d) { transition(d, clickHandler); })
                 .select("text")
                 .text(name(d));
 
@@ -96,7 +103,7 @@ var TreeMap = (function() {
 
             g.filter(function(d) { return d.children; })
                 .classed("treemap-children", true)
-                .on("click", function(d) { transition(d); clickHandler(d); });
+                .on("click", function(d) { transition(d, clickHandler); });
 
             g.selectAll(".child")
                 .data(function(d) { return d.children || [d]; })
@@ -117,7 +124,7 @@ var TreeMap = (function() {
                 .text(function(d) { return d.name; })
                 .call(text);
 
-            function transition(d) {
+            function transition(d, clickHandler) {
                 if (transitioning || !d) return;
                 transitioning = true;
 
@@ -149,6 +156,8 @@ var TreeMap = (function() {
                     svg.style("shape-rendering", "crispEdges");
                     transitioning = false;
                 });
+
+                clickHandler(d);
             }
 
             return g;

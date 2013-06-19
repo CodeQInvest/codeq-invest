@@ -18,8 +18,6 @@
  */
 package org.codeqinvest.investment.profit;
 
-import org.codeqinvest.investment.profit.ProfitCalculator;
-import org.codeqinvest.investment.profit.WeightedProfitCalculator;
 import org.codeqinvest.quality.QualityViolation;
 import org.fest.assertions.Delta;
 import org.junit.Test;
