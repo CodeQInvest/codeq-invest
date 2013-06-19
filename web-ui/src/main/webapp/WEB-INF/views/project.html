@@ -366,7 +366,24 @@
                     });
                 }
             });
+            sendManualEstimatesAndUpdateView(estimates);
+            event.preventDefault();
+        });
 
+        $('#deleteManualEstimates').click(function(event) {
+            var estimates = [];
+            $('#manualEstimations tr').each(function(index, element) {
+                var artefactName = $(element).find('td :first > div').text();
+                estimates.push({
+                    artefact: artefactName,
+                    estimate: null
+                });
+            });
+            sendManualEstimatesAndUpdateView(estimates);
+            event.preventDefault();
+        });
+
+        function sendManualEstimatesAndUpdateView(estimates) {
             $.ajax({
                 type: 'put',
                 url: '/projects/' + $('#projectId').text() + '/estimates',
@@ -381,14 +398,7 @@
             }).fail(function() {
                 // TODO implement error handling
             });
-
-            event.preventDefault();
-        });
-
-        $('#deleteManualEstimates').click(function(event) {
-            // TODO implement
-            event.preventDefault();
-        });
+        }
 
         // handle investment plan request
         $('#calculateInvestment').click(function(event) {
