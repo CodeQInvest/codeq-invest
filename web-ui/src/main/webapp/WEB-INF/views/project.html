@@ -74,7 +74,7 @@
             <div class="row-fluid">
                 <div class="span6 with-border-right">
                     <form>
-                        <legend class="no-border">Investment Opportunities</legend>
+                        <legend class="no-border" th:text="#{investment.opportunities}">Investment Opportunities</legend>
                         <div class="row-fluid">
                             <div id="treemap" class="span12"></div>
                             <div id="treemapNoInvestments" class="alert alert-info" th:text="#{treemap.no.invest}">There are no investment opportunities with the current change probabilities. You can change this by giving CodeQ Invest some hints with manual estimates.</div>
@@ -82,13 +82,13 @@
                         <div class="row-fluid">
                             <div class="span7">
                                 <div class="treemap-legend muted">
-                                    <span class="colorScale-legend-left">Color: Manual Estimate / Change Probability 0%</span>
+                                    <span class="colorScale-legend-left" th:text="#{treemap.legend.color}">Color: Manual Estimate / Change Probability 0%</span>
                                     <span id="colorScale"></span>
                                     <span class="colorScale-legend-right">100%</span>
                                 </div>
                             </div>
                             <div class="span5">
-                                <div class="text-right treemap-legend muted">
+                                <div class="text-right treemap-legend muted" th:text="#{treemap.legend.size}">
                                     Size: Investment Potential
                                 </div>
                             </div>
@@ -107,9 +107,9 @@
                             <table class="table table-condensed">
                                 <thead>
                                     <tr>
-                                        <th>Artefact</th>
-                                        <th>Change Probability</th>
-                                        <th>Manual Estimate</th>
+                                        <th th:text="#{table.header.artefact}">Artefact</th>
+                                        <th th:text="#{table.header.changeprobability}">Change Probability</th>
+                                        <th th:text="#{table.header.estimate}">Manual Estimate</th>
                                     </tr>
                                 </thead>
                                 <tbody id="manualEstimations" th:remove="body">
@@ -152,8 +152,8 @@
                                 </tbody>
                             </table>
                             <div class="form-actions">
-                                <a id="applyManualEstimates" class="btn btn-primary" href="#">Apply manual estimates</a>
-                                <a id="deleteManualEstimates" class="btn btn-danger" style="float: right;" href="#">Delete manual estimates</a>
+                                <a id="applyManualEstimates" class="btn btn-primary" href="#" th:text="#{form.button.applyestimates}">Apply manual estimates</a>
+                                <a id="deleteManualEstimates" class="btn btn-danger pull-right" href="#" th:text="#{form.button.deleteestimates}">Delete manual estimates</a>
                             </div>
                         </fieldset>
                     </form>
@@ -162,9 +162,9 @@
                     <div class="row-fluid">
                         <div class="span12">
                         <form class="form-inline">
-                            <legend class="no-border">Investment</legend>
+                            <legend class="no-border" th:text="#{investment}">Investment</legend>
                             <fieldset>
-                                <label for="amount">Amount:</label>
+                                <label for="amount" th:text="#{form.label.amount}">Amount:</label>
                                 <input type="text" id="amount" placeholder="7h 30m"/>
                                 <input type="submit" id="calculateInvestment" class="btn btn-primary" value="Calculate" th:value="#{form.button.calculate.invest}"/>
                             </fieldset>
@@ -396,7 +396,6 @@
         // handle investment plan request
         $('#calculateInvestment').click(function(event) {
 
-            // parse base package name out of treemap headline
             var investmentPlanRequest = {};
             investmentPlanRequest.basePackage = getBasePackageName();
             investmentPlanRequest.investment = $('#amount').val();
