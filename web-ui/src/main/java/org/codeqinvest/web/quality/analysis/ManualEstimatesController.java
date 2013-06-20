@@ -20,6 +20,7 @@ package org.codeqinvest.web.quality.analysis;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
@@ -38,9 +39,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,8 +73,11 @@ class ManualEstimatesController {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
 
+    long updatedArtefacts = 0L;
     for (ManualEstimate manualEstimate : manualEstimates) {
       for (Artefact artefact : findArtefacts(lastAnalysis, manualEstimate.getArtefact())) {
+        updatedArtefacts++;
+        log.debug("Update {} with manual estimate of {}", artefact.getName(), manualEstimate.getEstimate());
         if (manualEstimate.getEstimate() != null) {
           artefact.setManualEstimate(Integer.parseInt(manualEstimate.getEstimate()));
         } else {
@@ -85,18 +87,27 @@ class ManualEstimatesController {
     }
 
     qualityAnalysisRepository.save(lastAnalysis);
-    log.info("Updated {} artefacts with manual estimates for project {}", manualEstimates.size(), project.getName());
+    log.info("Updated {} artefacts with manual estimates for project {}", updatedArtefacts, project.getName());
     return MAPPER.readTree(investmentOpportunitiesJsonGenerator.generate(lastAnalysis));
   }
 
   private Collection<Artefact> findArtefacts(QualityAnalysis analysis, String artefactName) {
-    List<Artefact> artefacts = new ArrayList<Artefact>();
+    Set<Artefact> artefacts = Sets.newHashSet();
     for (QualityViolation violation : analysis.getViolations()) {
       String currentArtefactName = violation.getArtefact().getName();
-      if (currentArtefactName.equals(artefactName) || currentArtefactName.startsWith(artefactName)) {
+      if (currentArtefactName.equals(artefactName) || isPartOfPackageName(artefactName, currentArtefactName)) {
         artefacts.add(violation.getArtefact());
       }
     }
+    log.debug("Found {} artefacts for {}: {}", artefacts.size(), artefactName, artefacts);
     return artefacts;
+  }
+
+  private boolean isPartOfPackageName(String artefactName, String currentArtefactName) {
+    if (currentArtefactName.startsWith(artefactName)) {
+      String packagePart = currentArtefactName.substring(artefactName.length());
+      return packagePart.contains(".");
+    }
+    return false;
   }
 }
