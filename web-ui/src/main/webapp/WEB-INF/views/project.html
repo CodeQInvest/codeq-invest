@@ -93,6 +93,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div id="manualEstimatesUpdateSuccess" class="alert alert-success text-center" th:class="'alert alert-success text-center hide'" th:text="#{manual.estimates.success}">
+                                    Updated manual estimates.
+                                </div>
+                                <div id="manualEstimatesUpdateError" class="alert alert-error text-center" th:class="'alert alert-error text-center hide'" th:text="#{manual.estimates.error}">
+                                    Could not update manual estimates!
+                                </div>
+                            </div>
+                        </div>
                         <fieldset id="manualEstimationsContainer" th:class="'hide'">
                             <table class="table table-condensed">
                                 <thead>
@@ -383,23 +393,6 @@
             event.preventDefault();
         });
 
-        function sendManualEstimatesAndUpdateView(estimates) {
-            $.ajax({
-                type: 'put',
-                url: '/projects/' + $('#projectId').text() + '/estimates',
-                contentType: 'application/json',
-                dataType: 'json',
-                processData: false,
-                data: JSON.stringify(estimates)
-            }).done(function (data) {
-                var selectedNode = findNodeWithName(data, getBasePackageName());
-                treemapContainer.empty();
-                createTreeMap(data, selectedNode);
-            }).fail(function() {
-                // TODO implement error handling
-            });
-        }
-
         // handle investment plan request
         $('#calculateInvestment').click(function(event) {
 
@@ -416,39 +409,39 @@
                 processData: false,
                 data: JSON.stringify(investmentPlanRequest)
             }).done(function (data) {
-                        if (data.profitInMinutes === 0) {
-                            $('#investmentPlanErrorLabel').hide();
-                            $('#investmentPlanInfo').hide();
-                            $('#investmentPlanTable').hide();
-                            $('#investmentPlanWithoutProfitLabel').show();
-                            $('#investmentPlanContainer').show();
-                        } else {
-                            $('#investmentPlanInfo').text(timeToString(data.profitInMinutes) + ' Profit with ROI of ' + data.roi + '%');
+                if (data.profitInMinutes === 0) {
+                    $('#investmentPlanErrorLabel').hide();
+                    $('#investmentPlanInfo').hide();
+                    $('#investmentPlanTable').hide();
+                    $('#investmentPlanWithoutProfitLabel').show();
+                    $('#investmentPlanContainer').show();
+                } else {
+                    $('#investmentPlanInfo').text(timeToString(data.profitInMinutes) + ' Profit with ROI of ' + data.roi + '%');
 
-                            var investmentPlanTableRows = '';
-                            $.each(data.entries, function(index, value) {
-                                investmentPlanTableRows += '<tr>' +
-                                        '<td>' + value.requirementCode + ' ' + value.violatedConstraint +  '</td>' +
-                                        '<td title="' + value.artefactLongName + '">' + value.artefactShortName + '</td>' +
-                                        '<td>' + timeToString(value.remediationCostsInMinutes) + '</td>' +
-                                        '<td>' + timeToString(value.profitInMinutes) + '</td>' +
-                                        '</tr>';
-                            });
-                            $('#investmentPlan').empty().append(investmentPlanTableRows);
-
-                            $('#investmentPlanWithoutProfitLabel').hide();
-                            $('#investmentPlanErrorLabel').hide();
-                            $('#investmentPlanInfo').show();
-                            $('#investmentPlanTable').show();
-                            $('#investmentPlanContainer').show();
-                        }
-                    }).fail(function() {
-                        $('#investmentPlanInfo').hide();
-                        $('#investmentPlanTable').hide();
-                        $('#investmentPlanWithoutProfitLabel').hide();
-                        $('#investmentPlanErrorLabel').show();
-                        $('#investmentPlanContainer').show();
+                    var investmentPlanTableRows = '';
+                    $.each(data.entries, function(index, value) {
+                        investmentPlanTableRows += '<tr>' +
+                                '<td>' + value.requirementCode + ' ' + value.violatedConstraint +  '</td>' +
+                                '<td title="' + value.artefactLongName + '">' + value.artefactShortName + '</td>' +
+                                '<td>' + timeToString(value.remediationCostsInMinutes) + '</td>' +
+                                '<td>' + timeToString(value.profitInMinutes) + '</td>' +
+                                '</tr>';
                     });
+                    $('#investmentPlan').empty().append(investmentPlanTableRows);
+
+                    $('#investmentPlanWithoutProfitLabel').hide();
+                    $('#investmentPlanErrorLabel').hide();
+                    $('#investmentPlanInfo').show();
+                    $('#investmentPlanTable').show();
+                    $('#investmentPlanContainer').show();
+                }
+            }).fail(function() {
+                $('#investmentPlanInfo').hide();
+                $('#investmentPlanTable').hide();
+                $('#investmentPlanWithoutProfitLabel').hide();
+                $('#investmentPlanErrorLabel').show();
+                $('#investmentPlanContainer').show();
+            });
 
             event.preventDefault();
         });
@@ -506,6 +499,26 @@
             function selectedIf(expected, actual) {
                 return expected === actual ? 'selected="selected"' : '';
             }
+        }
+
+        function sendManualEstimatesAndUpdateView(estimates) {
+            $.ajax({
+                type: 'put',
+                url: '/projects/' + $('#projectId').text() + '/estimates',
+                contentType: 'application/json',
+                dataType: 'json',
+                processData: false,
+                data: JSON.stringify(estimates)
+            }).done(function (data) {
+                var selectedNode = findNodeWithName(data, getBasePackageName());
+                treemapContainer.empty();
+                createTreeMap(data, selectedNode);
+                $('#manualEstimatesUpdateSuccess').show().fadeOut(2500);
+                $('#manualEstimatesUpdateError').hide();
+            }).fail(function() {
+                $('#manualEstimatesUpdateError').show().fadeOut(2500);;
+                $('#manualEstimatesUpdateSuccess').hide();
+            });
         }
 
         function getBasePackageName() {
