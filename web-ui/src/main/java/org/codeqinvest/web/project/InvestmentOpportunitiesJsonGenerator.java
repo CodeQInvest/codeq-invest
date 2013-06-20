@@ -233,6 +233,7 @@ public class InvestmentOpportunitiesJsonGenerator {
       float sumOfAutomaticChangeProbabilities = 0.0f;
 
       Integer manualEstimateOfOneChildren = null;
+      boolean isFirstEstimate = true;
       boolean hasEachChildrenSameManualEstimate = true;
 
       for (Node node : getAllChildren()) {
@@ -242,11 +243,16 @@ public class InvestmentOpportunitiesJsonGenerator {
           packageNode.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
 
           if (manualEstimateOfOneChildren == null) {
-            manualEstimateOfOneChildren = packageNode.getManualEstimate();
-          } else if (!manualEstimateOfOneChildren.equals(packageNode.getManualEstimate())) {
+            if (isFirstEstimate) {
+              manualEstimateOfOneChildren = packageNode.getManualEstimate();
+            } else if (packageNode.getManualEstimate() != null) {
+              hasEachChildrenSameManualEstimate = false;
+            }
+          } else if (!manualEstimateOfOneChildren.equals(packageNode.getManualEstimate()) || packageNode.getManualEstimate() == null) {
             hasEachChildrenSameManualEstimate = false;
           }
 
+          isFirstEstimate = false;
           sumOfAutomaticChangeProbabilities += packageNode.getAutomaticChangeProbability();
         }
       }
