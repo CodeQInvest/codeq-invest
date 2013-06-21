@@ -34,7 +34,7 @@ interface ManualEstimatesUpdater {
    * Updates all artefacts of the analysis's violations with the given set of
    * manual estimates.
    *
-   * @return the updated and persisted analysis instance
+   * @return the updated analysis instance
    */
   QualityAnalysis updateManualEstimates(QualityAnalysis analysis, Set<ManualEstimate> manualEstimates);
 }
