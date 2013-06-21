@@ -27,6 +27,13 @@ import org.springframework.web.servlet.LocaleResolver;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * This helper class is used to convert the requirement code
+ * in {@link QualityInvestmentPlanEntry} instances to a localized
+ * full text representation.
+ *
+ * @author fmueller
+ */
 @Component
 class RequirementCodeConverter {
 
@@ -39,7 +46,7 @@ class RequirementCodeConverter {
     this.localeResolver = localeResolver;
   }
 
-  public void convertRequirementCodeToLocalizedMessage(HttpServletRequest request, QualityInvestmentPlan investmentPlan) {
+  void convertRequirementCodeToLocalizedMessage(HttpServletRequest request, QualityInvestmentPlan investmentPlan) {
     for (QualityInvestmentPlanEntry entry : investmentPlan.getEntries()) {
       String code = entry.getRequirementCode();
       entry.setRequirementCode(messageSource.getMessage(code, null, localeResolver.resolveLocale(request)));

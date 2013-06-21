@@ -21,7 +21,6 @@ package org.codeqinvest.quality.analysis;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.repository.ProjectRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This {@code Runnable} implementation is used in the
@@ -46,7 +45,6 @@ class AnalyzerRunnable implements Runnable {
    * Executes an analysis run.
    */
   @Override
-  @Transactional
   public void run() {
     Project project = projectRepository.findOne(projectId);
     if (project != null) {
