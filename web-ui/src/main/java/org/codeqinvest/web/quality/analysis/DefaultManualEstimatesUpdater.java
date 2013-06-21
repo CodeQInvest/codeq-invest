@@ -64,7 +64,7 @@ class DefaultManualEstimatesUpdater implements ManualEstimatesUpdater {
       }
     }
 
-    qualityAnalysisRepository.save(analysis);
+    analysis = qualityAnalysisRepository.save(analysis);
     log.info("Updated {} artefacts with manual estimates for project {}", updatedArtefacts, analysis.getProject().getName());
     return analysis;
   }

@@ -52,7 +52,7 @@ public class QualityViolation implements Serializable {
   @JoinColumn(name = "REQUIREMENT_ID", nullable = false, updatable = false)
   private QualityRequirement requirement;
 
-  @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+  @ManyToOne(optional = false, cascade = CascadeType.ALL)
   @JoinColumn(name = "ARTEFACT_ID", nullable = false, updatable = false)
   private Artefact artefact;
 
