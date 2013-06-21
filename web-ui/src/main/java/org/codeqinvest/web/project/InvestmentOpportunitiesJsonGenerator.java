@@ -207,9 +207,15 @@ public class InvestmentOpportunitiesJsonGenerator {
       double profit = 0.0;
       for (Node child : getAllChildren()) {
         if (child instanceof ArtefactNode) {
-          profit += ((ArtefactNode) child).getValue();
+          double artefactProfit = ((ArtefactNode) child).getValue();
+          if (artefactProfit > 0.0) {
+            profit += artefactProfit;
+          }
         } else if (child instanceof PackageNode) {
-          profit += ((PackageNode) child).aggregateProfit();
+          double packageProfit = ((PackageNode) child).aggregateProfit();
+          if (packageProfit > 0.0) {
+            profit += packageProfit;
+          }
         }
       }
       return profit;

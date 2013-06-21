@@ -113,6 +113,39 @@ public class InvestmentOpportunitiesJsonGeneratorTest {
     assertThat(rootPackagNode.get(1).get("changeProbability").asInt()).isEqualTo(22);
   }
 
+  @Test
+  public void profitablePacakgesAndArtefactsShouldBeFilteredProperly() throws IOException {
+    Artefact artefact1 = new Artefact("org.project.test.util.C", "DUMMY");
+    Artefact artefact2 = new Artefact("org.project.test.util.D", "DUMMY");
+    Artefact artefact3 = new Artefact("org.project.test.E", "DUMMY");
+    Artefact artefact4 = new Artefact("org.project.F", "DUMMY");
+
+    artefact1.setChangeProbability(0.1);
+    artefact1.setManualEstimate(40);
+
+    artefact2.setChangeProbability(0.2);
+    artefact2.setManualEstimate(80);
+
+    artefact3.setChangeProbability(0.0);
+    artefact4.setChangeProbability(0.0);
+
+    QualityViolation violation1 = new QualityViolation(artefact1, null, 0, 0, 0, "");
+    QualityViolation violation2 = new QualityViolation(artefact2, null, 0, 0, 0, "");
+    QualityViolation violation3 = new QualityViolation(artefact3, null, 0, 0, 0, "");
+    QualityViolation violation4 = new QualityViolation(artefact4, null, 0, 0, 0, "");
+
+    QualityAnalysis analysis = QualityAnalysis.success(project, Arrays.asList(violation1, violation2, violation3, violation4));
+
+    when(weightedProfitCalculator.calculateWeightedProfit(violation1)).thenReturn(10.0);
+    when(weightedProfitCalculator.calculateWeightedProfit(violation2)).thenReturn(20.0);
+    when(weightedProfitCalculator.calculateWeightedProfit(violation3)).thenReturn(-10.0);
+    when(weightedProfitCalculator.calculateWeightedProfit(violation4)).thenReturn(-20.0);
+
+    JsonNode generatedJson = generate(analysis);
+    ArrayNode rootPackagNode = (ArrayNode) generatedJson.get("children");
+    assertThat(rootPackagNode.get(0).get("changeProbability").asInt()).isEqualTo(60);
+  }
+
   private JsonNode generate(QualityAnalysis analysis) throws IOException {
     String jsonString = generator.generate(analysis);
     return mapper.readTree(jsonString);
