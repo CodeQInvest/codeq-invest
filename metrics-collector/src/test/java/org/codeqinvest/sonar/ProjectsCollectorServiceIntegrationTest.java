@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.sonar;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,10 @@ public class ProjectsCollectorServiceIntegrationTest {
   @Autowired
   private ProjectsCollectorService projectsCollectorService;
 
+  // this test is ignored because the used sonar server is change quite often
+  // should be replaced with own server setup dynamically with puppet and vagrant
   @Test
+  @Ignore
   public void shouldListAllProjectsOfNemoSonarDemoServer() {
     /*
      * TODO this is an ugly test: it can be easily broken by an update of the Sonar demo server
