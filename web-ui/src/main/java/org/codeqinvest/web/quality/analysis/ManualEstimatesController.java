@@ -66,7 +66,7 @@ class ManualEstimatesController {
   @ResponseBody
   JsonNode updateManualEstimates(@PathVariable long projectId, @RequestBody Set<ManualEstimate> manualEstimates) throws IOException {
     Project project = projectRepository.findOne(projectId);
-    QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
+    QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project);
     lastAnalysis = manualEstimatesUpdater.updateManualEstimates(lastAnalysis, manualEstimates);
     return MAPPER.readTree(investmentOpportunitiesJsonGenerator.generate(lastAnalysis));
   }

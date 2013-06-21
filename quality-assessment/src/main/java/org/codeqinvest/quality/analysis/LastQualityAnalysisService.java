@@ -19,28 +19,19 @@
 package org.codeqinvest.quality.analysis;
 
 import org.codeqinvest.quality.Project;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
+ * This interface describes a service that retrieves the
+ * last successful analysis of a project from the database.
+ *
  * @author fmueller
  */
-@Service
-public class LastQualityAnalysisService {
+public interface LastQualityAnalysisService {
 
-  private final QualityAnalysisRepository qualityAnalysisRepository;
-
-  @Autowired
-  public LastQualityAnalysisService(QualityAnalysisRepository qualityAnalysisRepository) {
-    this.qualityAnalysisRepository = qualityAnalysisRepository;
-  }
-
-  public QualityAnalysis retrieveLastAnalysis(Project project) {
-    List<QualityAnalysis> allAnalysis = qualityAnalysisRepository.findByProjectOrderByCreatedDesc(project);
-    return (allAnalysis != null && !allAnalysis.isEmpty())
-        ? qualityAnalysisRepository.findOneByIdWithViolations(allAnalysis.get(0).getId())
-        : null;
-  }
+  /**
+   * Retrieves the last successful analysis of a project
+   * from the database. Returns {@code null} if it can not
+   * find one.
+   */
+  QualityAnalysis retrieveLastSuccessfulAnalysis(Project project);
 }

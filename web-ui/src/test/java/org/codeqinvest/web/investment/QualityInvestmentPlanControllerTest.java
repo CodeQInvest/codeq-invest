@@ -62,7 +62,7 @@ public class QualityInvestmentPlanControllerTest {
     QualityAnalysis mockedAnalysis = mock(QualityAnalysis.class);
 
     when(projectRepository.findOne(1L)).thenReturn(mockedProject);
-    when(lastQualityAnalysisService.retrieveLastAnalysis(mockedProject)).thenReturn(mockedAnalysis);
+    when(lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(mockedProject)).thenReturn(mockedAnalysis);
     when(investmentPlanService.computeInvestmentPlan(eq(mockedAnalysis), anyString(), anyInt())).thenReturn(dummyInvestmentPlan);
 
     mockMvc = MockMvcBuilders.standaloneSetup(new QualityInvestmentPlanController(projectRepository,
@@ -119,7 +119,7 @@ public class QualityInvestmentPlanControllerTest {
 
   @Test
   public void projectShouldHaveLastSuccessfulAnalysis() throws Exception {
-    when(lastQualityAnalysisService.retrieveLastAnalysis(any(Project.class))).thenReturn(null);
+    when(lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(any(Project.class))).thenReturn(null);
     mockMvc.perform(put("/projects/1/investment")
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"basePackage\": \"\", \"investment\": \"1h\"}"))

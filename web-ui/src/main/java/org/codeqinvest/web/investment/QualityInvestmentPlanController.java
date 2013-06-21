@@ -85,7 +85,7 @@ class QualityInvestmentPlanController {
       return null;
     }
 
-    QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
+    QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project);
     if (lastAnalysis == null) {
       response.setStatus(400);
       return null;
