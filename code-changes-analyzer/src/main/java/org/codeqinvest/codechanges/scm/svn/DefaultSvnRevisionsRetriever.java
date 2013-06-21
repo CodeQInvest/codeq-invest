@@ -22,8 +22,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.tmatesoft.svn.core.ISVNLogEntryHandler;
@@ -44,7 +44,7 @@ class DefaultSvnRevisionsRetriever implements SvnRevisionsRetriever {
   public DailyRevisions retrieveRevisions(ScmConnectionSettings connectionSettings, LocalDate day) throws SVNException {
     log.info("Retrieve revisions on day {} for {}", day, connectionSettings);
     final SVNRepository repository = SvnRepositoryFactory.create(connectionSettings);
-    final DateTime startTime = day.toDateTimeAtStartOfDay();
+    final LocalDateTime startTime = day.toDateTimeAtStartOfDay().toLocalDateTime();
     final long startRevision = repository.getDatedRevision(startTime.toDate());
     final long endRevision = repository.getDatedRevision(startTime.withTime(23, 59, 59, 999).toDate());
 
