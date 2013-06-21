@@ -20,14 +20,10 @@ package org.codeqinvest.web.quality.analysis;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
-import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.quality.analysis.LastQualityAnalysisService;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
-import org.codeqinvest.quality.analysis.QualityAnalysisRepository;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.codeqinvest.web.project.InvestmentOpportunitiesJsonGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -52,18 +47,18 @@ class ManualEstimatesController {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private final ProjectRepository projectRepository;
-  private final QualityAnalysisRepository qualityAnalysisRepository;
   private final LastQualityAnalysisService lastQualityAnalysisService;
+  private final ManualEstimatesUpdater manualEstimatesUpdater;
   private final InvestmentOpportunitiesJsonGenerator investmentOpportunitiesJsonGenerator;
 
   @Autowired
   ManualEstimatesController(ProjectRepository projectRepository,
-                            QualityAnalysisRepository qualityAnalysisRepository,
                             LastQualityAnalysisService lastQualityAnalysisService,
+                            ManualEstimatesUpdater manualEstimatesUpdater,
                             InvestmentOpportunitiesJsonGenerator investmentOpportunitiesJsonGenerator) {
     this.projectRepository = projectRepository;
-    this.qualityAnalysisRepository = qualityAnalysisRepository;
     this.lastQualityAnalysisService = lastQualityAnalysisService;
+    this.manualEstimatesUpdater = manualEstimatesUpdater;
     this.investmentOpportunitiesJsonGenerator = investmentOpportunitiesJsonGenerator;
   }
 
@@ -72,42 +67,7 @@ class ManualEstimatesController {
   JsonNode updateManualEstimates(@PathVariable long projectId, @RequestBody Set<ManualEstimate> manualEstimates) throws IOException {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
-
-    long updatedArtefacts = 0L;
-    for (ManualEstimate manualEstimate : manualEstimates) {
-      for (Artefact artefact : findArtefacts(lastAnalysis, manualEstimate.getArtefact())) {
-        updatedArtefacts++;
-        log.debug("Update {} with manual estimate of {}", artefact.getName(), manualEstimate.getEstimate());
-        if (manualEstimate.getEstimate() != null) {
-          artefact.setManualEstimate(Integer.parseInt(manualEstimate.getEstimate()));
-        } else {
-          artefact.setManualEstimate(null);
-        }
-      }
-    }
-
-    qualityAnalysisRepository.save(lastAnalysis);
-    log.info("Updated {} artefacts with manual estimates for project {}", updatedArtefacts, project.getName());
+    lastAnalysis = manualEstimatesUpdater.updateManualEstimates(lastAnalysis, manualEstimates);
     return MAPPER.readTree(investmentOpportunitiesJsonGenerator.generate(lastAnalysis));
-  }
-
-  private Collection<Artefact> findArtefacts(QualityAnalysis analysis, String artefactName) {
-    Set<Artefact> artefacts = Sets.newHashSet();
-    for (QualityViolation violation : analysis.getViolations()) {
-      String currentArtefactName = violation.getArtefact().getName();
-      if (currentArtefactName.equals(artefactName) || isPartOfPackageName(artefactName, currentArtefactName)) {
-        artefacts.add(violation.getArtefact());
-      }
-    }
-    log.debug("Found {} artefacts for {}: {}", artefacts.size(), artefactName, artefacts);
-    return artefacts;
-  }
-
-  private boolean isPartOfPackageName(String artefactName, String currentArtefactName) {
-    if (currentArtefactName.startsWith(artefactName)) {
-      String packagePart = currentArtefactName.substring(artefactName.length());
-      return packagePart.contains(".");
-    }
-    return false;
   }
 }
