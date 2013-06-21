@@ -77,27 +77,33 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
   // TODO IMPORTANT: refactor this into commmand pattern to get better structure
   @Override
   public QualityAnalysis analyzeProject(Project project) {
-    ViolationsAnalysisResult violationsAnalysisResult = violationsCalculatorService.calculateAllViolation(project);
-    if (!violationsAnalysisResult.isSuccessful()) {
-      log.error("Quality analysis for project {} failed due '{}'", project.getName(), violationsAnalysisResult.getFailureReason().get());
-      return QualityAnalysis.failed(project,
-          zeroCostsForEachViolation(violationsAnalysisResult),
-          violationsAnalysisResult.getFailureReason().get());
-    }
+    try {
+      ViolationsAnalysisResult violationsAnalysisResult = violationsCalculatorService.calculateAllViolation(project);
+      if (!violationsAnalysisResult.isSuccessful()) {
+        log.error("Quality analysis for project {} failed due '{}'", project.getName(), violationsAnalysisResult.getFailureReason().get());
+        return QualityAnalysis.failed(project,
+            zeroCostsForEachViolation(violationsAnalysisResult),
+            violationsAnalysisResult.getFailureReason().get());
+      }
 
-    log.info("Checking the availability of the SCM system {} for project {}", project.getScmSettings(), project.getName());
-    if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
-      return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "The scm system is not available.");
-    }
+      log.info("Checking the availability of the SCM system {} for project {}", project.getScmSettings(), project.getName());
+      if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
+        return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "The scm system is not available.");
+      }
 
-    QualityAnalysis qualityAnalysis = addChangeProbabilityToEachArtifact(project, violationsAnalysisResult);
-    if (!qualityAnalysis.isSuccessful()) {
+      QualityAnalysis qualityAnalysis = addChangeProbabilityToEachArtifact(project, violationsAnalysisResult);
+      if (!qualityAnalysis.isSuccessful()) {
+        return qualityAnalysisRepository.save(qualityAnalysis);
+      }
+
+      qualityAnalysis = addSecureChangeProbabilityToEachArtifact(project, qualityAnalysis);
+      log.info("Quality analysis succeeded for project {} with {} violations.", project.getName(), violationsAnalysisResult.getViolations().size());
       return qualityAnalysisRepository.save(qualityAnalysis);
+    } catch (Exception e) {
+      String errorMessage = "Unexpected error occured during quality analysis!";
+      log.error(errorMessage, e);
+      return QualityAnalysis.failed(project, new ArrayList<QualityViolation>(), errorMessage);
     }
-
-    qualityAnalysis = addSecureChangeProbabilityToEachArtifact(project, qualityAnalysis);
-    log.info("Quality analysis succeeded for project {} with {} violations.", project.getName(), violationsAnalysisResult.getViolations().size());
-    return qualityAnalysisRepository.save(qualityAnalysis);
   }
 
   private QualityAnalysis addChangeProbabilityToEachArtifact(Project project, ViolationsAnalysisResult violationsAnalysisResult) {
