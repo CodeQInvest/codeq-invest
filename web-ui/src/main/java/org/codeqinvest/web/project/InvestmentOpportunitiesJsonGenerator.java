@@ -74,12 +74,8 @@ public class InvestmentOpportunitiesJsonGenerator {
     }
 
     rootNode.filterProfitableChildren();
-    for (PackageNode packageNode : nodeLookupTable.values()) {
-      packageNode.updateChangeProbabilityOfProfitableChildren();
-    }
-    for (PackageNode packageNode : nodeLookupTable.values()) {
-      packageNode.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
-    }
+    rootNode.updateChangeProbabilityOfProfitableChildren();
+    rootNode.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
     return MAPPER.writeValueAsString(rootNode);
   }
 
