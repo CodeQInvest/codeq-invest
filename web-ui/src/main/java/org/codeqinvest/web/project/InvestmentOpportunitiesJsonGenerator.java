@@ -67,7 +67,7 @@ public class InvestmentOpportunitiesJsonGenerator {
   public String generate(QualityAnalysis analysis) throws JsonProcessingException {
     Set<String> alreadyAddedArtefacts = Sets.newHashSet();
     Map<String, PackageNode> nodeLookupTable = Maps.newHashMap();
-    Node rootNode = new Node(analysis.getProject().getName());
+    RootNode rootNode = new RootNode(analysis.getProject().getName());
 
     for (QualityViolation violation : analysis.getViolations()) {
       addArtefact(violation, rootNode, alreadyAddedArtefacts, nodeLookupTable);
@@ -83,7 +83,7 @@ public class InvestmentOpportunitiesJsonGenerator {
     return MAPPER.writeValueAsString(rootNode);
   }
 
-  private void addArtefact(QualityViolation violation, Node root, Set<String> alreadyAddedArtefacts, Map<String, PackageNode> nodeLookupTable) {
+  private void addArtefact(QualityViolation violation, RootNode root, Set<String> alreadyAddedArtefacts, Map<String, PackageNode> nodeLookupTable) {
     Artefact artefact = violation.getArtefact();
     double weightedProfit = weightedProfitCalculator.calculateWeightedProfit(violation);
 
@@ -149,45 +149,14 @@ public class InvestmentOpportunitiesJsonGenerator {
 
   @Getter
   @EqualsAndHashCode
-  private static class Node {
+  @JsonPropertyOrder({"name", "longName", "changeProbability", "automaticChangeProbability", "manualEstimate", "allChildren", "children"})
+  private static class PackageNode {
 
     private final String name;
-    private final SortedSet<Node> allChildren = new TreeSet<Node>(new ByNameComparator());
-    private final SortedSet<Node> children = new TreeSet<Node>(new ByNameComparator());
-
-    Node(String name) {
-      this.name = name;
-    }
-
-    void addChildren(Node node) {
-      allChildren.add(node);
-    }
-
-    void filterProfitableChildren() {
-      for (Node child : getAllChildren()) {
-        child.filterProfitableChildren();
-
-        if (child instanceof ArtefactNode) {
-          ArtefactNode artefactNode = (ArtefactNode) child;
-          if (artefactNode.getValue() > 0.0) {
-            children.add(child);
-          }
-        } else if (child instanceof PackageNode) {
-          PackageNode packageNode = (PackageNode) child;
-          if (packageNode.aggregateProfit() > 0.0) {
-            children.add(child);
-          }
-        }
-      }
-    }
-  }
-
-  @Getter
-  @EqualsAndHashCode(callSuper = true)
-  @JsonPropertyOrder({"name", "longName", "changeProbability", "automaticChangeProbability", "manualEstimate", "allChildren", "children"})
-  private static class PackageNode extends Node {
-
     private final String longName;
+
+    private final SortedSet<PackageNode> allChildren = new TreeSet<PackageNode>(new ByNameComparator());
+    private final SortedSet<PackageNode> children = new TreeSet<PackageNode>(new ByNameComparator());
 
     @Setter
     private int changeProbability;
@@ -199,23 +168,29 @@ public class InvestmentOpportunitiesJsonGenerator {
     private Integer manualEstimate;
 
     PackageNode(String name, String longName) {
-      super(name);
+      this.name = name;
       this.longName = longName;
+    }
+
+    void addChildren(PackageNode node) {
+      allChildren.add(node);
+    }
+
+    void filterProfitableChildren() {
+      for (PackageNode child : getAllChildren()) {
+        child.filterProfitableChildren();
+        if (child.aggregateProfit() > 0.0) {
+          children.add(child);
+        }
+      }
     }
 
     double aggregateProfit() {
       double profit = 0.0;
-      for (Node child : getAllChildren()) {
-        if (child instanceof ArtefactNode) {
-          double artefactProfit = ((ArtefactNode) child).getValue();
-          if (artefactProfit > 0.0) {
-            profit += artefactProfit;
-          }
-        } else if (child instanceof PackageNode) {
-          double packageProfit = ((PackageNode) child).aggregateProfit();
-          if (packageProfit > 0.0) {
-            profit += packageProfit;
-          }
+      for (PackageNode child : getAllChildren()) {
+        double packageProfit = child.aggregateProfit();
+        if (packageProfit > 0.0) {
+          profit += packageProfit;
         }
       }
       return profit;
@@ -223,14 +198,9 @@ public class InvestmentOpportunitiesJsonGenerator {
 
     void updateChangeProbabilityOfProfitableChildren() {
       float sumOfChangeProbabilities = 0.0f;
-      for (Node node : getChildren()) {
-
-        if (node instanceof PackageNode) {
-          PackageNode packageNode = ((PackageNode) node);
-          packageNode.updateChangeProbabilityOfProfitableChildren();
-
-          sumOfChangeProbabilities += packageNode.getChangeProbability();
-        }
+      for (PackageNode node : getChildren()) {
+        node.updateChangeProbabilityOfProfitableChildren();
+        sumOfChangeProbabilities += node.getChangeProbability();
       }
       changeProbability = Math.round(sumOfChangeProbabilities / (float) getChildren().size());
     }
@@ -242,31 +212,37 @@ public class InvestmentOpportunitiesJsonGenerator {
       boolean isFirstEstimate = true;
       boolean hasEachChildrenSameManualEstimate = true;
 
-      for (Node node : getAllChildren()) {
+      for (PackageNode node : getAllChildren()) {
+        node.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
 
-        if (node instanceof PackageNode) {
-          PackageNode packageNode = ((PackageNode) node);
-          packageNode.updateAutomaticChangeProbabilityAndEstimateOfAllChildren();
-
-          if (manualEstimateOfOneChildren == null) {
-            if (isFirstEstimate) {
-              manualEstimateOfOneChildren = packageNode.getManualEstimate();
-            } else if (packageNode.getManualEstimate() != null) {
-              hasEachChildrenSameManualEstimate = false;
-            }
-          } else if (!manualEstimateOfOneChildren.equals(packageNode.getManualEstimate()) || packageNode.getManualEstimate() == null) {
+        if (manualEstimateOfOneChildren == null) {
+          if (isFirstEstimate) {
+            manualEstimateOfOneChildren = node.getManualEstimate();
+          } else if (node.getManualEstimate() != null) {
             hasEachChildrenSameManualEstimate = false;
           }
-
-          isFirstEstimate = false;
-          sumOfAutomaticChangeProbabilities += packageNode.getAutomaticChangeProbability();
+        } else if (!manualEstimateOfOneChildren.equals(node.getManualEstimate()) || node.getManualEstimate() == null) {
+          hasEachChildrenSameManualEstimate = false;
         }
+
+        isFirstEstimate = false;
+        sumOfAutomaticChangeProbabilities += node.getAutomaticChangeProbability();
       }
       automaticChangeProbability = Math.round(sumOfAutomaticChangeProbabilities / (float) getAllChildren().size());
 
       if (hasEachChildrenSameManualEstimate && manualEstimateOfOneChildren != null) {
         manualEstimate = manualEstimateOfOneChildren;
       }
+    }
+  }
+
+  @EqualsAndHashCode(callSuper = true)
+  @JsonPropertyOrder({"name", "allChildren", "children"})
+  @JsonIgnoreProperties({"longName", "value", "changeProbability", "automaticChangeProbability", "manualEstimate"})
+  private static class RootNode extends PackageNode {
+
+    RootNode(String name) {
+      super(name, "");
     }
   }
 
@@ -294,7 +270,12 @@ public class InvestmentOpportunitiesJsonGenerator {
     }
 
     @Override
-    void addChildren(Node node) {
+    double aggregateProfit() {
+      return value;
+    }
+
+    @Override
+    void addChildren(PackageNode node) {
       throw new UnsupportedOperationException();
     }
 
@@ -309,10 +290,10 @@ public class InvestmentOpportunitiesJsonGenerator {
     }
   }
 
-  private static final class ByNameComparator implements Comparator<Node> {
+  private static final class ByNameComparator implements Comparator<PackageNode> {
 
     @Override
-    public int compare(Node node, Node otherNode) {
+    public int compare(PackageNode node, PackageNode otherNode) {
       return node.getName().compareToIgnoreCase(otherNode.getName());
     }
   }
