@@ -56,7 +56,7 @@ public class QualityInvestmentPlanService {
     Multimap<Double, QualityViolation> violationsByProfit = ArrayListMultimap.create();
     for (QualityViolation violation : filterViolationsByArtefactNameStartingWith(basePackage, analysis.getViolations())) {
       double profit = profitCalculator.calculateProfit(violation);
-      if (profit > 0.0) {
+      if (Math.round(profit) > 0) {
         violationsByProfit.put(profit, violation);
       }
     }
