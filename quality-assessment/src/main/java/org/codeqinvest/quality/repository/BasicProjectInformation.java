@@ -18,25 +18,18 @@
  */
 package org.codeqinvest.quality.repository;
 
-import org.codeqinvest.quality.Project;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import lombok.Data;
 
 /**
+ * This class encapsulate the basic information of a
+ * {@link org.codeqinvest.quality.Project}. It's used in {@link ProjectRepository}
+ * to prevent retrieving the whole project object graph which can be expensive.
+ *
  * @author fmueller
  */
-@Transactional(readOnly = true)
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+@Data
+public class BasicProjectInformation {
 
-  Project findOneByLowercaseName(String lowercaseName);
-
-  /**
-   * Retrieves all projects from the database but only loads the id and the
-   * name of each project.
-   */
-  @Query("select new org.codeqinvest.quality.repository.BasicProjectInformation(p.id, p.name) from Project p")
-  List<BasicProjectInformation> findAllBasicInformation();
+  private final long id;
+  private final String name;
 }

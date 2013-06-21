@@ -18,7 +18,7 @@
  */
 package org.codeqinvest.web;
 
-import org.codeqinvest.quality.Project;
+import org.codeqinvest.quality.repository.BasicProjectInformation;
 import org.codeqinvest.quality.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,7 +39,7 @@ class GlobalControllerAdvice {
   private final ProjectRepository projectRepository;
 
   @Autowired
-  public GlobalControllerAdvice(ProjectRepository projectRepository) {
+  GlobalControllerAdvice(ProjectRepository projectRepository) {
     this.projectRepository = projectRepository;
   }
 
@@ -49,7 +49,7 @@ class GlobalControllerAdvice {
   @ModelAttribute("projects")
   List<ProjectNavBarInformation> allProjects() {
     List<ProjectNavBarInformation> projectsInformation = new ArrayList<ProjectNavBarInformation>();
-    for (Project project : projectRepository.findAll()) {
+    for (BasicProjectInformation project : projectRepository.findAllBasicInformation()) {
       projectsInformation.add(new ProjectNavBarInformation(project.getId(), project.getName()));
     }
     return projectsInformation;

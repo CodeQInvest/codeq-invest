@@ -70,4 +70,9 @@ public class ProjectRepositoryIntegrationTest {
   public void shouldNotFindAnyProjectByGivenNameWhenProjectDoesNotExistInDatabase() {
     assertThat(projectRepository.findOneByLowercaseName("abc123")).isNull();
   }
+
+  @Test
+  public void shouldFindAllProjectBasicInformation() {
+    assertThat(projectRepository.findAllBasicInformation()).hasSize(1);
+  }
 }
