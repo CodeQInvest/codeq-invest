@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.sonar.MetricCollectorService;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author fmueller
  */
+@Slf4j
 @Service
 class QualityViolationCostsCalculator {
 
@@ -38,10 +40,12 @@ class QualityViolationCostsCalculator {
   }
 
   public int calculateRemediationCosts(SonarConnectionSettings sonarConnectionSettings, ViolationOccurence violation) throws ResourceNotFoundException {
+    log.info("Calculating remediation costs for {} with violated criteria {}", violation.getArtefact().getName(), violation.getRequirement().getCriteria());
     return calculateCosts(sonarConnectionSettings, violation, violation.getRequirement().getRemediationCosts());
   }
 
   public int calculateNonRemediationCosts(SonarConnectionSettings sonarConnectionSettings, ViolationOccurence violation) throws ResourceNotFoundException {
+    log.info("Calculating non-remediation costs for {} with violated criteria {}", violation.getArtefact().getName(), violation.getRequirement().getCriteria());
     return calculateCosts(sonarConnectionSettings, violation, violation.getRequirement().getNonRemediationCosts());
   }
 
