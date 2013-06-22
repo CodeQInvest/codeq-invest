@@ -29,6 +29,8 @@ import java.util.List;
  */
 public interface QualityAnalysisRepository extends JpaRepository<QualityAnalysis, Long> {
 
+  List<QualityAnalysis> findByProjectOrderByCreatedDesc(Project project);
+
   List<QualityAnalysis> findByProjectAndSuccessfulOrderByCreatedDesc(Project project, boolean successful);
 
   @Query("select q from QualityAnalysis q left join fetch q.violations where q.id = ?1")

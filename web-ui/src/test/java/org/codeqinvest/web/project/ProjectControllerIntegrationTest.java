@@ -29,6 +29,7 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
   private static final String PROJECT_WITHOUT_ANALYSIS_SITE = PROJECT_SITE + "1";
   private static final String PROJECT_WITH_FIRST_ANALYSIS_IN_PROGRESS_SITE = PROJECT_SITE + "2";
   private static final String PROJECT_WITH_MANY_ANALYSIS_SITE = PROJECT_SITE + "3";
+  private static final String PROJECT_WITH_ONLY_FAILED_ANALYSIS = PROJECT_SITE + "5";
 
   @Test
   public void currentProjectShouldBeActiveItemInNavigationMenu() {
@@ -66,5 +67,13 @@ public class ProjectControllerIntegrationTest extends AbstractFluentTestWithHtml
     goTo(PROJECT_WITH_MANY_ANALYSIS_SITE);
     assertThat(find("#projectQualityInvestment")).isNotEmpty();
     assertThat(find("#noAnalysisBox")).isEmpty();
+  }
+
+  @Test
+  public void whenProjectHasOnlyFailedAnalysisThenInfoBoxForOnlyFailedAnalysisShouldBeVisible() {
+    goTo(PROJECT_WITH_ONLY_FAILED_ANALYSIS);
+    assertThat(find("#projectQualityInvestment")).isEmpty();
+    assertThat(find("#noAnalysisBox")).isEmpty();
+    assertThat(find("#onlyFailedAnalysisBox")).isNotEmpty();
   }
 }

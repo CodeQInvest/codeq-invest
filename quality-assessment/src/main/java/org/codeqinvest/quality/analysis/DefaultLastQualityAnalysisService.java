@@ -29,6 +29,7 @@ import java.util.List;
  * @author fmueller
  */
 @Service
+@Transactional(readOnly = true)
 class DefaultLastQualityAnalysisService implements LastQualityAnalysisService {
 
   private final QualityAnalysisRepository qualityAnalysisRepository;
@@ -42,9 +43,21 @@ class DefaultLastQualityAnalysisService implements LastQualityAnalysisService {
    * {@inheritDoc}
    */
   @Override
-  @Transactional(readOnly = true)
   public QualityAnalysis retrieveLastSuccessfulAnalysis(Project project) {
     List<QualityAnalysis> allAnalysis = qualityAnalysisRepository.findByProjectAndSuccessfulOrderByCreatedDesc(project, true);
+    return getLastAnalysis(allAnalysis);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public QualityAnalysis retrieveLastAnalysis(Project project) {
+    List<QualityAnalysis> allAnalysis = qualityAnalysisRepository.findByProjectOrderByCreatedDesc(project);
+    return getLastAnalysis(allAnalysis);
+  }
+
+  private QualityAnalysis getLastAnalysis(List<QualityAnalysis> allAnalysis) {
     return (allAnalysis != null && !allAnalysis.isEmpty())
         ? qualityAnalysisRepository.findOneByIdWithViolations(allAnalysis.get(0).getId())
         : null;

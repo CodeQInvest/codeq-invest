@@ -27,6 +27,8 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class NavigationBarIntegrationTest extends AbstractFluentTestWithHtmlUnitDriver {
 
+  private static final int NUMBER_OF_TEST_PROJECTS = 5;
+
   @Test
   public void shouldListAllProjectsInNavigationBarMenuItem() throws IOException {
     addRandomProject();
@@ -35,8 +37,7 @@ public class NavigationBarIntegrationTest extends AbstractFluentTestWithHtmlUnit
     goTo(IntegrationTestHelper.ADD_PROJECT_SITE);
     assertThat(find("#projectsMenuItem li"))
         .as("All projects should be listed in corresponding menu item.")
-        .hasSize(2 + 2 + 4);
+        .hasSize(2 + 2 + NUMBER_OF_TEST_PROJECTS);
     // + 2 because of addProject menu item and delimiter item
-    // + 4 because there are 4 test projects in test data
   }
 }

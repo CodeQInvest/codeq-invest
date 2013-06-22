@@ -22,7 +22,7 @@ import org.codeqinvest.quality.Project;
 
 /**
  * This interface describes a service that retrieves the
- * last successful analysis of a project from the database.
+ * last analysis of a project from the database.
  *
  * @author fmueller
  */
@@ -34,4 +34,10 @@ public interface LastQualityAnalysisService {
    * find one.
    */
   QualityAnalysis retrieveLastSuccessfulAnalysis(Project project);
+
+  /**
+   * Retrieves the last analysis of a project from the database - succesful or failed.
+   * Returns {@code null} if it can not find one.
+   */
+  QualityAnalysis retrieveLastAnalysis(Project project);
 }

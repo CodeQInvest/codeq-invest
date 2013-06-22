@@ -75,4 +75,16 @@ public class DefaultLastQualityAnalysisServiceIntegrationTest {
     entityManager.persist(QualityAnalysis.failed(project, Collections.<QualityViolation>emptyList(), "error"));
     assertThat(lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project)).isNull();
   }
+
+  @Test
+  public void shouldLoadSuccessfulAnalysisForRetrieveLastAnalysis() {
+    entityManager.persist(QualityAnalysis.success(project, Collections.<QualityViolation>emptyList()));
+    assertThat(lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project)).isNotNull();
+  }
+
+  @Test
+  public void shouldLoadFailedAnalysisForRetrieveLastAnalysis() {
+    entityManager.persist(QualityAnalysis.failed(project, Collections.<QualityViolation>emptyList(), "error"));
+    assertThat(lastQualityAnalysisService.retrieveLastAnalysis(project)).isNotNull();
+  }
 }

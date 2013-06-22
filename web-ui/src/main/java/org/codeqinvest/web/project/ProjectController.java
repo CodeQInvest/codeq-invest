@@ -61,7 +61,7 @@ class ProjectController {
   @RequestMapping(value = "/{projectId}", method = RequestMethod.GET)
   String showProject(@PathVariable long projectId, Model model) throws JsonProcessingException {
     Project project = projectRepository.findOne(projectId);
-    QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project);
+    QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastAnalysis(project);
 
     model.addAttribute("currentUrl", "/projects/" + projectId);
     model.addAttribute("project", project);

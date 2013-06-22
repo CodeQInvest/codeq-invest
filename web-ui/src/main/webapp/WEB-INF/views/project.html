@@ -58,278 +58,288 @@
                 </div>
             </div>
         </div>
-        <div id="projectQualityInvestment" th:if="${lastAnalysis}">
-            <div class="row-fluid">
-                <div class="well small-well">
-                    <div>
-                        <strong th:text="${project.name}">My Project</strong>
-                        <div class="pull-right">
-                            <span th:text="#{project.lastAnalysis.info(${lastAnalysis.created.toString('yyyy-MM-dd HH:mm:ss')}, ${project.profile.name})}">
-                                Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile
-                            </span> <a href="#" th:remove="all">Configure</a>
-                        </div>
+        <div th:if="${lastAnalysis}">
+            <div id="onlyFailedAnalysisBox" th:unless="${lastAnalysis.successful}">
+                <div class="row-fluid">
+                    <div class="span6 offset3 well text-center" th:text="#{failed.quality.analysis(${lastAnalysis.created.toString('yyyy-MM-dd HH:mm:ss')}, ${lastAnalysis.failureReason})}">
+                        Sorry, but for this project exists only failed analysis. The last analysis which was run on 2013-06-02 02:00:00
+                        failed with following reason: "The scm system is not available."
                     </div>
                 </div>
             </div>
-            <div class="row-fluid">
-                <div class="span6 with-border-right">
-                    <form>
-                        <legend class="no-border" th:text="#{investment.opportunities}">Investment Opportunities</legend>
-                        <div class="row-fluid">
-                            <div id="treemap" class="span12"></div>
-                            <div id="treemapNoInvestments" class="alert alert-info" th:text="#{treemap.no.invest}">There are no investment opportunities with the current change probabilities. You can change this by giving CodeQ Invest some hints with manual estimates.</div>
-                        </div>
-                        <div class="row-fluid">
-                            <div class="span7">
-                                <div class="treemap-legend muted">
-                                    <span class="colorScale-legend-left" th:text="#{treemap.legend.color}">Color: Manual Estimate / Change Probability 0%</span>
-                                    <span id="colorScale"></span>
-                                    <span class="colorScale-legend-right">100%</span>
-                                </div>
-                            </div>
-                            <div class="span5">
-                                <div class="text-right treemap-legend muted" th:text="#{treemap.legend.size}">
-                                    Size: Investment Potential
-                                </div>
+            <div id="projectQualityInvestment" th:if="${lastAnalysis.successful}">
+                <div class="row-fluid">
+                    <div class="well small-well">
+                        <div>
+                            <strong th:text="${project.name}">My Project</strong>
+                            <div class="pull-right">
+                                <span th:text="#{project.lastAnalysis.info(${lastAnalysis.created.toString('yyyy-MM-dd HH:mm:ss')}, ${project.profile.name})}">
+                                    Last Investment Analysis Run: 03:15 10-11-2012 with company-standard-profile
+                                </span> <a href="#" th:remove="all">Configure</a>
                             </div>
                         </div>
-                        <div class="row-fluid">
-                            <div class="span12">
-                                <div id="manualEstimatesUpdateSuccess" class="alert alert-success text-center" th:class="'alert alert-success text-center hide'" th:text="#{manual.estimates.success}">
-                                    Updated manual estimates.
-                                </div>
-                                <div id="manualEstimatesUpdateError" class="alert alert-error text-center" th:class="'alert alert-error text-center hide'" th:text="#{manual.estimates.error}">
-                                    Could not update manual estimates!
-                                </div>
-                            </div>
-                        </div>
-                        <fieldset id="manualEstimationsContainer" th:class="'hide'">
-                            <table class="table table-condensed">
-                                <thead>
-                                    <tr>
-                                        <th th:text="#{table.header.artefact}">Artefact</th>
-                                        <th th:text="#{table.header.changeprobability}">Change Probability</th>
-                                        <th th:text="#{table.header.estimate}">Manual Estimate</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="manualEstimations" th:remove="body">
-                                <tr>
-                                    <td>animate</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="bar" style="width: 43.49%;"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <select>
-                                            <option value="0">none</option>
-                                            <option value="1">very low</option>
-                                            <option value="2">low</option>
-                                            <option value="3">normal</option>
-                                            <option value="4">high</option>
-                                            <option value="5">very high</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>analytics</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="bar" style="width: 47.78%;"></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <select>
-                                            <option value="0">none</option>
-                                            <option value="1">very low</option>
-                                            <option value="2">low</option>
-                                            <option value="3">normal</option>
-                                            <option value="4">high</option>
-                                            <option value="5">very high</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <div class="form-actions">
-                                <a id="applyManualEstimates" class="btn btn-primary" href="#" th:text="#{form.button.applyestimates}">Apply manual estimates</a>
-                                <a id="deleteManualEstimates" class="btn btn-danger pull-right" href="#" th:text="#{form.button.deleteestimates}">Delete manual estimates</a>
-                            </div>
-                        </fieldset>
-                    </form>
+                    </div>
                 </div>
-                <div class="span6">
-                    <div class="row-fluid">
-                        <div class="span12">
-                        <form class="form-inline">
-                            <legend class="no-border" th:text="#{investment}">Investment</legend>
-                            <fieldset>
-                                <label for="amount" th:text="#{form.label.amount}">Amount:</label>
-                                <input type="text" id="amount" placeholder="7h 30m"/>
-                                <input type="submit" id="calculateInvestment" class="btn btn-primary" value="Calculate" th:value="#{form.button.calculate.invest}"/>
+                <div class="row-fluid">
+                    <div class="span6 with-border-right">
+                        <form>
+                            <legend class="no-border" th:text="#{investment.opportunities}">Investment Opportunities</legend>
+                            <div class="row-fluid">
+                                <div id="treemap" class="span12"></div>
+                                <div id="treemapNoInvestments" class="alert alert-info" th:text="#{treemap.no.invest}">There are no investment opportunities with the current change probabilities. You can change this by giving CodeQ Invest some hints with manual estimates.</div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span7">
+                                    <div class="treemap-legend muted">
+                                        <span class="colorScale-legend-left" th:text="#{treemap.legend.color}">Color: Manual Estimate / Change Probability 0%</span>
+                                        <span id="colorScale"></span>
+                                        <span class="colorScale-legend-right">100%</span>
+                                    </div>
+                                </div>
+                                <div class="span5">
+                                    <div class="text-right treemap-legend muted" th:text="#{treemap.legend.size}">
+                                        Size: Investment Potential
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <div id="manualEstimatesUpdateSuccess" class="alert alert-success text-center" th:class="'alert alert-success text-center hide'" th:text="#{manual.estimates.success}">
+                                        Updated manual estimates.
+                                    </div>
+                                    <div id="manualEstimatesUpdateError" class="alert alert-error text-center" th:class="'alert alert-error text-center hide'" th:text="#{manual.estimates.error}">
+                                        Could not update manual estimates!
+                                    </div>
+                                </div>
+                            </div>
+                            <fieldset id="manualEstimationsContainer" th:class="'hide'">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th th:text="#{table.header.artefact}">Artefact</th>
+                                            <th th:text="#{table.header.changeprobability}">Change Probability</th>
+                                            <th th:text="#{table.header.estimate}">Manual Estimate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="manualEstimations" th:remove="body">
+                                    <tr>
+                                        <td>animate</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="bar" style="width: 43.49%;"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select>
+                                                <option value="0">none</option>
+                                                <option value="1">very low</option>
+                                                <option value="2">low</option>
+                                                <option value="3">normal</option>
+                                                <option value="4">high</option>
+                                                <option value="5">very high</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>analytics</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="bar" style="width: 47.78%;"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select>
+                                                <option value="0">none</option>
+                                                <option value="1">very low</option>
+                                                <option value="2">low</option>
+                                                <option value="3">normal</option>
+                                                <option value="4">high</option>
+                                                <option value="5">very high</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="form-actions">
+                                    <a id="applyManualEstimates" class="btn btn-primary" href="#" th:text="#{form.button.applyestimates}">Apply manual estimates</a>
+                                    <a id="deleteManualEstimates" class="btn btn-danger pull-right" href="#" th:text="#{form.button.deleteestimates}">Delete manual estimates</a>
+                                </div>
                             </fieldset>
                         </form>
-                        </div>
                     </div>
-                    <div id="investmentPlanContainer"  th:class="'hide'">
+                    <div class="span6">
                         <div class="row-fluid">
                             <div class="span12">
-                                <div id="investmentPlanInfo" class="alert alert-success text-center">
-                                    1d 3h 15m Profit with ROI of 108%
-                                </div>
-                                <div id="investmentPlanWithoutProfitLabel" class="alert text-center" th:text="#{investment.without.profit}">
-                                    You gain no profit with the given amount of investment.
-                                </div>
-                                <div id="investmentPlanErrorLabel" class="alert alert-error text-center" th:text="#{investment.plan.error}">
-                                    Error while trying to generate investment plan. Please enter a vaild amount of investment, e.g. 1h 30m.
-                                </div>
+                            <form class="form-inline">
+                                <legend class="no-border" th:text="#{investment}">Investment</legend>
+                                <fieldset>
+                                    <label for="amount" th:text="#{form.label.amount}">Amount:</label>
+                                    <input type="text" id="amount" placeholder="7h 30m"/>
+                                    <input type="submit" id="calculateInvestment" class="btn btn-primary" value="Calculate" th:value="#{form.button.calculate.invest}"/>
+                                </fieldset>
+                            </form>
                             </div>
                         </div>
-                        <div id="investmentPlanTable" class="row-fluid">
-                            <div class="table-header label-info" th:text="#{table.investmentplan}">Quality Investment Plan</div>
-                            <table class="table table-condensed table-striped table-borders">
-                                <thead>
-                                <tr>
-                                    <th th:text="#{table.header.requirement}">Requirement</th>
-                                    <th th:text="#{table.header.artefact}">Artefact</th>
-                                    <th th:text="#{table.header.remediationcosts}">RC</th>
-                                    <th th:text="#{table.header.profit}">Profit</th>
-                                </tr>
-                                </thead>
-                                <tbody id="investmentPlan" th:remove="body">
-                                <tr>
-                                    <td>Response for Class &lt; 50</td>
-                                    <td>FunctionSequence</td>
-                                    <td>2h 30m</td>
-                                    <td>4h</td>
-                                </tr>
-                                <tr>
-                                    <td>Duplicated Code &#61; 0%</td>
-                                    <td>Scheduler</td>
-                                    <td>1h 24m</td>
-                                    <td>3h 30m</td>
-                                </tr>
-                                <tr>
-                                    <td>Complexity per method &lt; 5</td>
-                                    <td>NumberInterpolator</td>
-                                    <td>40m</td>
-                                    <td>1h 20m</td>
-                                </tr>
-                                <tr>
-                                    <td>Code Coverage &gt; 80%</td>
-                                    <td>AspectRatioBanker</td>
-                                    <td>1h 40m</td>
-                                    <td>45m</td>
-                                </tr>
-                                <tr>
-                                    <td>LCOM4 &#61; 1</td>
-                                    <td>Transition</td>
-                                    <td>1h 10m</td>
-                                    <td>30m</td>
-                                </tr>
-                                <tr>
-                                    <td>Public API documented &gt;&#61; 50%</td>
-                                    <td>CommunityStructure</td>
-                                    <td>30m</td>
-                                    <td>20m</td>
-                                </tr>
-                                <tr>
-                                    <td>Comments &gt;&#61; 10%</td>
-                                    <td>FunctionSequence</td>
-                                    <td>50m</td>
-                                    <td>20m</td>
-                                </tr>
-                                <tr>
-                                    <td>Code Coverage &gt; 80%</td>
-                                    <td>FunctionSequence</td>
-                                    <td>60m</td>
-                                    <td>20m</td>
-                                </tr>
-                                <tr>
-                                    <td>Code Coverage &gt; 80%</td>
-                                    <td>Scheduler</td>
-                                    <td>40m</td>
-                                    <td>10m</td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div id="investmentPlanContainer"  th:class="'hide'">
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <div id="investmentPlanInfo" class="alert alert-success text-center">
+                                        1d 3h 15m Profit with ROI of 108%
+                                    </div>
+                                    <div id="investmentPlanWithoutProfitLabel" class="alert text-center" th:text="#{investment.without.profit}">
+                                        You gain no profit with the given amount of investment.
+                                    </div>
+                                    <div id="investmentPlanErrorLabel" class="alert alert-error text-center" th:text="#{investment.plan.error}">
+                                        Error while trying to generate investment plan. Please enter a vaild amount of investment, e.g. 1h 30m.
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="investmentPlanTable" class="row-fluid">
+                                <div class="table-header label-info" th:text="#{table.investmentplan}">Quality Investment Plan</div>
+                                <table class="table table-condensed table-striped table-borders">
+                                    <thead>
+                                    <tr>
+                                        <th th:text="#{table.header.requirement}">Requirement</th>
+                                        <th th:text="#{table.header.artefact}">Artefact</th>
+                                        <th th:text="#{table.header.remediationcosts}">RC</th>
+                                        <th th:text="#{table.header.profit}">Profit</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="investmentPlan" th:remove="body">
+                                    <tr>
+                                        <td>Response for Class &lt; 50</td>
+                                        <td>FunctionSequence</td>
+                                        <td>2h 30m</td>
+                                        <td>4h</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Duplicated Code &#61; 0%</td>
+                                        <td>Scheduler</td>
+                                        <td>1h 24m</td>
+                                        <td>3h 30m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Complexity per method &lt; 5</td>
+                                        <td>NumberInterpolator</td>
+                                        <td>40m</td>
+                                        <td>1h 20m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Code Coverage &gt; 80%</td>
+                                        <td>AspectRatioBanker</td>
+                                        <td>1h 40m</td>
+                                        <td>45m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>LCOM4 &#61; 1</td>
+                                        <td>Transition</td>
+                                        <td>1h 10m</td>
+                                        <td>30m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Public API documented &gt;&#61; 50%</td>
+                                        <td>CommunityStructure</td>
+                                        <td>30m</td>
+                                        <td>20m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Comments &gt;&#61; 10%</td>
+                                        <td>FunctionSequence</td>
+                                        <td>50m</td>
+                                        <td>20m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Code Coverage &gt; 80%</td>
+                                        <td>FunctionSequence</td>
+                                        <td>60m</td>
+                                        <td>20m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Code Coverage &gt; 80%</td>
+                                        <td>Scheduler</td>
+                                        <td>40m</td>
+                                        <td>10m</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="projectId" class="hide" th:text="${project.id}"></div>
-            <div id="investmentOpportunities" class="hide" th:text="${investmentOpportunitiesJson}">
-            {
-            "name": "org.java.subpackage.util",
-            "children": [
-            {
-            "name": "analytics",
-            "changeProbability": 47.78,
-            "children": [
-            {
-            "name": "cluster",
-            "changeProbability": 35.75,
-            "children": [
-            {"name": "AgglomerativeCluster", "value": 40, "changeProbability": 80},
-            {"name": "CommunityStructure", "value": 240, "changeProbability": 10},
-            {"name": "HierarchicalCluster", "value": 44, "changeProbability": 12},
-            {"name": "MergeEdge", "value": 130, "changeProbability": 41}
-            ]
-            },
-            {
-            "name": "graph",
-            "changeProbability": 29.6,
-            "children": [
-            {"name": "BetweennessCentrality", "value": 48, "changeProbability": 30},
-            {"name": "LinkDistance", "value": 10, "changeProbability": 5},
-            {"name": "MaxFlowMinCut", "value": 42, "changeProbability": 4},
-            {"name": "ShortestPaths", "value": 240, "changeProbability": 44},
-            {"name": "SpanningTree", "value": 412, "changeProbability": 65}
-            ]
-            },
-            {
-            "name": "optimization",
-            "changeProbability": 100,
-            "children": [
-            {"name": "AspectRatioBanker", "value": 110, "changeProbability": 100}
-            ]
-            }
-            ]
-            },
-            {
-            "name": "animate",
-            "changeProbability": 43.49,
-            "children": [
-            {"name": "Easing", "value": 240, "changeProbability": 56},
-            {"name": "FunctionSequence", "value": 192, "changeProbability": 88},
-            {
-            "name": "interpolate",
-            "changeProbability": 17.89,
-            "children": [
-            {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12},
-            {"name": "ColorInterpolator", "value": 43, "changeProbability": 0},
-            {"name": "DateInterpolator", "value": 64, "changeProbability": 0},
-            {"name": "Interpolator", "value": 24, "changeProbability": 24},
-            {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23},
-            {"name": "NumberInterpolator", "value": 81, "changeProbability": 90},
-            {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0},
-            {"name": "PointInterpolator", "value": 12, "changeProbability": 10},
-            {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2}
-            ]
-            },
-            {"name": "ISchedulable", "value": 13, "changeProbability": 22},
-            {"name": "Parallel", "value": 302, "changeProbability": 32},
-            {"name": "Pause", "value": 6, "changeProbability": 38},
-            {"name": "Scheduler", "value": 130, "changeProbability": 87},
-            {"name": "Sequence", "value": 41, "changeProbability": 4},
-            {"name": "Transition", "value": 70, "changeProbability": 34},
-            {"name": "Transitioner", "value": 20, "changeProbability": 76},
-            {"name": "TransitionEvent", "value": 33, "changeProbability": 56},
-            {"name": "Tween", "value": 56, "changeProbability": 11}
-            ]
-            }
-            ]
-            }
+                <div id="projectId" class="hide" th:text="${project.id}"></div>
+                <div id="investmentOpportunities" class="hide" th:text="${investmentOpportunitiesJson}">
+                {
+                "name": "org.java.subpackage.util",
+                "children": [
+                {
+                "name": "analytics",
+                "changeProbability": 47.78,
+                "children": [
+                {
+                "name": "cluster",
+                "changeProbability": 35.75,
+                "children": [
+                {"name": "AgglomerativeCluster", "value": 40, "changeProbability": 80},
+                {"name": "CommunityStructure", "value": 240, "changeProbability": 10},
+                {"name": "HierarchicalCluster", "value": 44, "changeProbability": 12},
+                {"name": "MergeEdge", "value": 130, "changeProbability": 41}
+                ]
+                },
+                {
+                "name": "graph",
+                "changeProbability": 29.6,
+                "children": [
+                {"name": "BetweennessCentrality", "value": 48, "changeProbability": 30},
+                {"name": "LinkDistance", "value": 10, "changeProbability": 5},
+                {"name": "MaxFlowMinCut", "value": 42, "changeProbability": 4},
+                {"name": "ShortestPaths", "value": 240, "changeProbability": 44},
+                {"name": "SpanningTree", "value": 412, "changeProbability": 65}
+                ]
+                },
+                {
+                "name": "optimization",
+                "changeProbability": 100,
+                "children": [
+                {"name": "AspectRatioBanker", "value": 110, "changeProbability": 100}
+                ]
+                }
+                ]
+                },
+                {
+                "name": "animate",
+                "changeProbability": 43.49,
+                "children": [
+                {"name": "Easing", "value": 240, "changeProbability": 56},
+                {"name": "FunctionSequence", "value": 192, "changeProbability": 88},
+                {
+                "name": "interpolate",
+                "changeProbability": 17.89,
+                "children": [
+                {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12},
+                {"name": "ColorInterpolator", "value": 43, "changeProbability": 0},
+                {"name": "DateInterpolator", "value": 64, "changeProbability": 0},
+                {"name": "Interpolator", "value": 24, "changeProbability": 24},
+                {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23},
+                {"name": "NumberInterpolator", "value": 81, "changeProbability": 90},
+                {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0},
+                {"name": "PointInterpolator", "value": 12, "changeProbability": 10},
+                {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2}
+                ]
+                },
+                {"name": "ISchedulable", "value": 13, "changeProbability": 22},
+                {"name": "Parallel", "value": 302, "changeProbability": 32},
+                {"name": "Pause", "value": 6, "changeProbability": 38},
+                {"name": "Scheduler", "value": 130, "changeProbability": 87},
+                {"name": "Sequence", "value": 41, "changeProbability": 4},
+                {"name": "Transition", "value": 70, "changeProbability": 34},
+                {"name": "Transitioner", "value": 20, "changeProbability": 76},
+                {"name": "TransitionEvent", "value": 33, "changeProbability": 56},
+                {"name": "Tween", "value": 56, "changeProbability": 11}
+                ]
+                }
+                ]
+                }
+                </div>
             </div>
         </div>
     </div>

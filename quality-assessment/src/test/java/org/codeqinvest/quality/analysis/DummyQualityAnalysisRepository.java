@@ -106,6 +106,11 @@ public class DummyQualityAnalysisRepository implements QualityAnalysisRepository
   }
 
   @Override
+  public List<QualityAnalysis> findByProjectOrderByCreatedDesc(Project project) {
+    return null;
+  }
+
+  @Override
   public List<QualityAnalysis> findByProjectAndSuccessfulOrderByCreatedDesc(Project project, boolean successful) {
     return null;
   }
