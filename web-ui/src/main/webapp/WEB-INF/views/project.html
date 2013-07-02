@@ -579,56 +579,6 @@
             event.preventDefault();
         });
 
-        nv.addGraph(function() {
-            var chart = nv.models.multiBarChart();
-            chart.stacked(true);
-
-            chart.yAxis.tickFormat(d3.format(',.1f'));
-
-            d3.select('#roiDistribution svg')
-                    .datum(exampleData())
-                    .transition().duration(500).call(chart);
-
-            nv.utils.windowResize(chart.update);
-
-            return chart;
-        });
-
-        function exampleData() {
-            return [
-                {
-                    key: 'UtilClass',
-                    values: [
-                        { x: "1h", y: 5 },
-                        { x: "2h", y: 5 },
-                        { x: "4h", y: 10 },
-                        { x: "1d", y: 12 },
-                        { x: "2d", y: 8 }
-                    ]
-                },
-                {
-                    key: 'user',
-                    values: [
-                        { x: "1h", y: 60 },
-                        { x: "2h", y: 70 },
-                        { x: "4h", y: 110 },
-                        { x: "1d", y: 80 },
-                        { x: "2d", y: 90 }
-                    ]
-                },
-                {
-                    key: 'service',
-                    values: [
-                        { x: "1h", y: 43 },
-                        { x: "2h", y: 52 },
-                        { x: "4h", y: 60 },
-                        { x: "1d", y: 55 },
-                        { x: "2d", y: 58 }
-                    ]
-                }
-            ];
-        }
-
         function createTreeMap(data, selectedNode) {
             if (data.children.length > 0) {
                 $('#treemap').show();
@@ -639,6 +589,7 @@
                     return tinycolor('hsv(' + (120 - (data.changeProbability * 1.2)) + ', 100%, 100%)').toHexString();
                 }, function(data) {
                     updateManualEstimatesTable(data);
+                    updateRoiDistribution(data);
                 }, data, selectedNode);
 
                 $('#colorScale').empty();
@@ -651,7 +602,41 @@
                 $('.treemap-legend').hide();
                 $('#manualEstimationsContainer').hide();
             }
+
             updateManualEstimatesTable(selectedNode ? selectedNode : data);
+            updateRoiDistribution();
+        }
+
+        function updateRoiDistribution(data) {
+            var packageName = "";
+            if (data && data.longName) {
+                packageName = data.longName;
+            }
+
+            $.ajax({
+                type: 'get',
+                url: '/projects/' + $('#projectId').text() + '/roidistribution?basePackage=' + packageName,
+                contentType: 'application/json'
+            }).done(function (data) {
+                $('#roiDistribution svg').empty();
+
+                nv.addGraph(function() {
+                    var chart = nv.models.multiBarChart();
+                    chart.stacked(true);
+
+                    chart.yAxis.tickFormat(d3.format(',.1f'));
+
+                    d3.select('#roiDistribution svg')
+                            .datum(data)
+                            .transition().duration(500).call(chart);
+
+                    nv.utils.windowResize(chart.update);
+
+                    return chart;
+                });
+            }).fail(function() {
+                console.log('UUPS!');
+            });
         }
 
         function updateManualEstimatesTable(data) {

@@ -129,7 +129,7 @@ public class QualityInvestmentPlanService {
     for (QualityInvestmentPlanEntry investmentPlanEntry : investmentPlanEntries) {
       overallRemediationCosts += investmentPlanEntry.getRemediationCostsInMinutes();
     }
-    return (int) Math.round(overallProfit / (double) overallRemediationCosts * 100);
+    return Math.round(overallProfit / (float) overallRemediationCosts * 100);
   }
 
   private static class DoubleDescendingComparator implements Comparator<Double> {
