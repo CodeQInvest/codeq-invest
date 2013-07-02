@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../resources/css/libs/bootstrap-2.3.2.min.css"/>
     <link rel="stylesheet" href="../../resources/css/main.css"/>
     <link rel="stylesheet" href="../../resources/css/libs/bootstrap-responsive-2.3.2.min.css"/>
+    <link rel="stylesheet" href="../../resources/css/libs/nv.d3-1.0.0.beta.css"/>
 </head>
 
 <body>
@@ -170,14 +171,20 @@
                     <div class="span6">
                         <div class="row-fluid">
                             <div class="span12">
-                            <form class="form-inline">
-                                <legend class="no-border" th:text="#{investment}">Investment</legend>
-                                <fieldset>
-                                    <label for="amount" th:text="#{form.label.amount}">Amount:</label>
-                                    <input type="text" id="amount" placeholder="7h 30m"/>
-                                    <input type="submit" id="calculateInvestment" class="btn btn-primary" value="Calculate" th:value="#{form.button.calculate.invest}"/>
-                                </fieldset>
-                            </form>
+                                <legend class="no-border" th:text="#{roi.distribution}">ROI Distribution</legend>
+                                <div id="roiDistribution"><svg style="min-height: 300px;"></svg></div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <form class="form-inline">
+                                    <legend class="no-border" th:text="#{investment}">Investment</legend>
+                                    <fieldset>
+                                        <label for="amount" th:text="#{form.label.amount}">Amount:</label>
+                                        <input type="text" id="amount" placeholder="7h 30m"/>
+                                        <input type="submit" id="calculateInvestment" class="btn btn-primary" value="Calculate" th:value="#{form.button.calculate.invest}"/>
+                                    </fieldset>
+                                </form>
                             </div>
                         </div>
                         <div id="investmentPlanContainer"  th:class="'hide'">
@@ -272,72 +279,188 @@
                 "name": "org.java.subpackage.util",
                 "children": [
                 {
-                "name": "analytics",
-                "changeProbability": 47.78,
-                "children": [
-                {
-                "name": "cluster",
-                "changeProbability": 35.75,
-                "children": [
-                {"name": "AgglomerativeCluster", "value": 40, "changeProbability": 80},
-                {"name": "CommunityStructure", "value": 240, "changeProbability": 10},
-                {"name": "HierarchicalCluster", "value": 44, "changeProbability": 12},
-                {"name": "MergeEdge", "value": 130, "changeProbability": 41}
-                ]
-                },
-                {
-                "name": "graph",
-                "changeProbability": 29.6,
-                "children": [
-                {"name": "BetweennessCentrality", "value": 48, "changeProbability": 30},
-                {"name": "LinkDistance", "value": 10, "changeProbability": 5},
-                {"name": "MaxFlowMinCut", "value": 42, "changeProbability": 4},
-                {"name": "ShortestPaths", "value": 240, "changeProbability": 44},
-                {"name": "SpanningTree", "value": 412, "changeProbability": 65}
-                ]
-                },
-                {
-                "name": "optimization",
-                "changeProbability": 100,
-                "children": [
-                {"name": "AspectRatioBanker", "value": 110, "changeProbability": 100}
-                ]
-                }
-                ]
-                },
-                {
-                "name": "animate",
-                "changeProbability": 43.49,
-                "children": [
-                {"name": "Easing", "value": 240, "changeProbability": 56},
-                {"name": "FunctionSequence", "value": 192, "changeProbability": 88},
-                {
-                "name": "interpolate",
-                "changeProbability": 17.89,
-                "children": [
-                {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12},
-                {"name": "ColorInterpolator", "value": 43, "changeProbability": 0},
-                {"name": "DateInterpolator", "value": 64, "changeProbability": 0},
-                {"name": "Interpolator", "value": 24, "changeProbability": 24},
-                {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23},
-                {"name": "NumberInterpolator", "value": 81, "changeProbability": 90},
-                {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0},
-                {"name": "PointInterpolator", "value": 12, "changeProbability": 10},
-                {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2}
-                ]
-                },
-                {"name": "ISchedulable", "value": 13, "changeProbability": 22},
-                {"name": "Parallel", "value": 302, "changeProbability": 32},
-                {"name": "Pause", "value": 6, "changeProbability": 38},
-                {"name": "Scheduler", "value": 130, "changeProbability": 87},
-                {"name": "Sequence", "value": 41, "changeProbability": 4},
-                {"name": "Transition", "value": 70, "changeProbability": 34},
-                {"name": "Transitioner", "value": 20, "changeProbability": 76},
-                {"name": "TransitionEvent", "value": 33, "changeProbability": 56},
-                {"name": "Tween", "value": 56, "changeProbability": 11}
-                ]
-                }
-                ]
+                    "name": "animate",
+                    "longName": "animate",
+                    "changeProbability": 43.49,
+                    "automaticChangeProbability": 43.49,
+                    "manualEstimate": null,
+                    "children": [
+                        {"name": "Easing", "value": 240, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                        {"name": "FunctionSequence", "value": 192, "changeProbability": 88, "automaticChangeProbability": 88, "manualEstimate": null},
+                        {
+                            "name": "interpolate",
+                            "longName": "interpolate",
+                            "changeProbability": 17.89,
+                            "automaticChangeProbability": 17.89,
+                            "manualEstimate": null,
+                            "children": [
+                                {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                                {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                                {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                                {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                                {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                                {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                            ],
+                            "allChildren": [
+                                {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                                {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                                {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                                {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                                {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                                {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                            ]
+                        },
+                        {"name": "ISchedulable", "value": 13, "changeProbability": 22, "automaticChangeProbability": 22, "manualEstimate": null},
+                        {"name": "Parallel", "value": 302, "changeProbability": 32, "automaticChangeProbability": 32, "manualEstimate": null},
+                        {"name": "Pause", "value": 6, "changeProbability": 38, "automaticChangeProbability": 38, "manualEstimate": null},
+                        {"name": "Scheduler", "value": 130, "changeProbability": 87, "automaticChangeProbability": 87, "manualEstimate": null},
+                        {"name": "Sequence", "value": 41, "changeProbability": 4, "automaticChangeProbability": 4, "manualEstimate": null},
+                        {"name": "Transition", "value": 70, "changeProbability": 34, "automaticChangeProbability": 34, "manualEstimate": null},
+                        {"name": "Transitioner", "value": 20, "changeProbability": 76, "automaticChangeProbability": 76, "manualEstimate": null},
+                        {"name": "TransitionEvent", "value": 33, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                        {"name": "Tween", "value": 56, "changeProbability": 11, "automaticChangeProbability": 11, "manualEstimate": null}
+                    ],
+                    "allChildren": [
+                        {"name": "Easing", "value": 240, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                        {"name": "FunctionSequence", "value": 192, "changeProbability": 88, "automaticChangeProbability": 88, "manualEstimate": null},
+                        {
+                            "name": "interpolate",
+                            "longName": "interpolate",
+                            "changeProbability": 17.89,
+                            "automaticChangeProbability": 17.89,
+                            "manualEstimate": null,
+                            "children": [
+                                {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                                {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                                {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                                {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                                {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                                {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                            ],
+                            "allChildren": [
+                                {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                                {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                                {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                                {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                                {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                                {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                                {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                            ]
+                        },
+                        {"name": "ISchedulable", "value": 13, "changeProbability": 22, "automaticChangeProbability": 22, "manualEstimate": null},
+                        {"name": "Parallel", "value": 302, "changeProbability": 32, "automaticChangeProbability": 32, "manualEstimate": null},
+                        {"name": "Pause", "value": 6, "changeProbability": 38, "automaticChangeProbability": 38, "manualEstimate": null},
+                        {"name": "Scheduler", "value": 130, "changeProbability": 87, "automaticChangeProbability": 87, "manualEstimate": null},
+                        {"name": "Sequence", "value": 41, "changeProbability": 4, "automaticChangeProbability": 4, "manualEstimate": null},
+                        {"name": "Transition", "value": 70, "changeProbability": 34, "automaticChangeProbability": 34, "manualEstimate": null},
+                        {"name": "Transitioner", "value": 20, "changeProbability": 76, "automaticChangeProbability": 76, "manualEstimate": null},
+                        {"name": "TransitionEvent", "value": 33, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                        {"name": "Tween", "value": 56, "changeProbability": 11, "automaticChangeProbability": 11, "manualEstimate": null}
+                    ]
+                }],
+                "allChildren": [
+                    {
+                    "name": "animate",
+                    "longName": "animate",
+                    "changeProbability": 43.49,
+                    "automaticChangeProbability": 43.49,
+                    "manualEstimate": null,
+                    "children": [
+                    {"name": "Easing", "value": 240, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                    {"name": "FunctionSequence", "value": 192, "changeProbability": 88, "automaticChangeProbability": 88, "manualEstimate": null},
+                    {
+                    "name": "interpolate",
+                    "longName": "interpolate",
+                    "changeProbability": 17.89,
+                    "automaticChangeProbability": 17.89,
+                    "manualEstimate": null,
+                    "children": [
+                    {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                    {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                    {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                    {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                    {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                    {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                    ],
+                    "allChildren": [
+                    {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                    {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                    {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                    {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                    {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                    {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                    ]
+                    },
+                    {"name": "ISchedulable", "value": 13, "changeProbability": 22, "automaticChangeProbability": 22, "manualEstimate": null},
+                    {"name": "Parallel", "value": 302, "changeProbability": 32, "automaticChangeProbability": 32, "manualEstimate": null},
+                    {"name": "Pause", "value": 6, "changeProbability": 38, "automaticChangeProbability": 38, "manualEstimate": null},
+                    {"name": "Scheduler", "value": 130, "changeProbability": 87, "automaticChangeProbability": 87, "manualEstimate": null},
+                    {"name": "Sequence", "value": 41, "changeProbability": 4, "automaticChangeProbability": 4, "manualEstimate": null},
+                    {"name": "Transition", "value": 70, "changeProbability": 34, "automaticChangeProbability": 34, "manualEstimate": null},
+                    {"name": "Transitioner", "value": 20, "changeProbability": 76, "automaticChangeProbability": 76, "manualEstimate": null},
+                    {"name": "TransitionEvent", "value": 33, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                    {"name": "Tween", "value": 56, "changeProbability": 11, "automaticChangeProbability": 11, "manualEstimate": null}
+                    ],
+                    "allChildren": [
+                    {"name": "Easing", "value": 240, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                    {"name": "FunctionSequence", "value": 192, "changeProbability": 88, "automaticChangeProbability": 88, "manualEstimate": null},
+                    {
+                    "name": "interpolate",
+                    "longName": "interpolate",
+                    "changeProbability": 17.89,
+                    "automaticChangeProbability": 17.89,
+                    "manualEstimate": null,
+                    "children": [
+                    {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                    {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                    {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                    {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                    {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                    {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                    ],
+                    "allChildren": [
+                    {"name": "ArrayInterpolator", "value": 22, "changeProbability": 12, "automaticChangeProbability": 12, "manualEstimate": null},
+                    {"name": "ColorInterpolator", "value": 43, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "DateInterpolator", "value": 64, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "Interpolator", "value": 24, "changeProbability": 24, "automaticChangeProbability": 24, "manualEstimate": null},
+                    {"name": "MatrixInterpolator", "value": 23, "changeProbability": 23, "automaticChangeProbability": 23, "manualEstimate": null},
+                    {"name": "NumberInterpolator", "value": 81, "changeProbability": 90, "automaticChangeProbability": 90, "manualEstimate": null},
+                    {"name": "ObjectInterpolator", "value": 110, "changeProbability": 0, "automaticChangeProbability": 0, "manualEstimate": null},
+                    {"name": "PointInterpolator", "value": 12, "changeProbability": 10, "automaticChangeProbability": 10, "manualEstimate": null},
+                    {"name": "RectangleInterpolator", "value": 38, "changeProbability": 2, "automaticChangeProbability": 2, "manualEstimate": null}
+                    ]
+                    },
+                    {"name": "ISchedulable", "value": 13, "changeProbability": 22, "automaticChangeProbability": 22, "manualEstimate": null},
+                    {"name": "Parallel", "value": 302, "changeProbability": 32, "automaticChangeProbability": 32, "manualEstimate": null},
+                    {"name": "Pause", "value": 6, "changeProbability": 38, "automaticChangeProbability": 38, "manualEstimate": null},
+                    {"name": "Scheduler", "value": 130, "changeProbability": 87, "automaticChangeProbability": 87, "manualEstimate": null},
+                    {"name": "Sequence", "value": 41, "changeProbability": 4, "automaticChangeProbability": 4, "manualEstimate": null},
+                    {"name": "Transition", "value": 70, "changeProbability": 34, "automaticChangeProbability": 34, "manualEstimate": null},
+                    {"name": "Transitioner", "value": 20, "changeProbability": 76, "automaticChangeProbability": 76, "manualEstimate": null},
+                    {"name": "TransitionEvent", "value": 33, "changeProbability": 56, "automaticChangeProbability": 56, "manualEstimate": null},
+                    {"name": "Tween", "value": 56, "changeProbability": 11, "automaticChangeProbability": 11, "manualEstimate": null}
+                    ]
+                    }]
                 }
                 </div>
             </div>
@@ -349,6 +472,7 @@
 <script src="../../resources/js/libs/bootstrap-2.3.2.min.js"></script>
 <script src="../../resources/js/libs/json2.js"></script>
 <script src="../../resources/js/libs/d3.v3.min.js"></script>
+<script src="../../resources/js/libs/nv.d3-1.0.0.beta.min.js"></script>
 <script src="../../resources/js/libs/tinycolor-0.9.14.min.js"></script>
 <script src="../../resources/js/SonarReachabilityModule.js"></script>
 <script src="../../resources/js/LoadSonarProjectsModule.js"></script>
@@ -454,6 +578,56 @@
 
             event.preventDefault();
         });
+
+        nv.addGraph(function() {
+            var chart = nv.models.multiBarChart();
+            chart.stacked(true);
+
+            chart.yAxis.tickFormat(d3.format(',.1f'));
+
+            d3.select('#roiDistribution svg')
+                    .datum(exampleData())
+                    .transition().duration(500).call(chart);
+
+            nv.utils.windowResize(chart.update);
+
+            return chart;
+        });
+
+        function exampleData() {
+            return [
+                {
+                    key: 'UtilClass',
+                    values: [
+                        { x: "1h", y: 5 },
+                        { x: "2h", y: 5 },
+                        { x: "4h", y: 10 },
+                        { x: "1d", y: 12 },
+                        { x: "2d", y: 8 }
+                    ]
+                },
+                {
+                    key: 'user',
+                    values: [
+                        { x: "1h", y: 60 },
+                        { x: "2h", y: 70 },
+                        { x: "4h", y: 110 },
+                        { x: "1d", y: 80 },
+                        { x: "2d", y: 90 }
+                    ]
+                },
+                {
+                    key: 'service',
+                    values: [
+                        { x: "1h", y: 43 },
+                        { x: "2h", y: 52 },
+                        { x: "4h", y: 60 },
+                        { x: "1d", y: 55 },
+                        { x: "2d", y: 58 }
+                    ]
+                }
+            ];
+        }
 
         function createTreeMap(data, selectedNode) {
             if (data.children.length > 0) {
