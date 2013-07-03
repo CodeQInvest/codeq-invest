@@ -210,6 +210,7 @@
                                         <th th:text="#{table.header.artefact}">Artefact</th>
                                         <th th:text="#{table.header.remediationcosts}">RC</th>
                                         <th th:text="#{table.header.profit}">Profit</th>
+                                        <th th:text="#{table.header.roi}">ROI</th>
                                     </tr>
                                     </thead>
                                     <tbody id="investmentPlan" th:remove="body">
@@ -218,54 +219,63 @@
                                         <td>FunctionSequence</td>
                                         <td>2h 30m</td>
                                         <td>4h</td>
+                                        <td>160%</td>
                                     </tr>
                                     <tr>
                                         <td>Duplicated Code &#61; 0%</td>
                                         <td>Scheduler</td>
                                         <td>1h 24m</td>
                                         <td>3h 30m</td>
+                                        <td>250%</td>
                                     </tr>
                                     <tr>
                                         <td>Complexity per method &lt; 5</td>
                                         <td>NumberInterpolator</td>
                                         <td>40m</td>
                                         <td>1h 20m</td>
+                                        <td>200%</td>
                                     </tr>
                                     <tr>
                                         <td>Code Coverage &gt; 80%</td>
                                         <td>AspectRatioBanker</td>
                                         <td>1h 40m</td>
                                         <td>45m</td>
+                                        <td>45%</td>
                                     </tr>
                                     <tr>
                                         <td>LCOM4 &#61; 1</td>
                                         <td>Transition</td>
                                         <td>1h 10m</td>
                                         <td>30m</td>
+                                        <td>43%</td>
                                     </tr>
                                     <tr>
                                         <td>Public API documented &gt;&#61; 50%</td>
                                         <td>CommunityStructure</td>
                                         <td>30m</td>
                                         <td>20m</td>
+                                        <td>67%</td>
                                     </tr>
                                     <tr>
                                         <td>Comments &gt;&#61; 10%</td>
                                         <td>FunctionSequence</td>
                                         <td>50m</td>
                                         <td>20m</td>
+                                        <td>40%</td>
                                     </tr>
                                     <tr>
                                         <td>Code Coverage &gt; 80%</td>
                                         <td>FunctionSequence</td>
                                         <td>60m</td>
                                         <td>20m</td>
+                                        <td>33%</td>
                                     </tr>
                                     <tr>
                                         <td>Code Coverage &gt; 80%</td>
                                         <td>Scheduler</td>
                                         <td>40m</td>
                                         <td>10m</td>
+                                        <td>25%</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -562,6 +572,7 @@
                                 '<td title="' + value.artefactLongName + '">' + value.artefactShortName + '</td>' +
                                 '<td>' + timeToString(value.remediationCostsInMinutes) + '</td>' +
                                 '<td>' + timeToString(value.profitInMinutes) + '</td>' +
+                                '<td>' + value.roi + '%</td>' +
                                 '</tr>';
                     });
                     $('#investmentPlan').empty().append(investmentPlanTableRows);

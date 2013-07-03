@@ -33,6 +33,7 @@ public class QualityInvestmentPlanEntry implements Comparable<QualityInvestmentP
   private final String artefactShortName;
   private final int profitInMinutes;
   private final int remediationCostsInMinutes;
+  private final int roi;
 
   public QualityInvestmentPlanEntry(String requirementCode, String violatedConstraint, String artefactLongName,
                                     String artefactShortName, int profitInMinutes, int remediationCostsInMinutes) {
@@ -42,6 +43,7 @@ public class QualityInvestmentPlanEntry implements Comparable<QualityInvestmentP
     this.artefactShortName = artefactShortName;
     this.profitInMinutes = profitInMinutes;
     this.remediationCostsInMinutes = remediationCostsInMinutes;
+    roi = Math.round(profitInMinutes / (float) remediationCostsInMinutes * 100);
   }
 
   @Override
