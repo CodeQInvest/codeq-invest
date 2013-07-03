@@ -173,6 +173,9 @@
                             <div class="span12">
                                 <legend class="no-border" th:text="#{roi.distribution}">ROI Distribution</legend>
                                 <div id="roiDistribution"><svg style="min-height: 300px;"></svg></div>
+                                <div id="roiDistributionErrorLabel" class="alert alert-error text-center" th:text="#{roi.distribution.error}">
+                                    Error while trying to generate generate roi distribution chart.
+                                </div>
                             </div>
                         </div>
                         <div class="row-fluid">
@@ -631,7 +634,9 @@
                 url: '/projects/' + $('#projectId').text() + '/roidistribution?basePackage=' + packageName,
                 contentType: 'application/json'
             }).done(function (data) {
+                $('#roiDistributionErrorLabel').hide();
                 $('#roiDistribution svg').empty();
+                $('#roiDistribution').show();
 
                 nv.addGraph(function() {
                     var chart = nv.models.multiBarChart();
@@ -656,7 +661,8 @@
                     return chart;
                 });
             }).fail(function() {
-                console.log('UUPS!');
+                $('#roiDistribution').hide();
+                $('#roiDistributionErrorLabel').show();
             });
         }
 
