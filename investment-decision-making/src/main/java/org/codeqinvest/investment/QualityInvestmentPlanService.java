@@ -116,8 +116,17 @@ public class QualityInvestmentPlanService {
   private Collection<QualityViolation> filterViolationsByArtefactNameStartingWith(String basePackage, List<QualityViolation> violations) {
     Collection<QualityViolation> filteredViolations = new ArrayList<QualityViolation>();
     for (QualityViolation violation : violations) {
-      if (violation.getArtefact().getName().startsWith(basePackage)) {
-        filteredViolations.add(violation);
+
+      String artefactName = violation.getArtefact().getName();
+      if (artefactName.startsWith(basePackage)) {
+
+        String artefactPartWithoutBasePackage = artefactName.substring(basePackage.length());
+        if (artefactPartWithoutBasePackage.isEmpty()
+            || artefactName.substring(basePackage.length()).contains(".")
+            || basePackage.isEmpty()) {
+
+          filteredViolations.add(violation);
+        }
       }
     }
     return filteredViolations;

@@ -153,4 +153,32 @@ public class QualityInvestmentPlanServiceTest {
     assertThat(qualityInvestmentPlan.getRoi()).isZero();
     assertThat(qualityInvestmentPlan.getEntries()).isEmpty();
   }
+
+  @Test
+  public void shouldGenerateInvestmentPlanForOneArtefact() {
+    QualityViolation violation1 = new QualityViolation(new Artefact("org.project.A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violation2 = new QualityViolation(new Artefact("org.project.AB", ""), createRequirementOnlyWithCriteria(new QualityCriteria("rfc", "<=", 50.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violation3 = new QualityViolation(new Artefact("org.project.ABC", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cov", ">", 80.0)), 10, 0, 0.0, "ncloc");
+    analysis = QualityAnalysis.success(null, Arrays.asList(violation1, violation2, violation3));
+
+    when(profitCalculator.calculateProfit(violation1)).thenReturn(100.0);
+
+    QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "org.project.A", 50);
+    assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefactLongName()).isEqualTo("org.project.A");
+  }
+
+  @Test
+  public void shouldGenerateInvestmentPlanForOneSubPackage() {
+    QualityViolation violation1 = new QualityViolation(new Artefact("org.project.a.test.A", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cc", "<", 5.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violation2 = new QualityViolation(new Artefact("org.project.b.B", ""), createRequirementOnlyWithCriteria(new QualityCriteria("rfc", "<=", 50.0)), 50, 0, 0.0, "ncloc");
+    QualityViolation violation3 = new QualityViolation(new Artefact("org.project.C", ""), createRequirementOnlyWithCriteria(new QualityCriteria("cov", ">", 80.0)), 10, 0, 0.0, "ncloc");
+    analysis = QualityAnalysis.success(null, Arrays.asList(violation1, violation2, violation3));
+
+    when(profitCalculator.calculateProfit(violation1)).thenReturn(100.0);
+
+    QualityInvestmentPlan qualityInvestmentPlan = investmentPlanService.computeInvestmentPlan(analysis, "org.project.a.test.A", 50);
+    assertThat(qualityInvestmentPlan.getEntries()).hasSize(1);
+    assertThat(qualityInvestmentPlan.getEntries().iterator().next().getArtefactLongName()).isEqualTo("org.project.a.test.A");
+  }
 }
