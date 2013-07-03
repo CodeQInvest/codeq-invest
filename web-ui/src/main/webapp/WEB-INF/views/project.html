@@ -636,19 +636,18 @@
                 nv.addGraph(function() {
                     var chart = nv.models.multiBarChart();
                     chart.showControls(false);
+                    chart.tooltips(false);
 
                     d3.select('#roiDistribution svg')
                             .datum(data)
                             .transition().duration(500).call(chart);
 
                     chart.multibar.dispatch.on('elementClick', function(e) {
-                        console.log(e.series.key + ' with roi of ' + e.point.y + ' on invest up to ' + e.point.x + ' minutes');
                         var packageName = getBasePackageName();
                         if (packageName.length > 0) {
                             packageName += '.' + e.series.key;
                         }
 
-                        console.log('invest request with package name "' + packageName + '" and investment of ' + e.point.x);
                         executeInvestmentPlanRequest(packageName, e.point.x);
                     });
 
