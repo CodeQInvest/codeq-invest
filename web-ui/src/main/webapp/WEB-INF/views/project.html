@@ -503,8 +503,11 @@
         };
 
         var treemapContainer = $('#treemap');
-        var investmentOpportunitiesJson = JSON.parse($('#investmentOpportunities').text());
-        createTreeMap(investmentOpportunitiesJson);
+        var investJsonAsText = $('#investmentOpportunities').text();
+        if (investJsonAsText && investJsonAsText.length > 0) {
+            var investmentOpportunitiesJson = JSON.parse(investJsonAsText);
+            createTreeMap(investmentOpportunitiesJson);
+        }
 
         $('#applyManualEstimates').click(function(event) {
             var estimates = [];
