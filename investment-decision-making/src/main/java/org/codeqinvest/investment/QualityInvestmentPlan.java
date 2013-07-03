@@ -18,10 +18,8 @@
  */
 package org.codeqinvest.investment;
 
-import com.google.common.collect.Sets;
 import lombok.Data;
 
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -35,22 +33,4 @@ public class QualityInvestmentPlan {
   private final int profitInMinutes;
   private final int roi;
   private final SortedSet<QualityInvestmentPlanEntry> entries;
-
-  public Set<String> getAllArtefactShortNames() {
-    Set<String> artefacts = Sets.newHashSet();
-    for (QualityInvestmentPlanEntry entry : entries) {
-      artefacts.add(entry.getArtefactShortName());
-    }
-    return artefacts;
-  }
-
-  public Set<QualityInvestmentPlanEntry> getAllEntriesOfArtefact(String artefactShortName) {
-    Set<QualityInvestmentPlanEntry> entriesOfArtefact = Sets.newHashSet();
-    for (QualityInvestmentPlanEntry investmentPlanEntry : entries) {
-      if (investmentPlanEntry.getArtefactShortName().equals(artefactShortName)) {
-        entriesOfArtefact.add(investmentPlanEntry);
-      }
-    }
-    return entriesOfArtefact;
-  }
 }

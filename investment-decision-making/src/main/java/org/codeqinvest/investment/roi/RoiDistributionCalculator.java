@@ -19,9 +19,10 @@
 package org.codeqinvest.investment.roi;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.codeqinvest.investment.QualityInvestmentPlan;
-import org.codeqinvest.investment.QualityInvestmentPlanEntry;
 import org.codeqinvest.investment.QualityInvestmentPlanService;
+import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.analysis.QualityAnalysis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,34 +44,29 @@ public class RoiDistributionCalculator {
   }
 
   public RoiDistribution calculateRoiDistribution(QualityAnalysis analysis, String basePackage, int investment) {
-    final QualityInvestmentPlan qualityInvestmentPlan = qualityInvestmentPlanService.computeInvestmentPlan(analysis, basePackage, investment);
-    return new RoiDistribution(investment, qualityInvestmentPlan.getRoi(), sumRoiByArtefact(qualityInvestmentPlan));
-  }
-
-  private Map<String, Integer> sumRoiByArtefact(QualityInvestmentPlan investmentPlan) {
+    Set<String> artefactsToAnalyze = mergeToPackageLevel(basePackage, analysis.getAllArtefacts());
     Map<String, Integer> roiByArtefact = Maps.newHashMap();
-    for (String artefact : investmentPlan.getAllArtefactShortNames()) {
-      Set<QualityInvestmentPlanEntry> entriesOfArtefact = investmentPlan.getAllEntriesOfArtefact(artefact);
-      int profit = sumOfProfit(entriesOfArtefact);
-      int remediationCosts = sumOfRemediationCosts(entriesOfArtefact);
-      roiByArtefact.put(artefact, Math.round(profit / (float) remediationCosts * 100));
+    for (String artefact : artefactsToAnalyze) {
+      QualityInvestmentPlan investmentPlan = qualityInvestmentPlanService.computeInvestmentPlan(analysis, artefact, investment);
+      roiByArtefact.put(artefact, investmentPlan.getRoi());
     }
-    return roiByArtefact;
+    return new RoiDistribution(investment, roiByArtefact);
   }
 
-  private int sumOfProfit(Set<QualityInvestmentPlanEntry> investmentPlanEntries) {
-    int profit = 0;
-    for (QualityInvestmentPlanEntry investmentPlanEntry : investmentPlanEntries) {
-      profit += investmentPlanEntry.getProfitInMinutes();
+  private Set<String> mergeToPackageLevel(String basePackage, Set<Artefact> allArtefacts) {
+    Set<String> mergedPackageLevels = Sets.newHashSet();
+    for (Artefact artefact : allArtefacts) {
+      if (artefact.getName().startsWith(basePackage)) {
+        mergedPackageLevels.add(getPackageLevel(basePackage, artefact.getName()));
+      }
     }
-    return profit;
+    return mergedPackageLevels;
   }
 
-  private int sumOfRemediationCosts(Set<QualityInvestmentPlanEntry> investmentPlanEntries) {
-    int remediationCosts = 0;
-    for (QualityInvestmentPlanEntry investmentPlanEntry : investmentPlanEntries) {
-      remediationCosts += investmentPlanEntry.getRemediationCostsInMinutes();
-    }
-    return remediationCosts;
+  private String getPackageLevel(String packageName, String artefact) {
+    int indexOfNextPackageStart = artefact.indexOf(".", packageName.length() + 1);
+    return indexOfNextPackageStart != -1
+        ? packageName + artefact.substring(packageName.length(), indexOfNextPackageStart)
+        : artefact;
   }
 }

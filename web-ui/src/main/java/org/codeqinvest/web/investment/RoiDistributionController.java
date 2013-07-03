@@ -79,7 +79,7 @@ class RoiDistributionController {
       for (Map.Entry<String, Integer> roiOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
 
         ValueTuple value = new ValueTuple(DEFAULT_INVESTMENTS[i], roiOfArtefact.getValue());
-        String artefact = roiOfArtefact.getKey();
+        String artefact = getLastPackageName(roiOfArtefact.getKey());
         if (!chartData.containsKey(artefact)) {
           chartData.put(artefact, new RoiDistributionChartRepresentation(artefact));
         }
@@ -87,6 +87,13 @@ class RoiDistributionController {
       }
     }
     return new TreeSet<RoiDistributionChartRepresentation>(chartData.values());
+  }
+
+  private String getLastPackageName(String artefactName) {
+    int indexOfLastPackageStart = artefactName.lastIndexOf(".");
+    return indexOfLastPackageStart != -1
+        ? artefactName.substring(indexOfLastPackageStart + 1)
+        : artefactName;
   }
 
   @Data

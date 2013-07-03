@@ -29,6 +29,5 @@ import java.util.Map;
 public class RoiDistribution {
 
   private final int investInMinutes;
-  private final int roi;
   private final Map<String, Integer> roiByArtefact;
 }

@@ -18,9 +18,11 @@
  */
 package org.codeqinvest.quality.analysis;
 
+import com.google.common.collect.Sets;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.codeqinvest.quality.Artefact;
 import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityViolation;
 import org.joda.time.DateTime;
@@ -36,6 +38,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * TODO javadoc
@@ -85,5 +88,13 @@ public class QualityAnalysis implements Serializable {
 
   public static QualityAnalysis failed(Project project, List<QualityViolation> violations, String failureReason) {
     return new QualityAnalysis(project, violations, false, failureReason);
+  }
+
+  public Set<Artefact> getAllArtefacts() {
+    Set<Artefact> artefacts = Sets.newHashSet();
+    for (QualityViolation violation : violations) {
+      artefacts.add(violation.getArtefact());
+    }
+    return artefacts;
   }
 }
