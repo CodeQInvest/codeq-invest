@@ -76,10 +76,10 @@ class RoiDistributionController {
     for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
       int investment = investmentAmountParser.parseMinutes(DEFAULT_INVESTMENTS[i]);
       RoiDistribution roiDistribution = roiDistributionCalculator.calculateRoiDistribution(lastAnalysis, basePackage, investment);
-      for (Map.Entry<String, Integer> roiProportionOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
+      for (Map.Entry<String, Integer> roiOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
 
-        ValueTuple value = new ValueTuple(DEFAULT_INVESTMENTS[i], roiProportionOfArtefact.getValue());
-        String artefact = roiProportionOfArtefact.getKey();
+        ValueTuple value = new ValueTuple(DEFAULT_INVESTMENTS[i], roiOfArtefact.getValue());
+        String artefact = roiOfArtefact.getKey();
         if (!chartData.containsKey(artefact)) {
           chartData.put(artefact, new RoiDistributionChartRepresentation(artefact));
         }
