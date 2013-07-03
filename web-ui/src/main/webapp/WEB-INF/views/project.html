@@ -529,10 +529,14 @@
 
         // handle investment plan request
         $('#calculateInvestment').click(function(event) {
+            executeInvestmentPlanRequest(getBasePackageName(), $('#amount').val());
+            event.preventDefault();
+        });
 
+        function executeInvestmentPlanRequest(basePackage, investment) {
             var investmentPlanRequest = {};
-            investmentPlanRequest.basePackage = getBasePackageName();
-            investmentPlanRequest.investment = $('#amount').val();
+            investmentPlanRequest.basePackage = basePackage;
+            investmentPlanRequest.investment = investment;
 
             $.ajax({
                 type: 'put',
@@ -575,9 +579,7 @@
                 $('#investmentPlanErrorLabel').show();
                 $('#investmentPlanContainer').show();
             });
-
-            event.preventDefault();
-        });
+        }
 
         function createTreeMap(data, selectedNode) {
             if (data.children.length > 0) {
@@ -622,13 +624,22 @@
 
                 nv.addGraph(function() {
                     var chart = nv.models.multiBarChart();
-                    chart.stacked(true);
-
-                    chart.yAxis.tickFormat(d3.format(',.1f'));
+                    chart.showControls(false);
 
                     d3.select('#roiDistribution svg')
                             .datum(data)
                             .transition().duration(500).call(chart);
+
+                    chart.multibar.dispatch.on('elementClick', function(e) {
+                        console.log(e.series.key + ' with roi of ' + e.point.y + ' on invest up to ' + e.point.x + ' minutes');
+                        var packageName = getBasePackageName();
+                        if (packageName.length > 0) {
+                            packageName += '.' + e.series.key;
+                        }
+
+                        console.log('invest request with package name "' + packageName + '" and investment of ' + e.point.x);
+                        executeInvestmentPlanRequest(packageName, e.point.x);
+                    });
 
                     nv.utils.windowResize(chart.update);
 

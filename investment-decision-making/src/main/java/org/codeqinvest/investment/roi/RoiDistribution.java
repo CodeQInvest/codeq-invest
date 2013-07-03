@@ -30,5 +30,5 @@ public class RoiDistribution {
 
   private final int investInMinutes;
   private final int roi;
-  private final Map<String, Integer> roiProportionByArtefact;
+  private final Map<String, Integer> roiByArtefact;
 }

@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web.investment;
+package org.codeqinvest.investment;
 
-class InvestmentParsingException extends Exception {
+public final class InvestmentParsingException extends Exception {
 
   InvestmentParsingException() {
   }

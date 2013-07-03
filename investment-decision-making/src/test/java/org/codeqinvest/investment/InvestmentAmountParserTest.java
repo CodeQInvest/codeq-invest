@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web.investment;
+package org.codeqinvest.investment;
 
 import org.junit.Before;
 import org.junit.Test;

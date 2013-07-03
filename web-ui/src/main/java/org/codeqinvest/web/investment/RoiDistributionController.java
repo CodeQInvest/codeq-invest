@@ -21,6 +21,8 @@ package org.codeqinvest.web.investment;
 import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.codeqinvest.investment.InvestmentAmountParser;
+import org.codeqinvest.investment.InvestmentParsingException;
 import org.codeqinvest.investment.roi.RoiDistribution;
 import org.codeqinvest.investment.roi.RoiDistributionCalculator;
 import org.codeqinvest.quality.Project;
@@ -46,34 +48,37 @@ import java.util.TreeSet;
 @Controller
 class RoiDistributionController {
 
-  private static final int[] DEFAULT_INVESTMENTS = new int[]{60, 120, 240, 480, 960};
+  private static final String[] DEFAULT_INVESTMENTS = new String[]{"1h", "2h", "4h", "8h", "16h"};
 
   private final ProjectRepository projectRepository;
   private final LastQualityAnalysisService lastQualityAnalysisService;
   private final RoiDistributionCalculator roiDistributionCalculator;
+  private final InvestmentAmountParser investmentAmountParser;
 
   @Autowired
   RoiDistributionController(ProjectRepository projectRepository,
                             LastQualityAnalysisService lastQualityAnalysisService,
-                            RoiDistributionCalculator roiDistributionCalculator) {
+                            RoiDistributionCalculator roiDistributionCalculator,
+                            InvestmentAmountParser investmentAmountParser) {
     this.projectRepository = projectRepository;
     this.lastQualityAnalysisService = lastQualityAnalysisService;
     this.roiDistributionCalculator = roiDistributionCalculator;
+    this.investmentAmountParser = investmentAmountParser;
   }
 
   @RequestMapping(value = "/projects/{projectId}/roidistribution", method = RequestMethod.GET)
   @ResponseBody
-  SortedSet<RoiDistributionChartRepresentation> retrieveRoiDistribution(@PathVariable long projectId, @RequestParam(required = false) String basePackage) {
+  SortedSet<RoiDistributionChartRepresentation> retrieveRoiDistribution(@PathVariable long projectId, @RequestParam(required = false) String basePackage) throws InvestmentParsingException {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project);
 
     Map<String, RoiDistributionChartRepresentation> chartData = Maps.newHashMap();
     for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
-      int investment = DEFAULT_INVESTMENTS[i];
+      int investment = investmentAmountParser.parseMinutes(DEFAULT_INVESTMENTS[i]);
       RoiDistribution roiDistribution = roiDistributionCalculator.calculateRoiDistribution(lastAnalysis, basePackage, investment);
-      for (Map.Entry<String, Integer> roiProportionOfArtefact : roiDistribution.getRoiProportionByArtefact().entrySet()) {
+      for (Map.Entry<String, Integer> roiProportionOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
 
-        ValueTuple value = new ValueTuple("" + investment, roiProportionOfArtefact.getValue());
+        ValueTuple value = new ValueTuple(DEFAULT_INVESTMENTS[i], roiProportionOfArtefact.getValue());
         String artefact = roiProportionOfArtefact.getKey();
         if (!chartData.containsKey(artefact)) {
           chartData.put(artefact, new RoiDistributionChartRepresentation(artefact));
@@ -93,7 +98,7 @@ class RoiDistributionController {
     RoiDistributionChartRepresentation(String key) {
       this.key = key;
       for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
-        values[i] = new ValueTuple("" + DEFAULT_INVESTMENTS[i], 0);
+        values[i] = new ValueTuple(DEFAULT_INVESTMENTS[i], 0);
       }
     }
 

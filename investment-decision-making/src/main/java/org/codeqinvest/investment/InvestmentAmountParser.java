@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web.investment;
+package org.codeqinvest.investment;
 
 import org.springframework.stereotype.Component;
 
@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
  * @author fmueller
  */
 @Component
-class InvestmentAmountParser {
+public class InvestmentAmountParser {
 
-  int parseMinutes(String formattedInvestmentAmount) throws InvestmentParsingException {
+  public int parseMinutes(String formattedInvestmentAmount) throws InvestmentParsingException {
     if (formattedInvestmentAmount.isEmpty()) {
       return 0;
     }

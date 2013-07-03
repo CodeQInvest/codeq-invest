@@ -44,20 +44,7 @@ public class RoiDistributionCalculator {
 
   public RoiDistribution calculateRoiDistribution(QualityAnalysis analysis, String basePackage, int investment) {
     final QualityInvestmentPlan qualityInvestmentPlan = qualityInvestmentPlanService.computeInvestmentPlan(analysis, basePackage, investment);
-    final int roi = qualityInvestmentPlan.getRoi();
-
-    Map<String, Integer> roiByArtefact = sumRoiByArtefact(qualityInvestmentPlan);
-    int sumOfRoiProportions = 0;
-    for (Integer roiProportion : roiByArtefact.values()) {
-      sumOfRoiProportions += roiProportion;
-    }
-
-    Map<String, Integer> roiProportionByArtefact = Maps.newHashMap();
-    for (Map.Entry<String, Integer> roiOfArtefact : roiByArtefact.entrySet()) {
-      roiProportionByArtefact.put(roiOfArtefact.getKey(), Math.round((roiOfArtefact.getValue() / (float) sumOfRoiProportions) * roi));
-    }
-
-    return new RoiDistribution(investment, roi, roiProportionByArtefact);
+    return new RoiDistribution(investment, qualityInvestmentPlan.getRoi(), sumRoiByArtefact(qualityInvestmentPlan));
   }
 
   private Map<String, Integer> sumRoiByArtefact(QualityInvestmentPlan investmentPlan) {

@@ -19,6 +19,7 @@
 package org.codeqinvest.web.investment;
 
 import com.google.common.collect.Sets;
+import org.codeqinvest.investment.InvestmentAmountParser;
 import org.codeqinvest.investment.QualityInvestmentPlan;
 import org.codeqinvest.investment.QualityInvestmentPlanEntry;
 import org.codeqinvest.investment.QualityInvestmentPlanService;

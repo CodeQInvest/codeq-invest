@@ -18,6 +18,8 @@
  */
 package org.codeqinvest.web.investment;
 
+import org.codeqinvest.investment.InvestmentAmountParser;
+import org.codeqinvest.investment.InvestmentParsingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
