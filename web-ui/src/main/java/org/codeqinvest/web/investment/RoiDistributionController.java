@@ -19,6 +19,7 @@
 package org.codeqinvest.web.investment;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.investment.InvestmentAmountParser;
@@ -37,7 +38,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -49,6 +52,7 @@ import java.util.TreeSet;
 class RoiDistributionController {
 
   private static final String[] DEFAULT_INVESTMENTS = new String[]{"1h", "2h", "4h", "8h", "16h"};
+  private static final int ROI_THRESHOLD = 20;
 
   private final ProjectRepository projectRepository;
   private final LastQualityAnalysisService lastQualityAnalysisService;
@@ -86,7 +90,20 @@ class RoiDistributionController {
         chartData.get(artefact).setValue(i, value);
       }
     }
-    return new TreeSet<RoiDistributionChartRepresentation>(chartData.values());
+    return new TreeSet<RoiDistributionChartRepresentation>(filterChartDataByThreshold(chartData.values()));
+  }
+
+  private Collection<RoiDistributionChartRepresentation> filterChartDataByThreshold(Collection<RoiDistributionChartRepresentation> chartData) {
+    Set<RoiDistributionChartRepresentation> filteredChartData = Sets.newHashSet();
+    for (RoiDistributionChartRepresentation roiDistribution : chartData) {
+      for (ValueTuple value : roiDistribution.values) {
+        if (value.y > ROI_THRESHOLD) {
+          filteredChartData.add(roiDistribution);
+          break;
+        }
+      }
+    }
+    return filteredChartData;
   }
 
   private String getLastPackageName(String artefactName) {
