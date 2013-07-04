@@ -66,4 +66,34 @@ class DefaultSvnRevisionsRetriever implements SvnRevisionsRetriever {
     log.debug("Found {} changes for day {} with connection {}", revisions.values().size(), day, connectionSettings);
     return new DailyRevisions(day, revisions);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Cacheable("svnRevisions")
+  public Revisions retrieveRevisions(ScmConnectionSettings connectionSettings, int numberOfCommits) throws SVNException {
+    log.info("Retrieve revisions on last {} commits for {}", numberOfCommits, connectionSettings);
+    final SVNRepository repository = SvnRepositoryFactory.create(connectionSettings);
+    final long startRevision = repository.getLatestRevision();
+    final long endRevision = startRevision - numberOfCommits;
+
+    final Multimap<String, SvnFileRevision> revisions = ArrayListMultimap.create();
+    repository.log(null, startRevision, endRevision, true, true, new ISVNLogEntryHandler() {
+
+      @Override
+      public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
+        for (SVNLogEntryPath logEntryPath : logEntry.getChangedPaths().values()) {
+          if (logEntryPath.getCopyPath() != null) {
+            revisions.put(logEntryPath.getPath(), new SvnFileRevision(logEntry.getRevision(), logEntryPath.getCopyPath(), logEntryPath.getPath()));
+          } else {
+            revisions.put(logEntryPath.getPath(), new SvnFileRevision(logEntry.getRevision(), logEntryPath.getPath(), logEntryPath.getPath()));
+          }
+        }
+      }
+    });
+
+    log.debug("Found {} changes for last {} commits with connection {}", revisions.values().size(), numberOfCommits, connectionSettings);
+    return new Revisions(revisions);
+  }
 }

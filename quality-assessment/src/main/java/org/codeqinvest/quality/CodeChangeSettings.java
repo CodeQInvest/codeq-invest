@@ -22,6 +22,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.codeqinvest.codechanges.CodeChangeProbabilityCalculator;
+import org.codeqinvest.codechanges.DefaultCodeChangeProbabilityCalculator;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -45,23 +47,31 @@ public class CodeChangeSettings implements Serializable {
   private int method;
 
   @Column(name = "CODE_CHANGE_DAYS")
-  private int days;
+  private Integer days;
+
+  @Column(name = "CODE_CHANGE_COMMITS")
+  private Integer numberOfCommits;
 
   public CodeChangeSettings() {
-    this(SupportedCodeChangeProbabilityMethod.DEFAULT.getId(), DEFAULT_DAYS);
+    this(SupportedCodeChangeProbabilityMethod.DEFAULT, DEFAULT_DAYS, null);
   }
 
-  public CodeChangeSettings(int method, int days) {
-    this.method = method;
+  public CodeChangeSettings(SupportedCodeChangeProbabilityMethod method, Integer days, Integer numberOfCommits) {
+    this.method = method.getId();
     this.days = days;
+    this.numberOfCommits = numberOfCommits;
   }
 
   public static CodeChangeSettings defaultSetting(int days) {
-    return new CodeChangeSettings(SupportedCodeChangeProbabilityMethod.DEFAULT.getId(), days);
+    return new CodeChangeSettings(SupportedCodeChangeProbabilityMethod.DEFAULT, days, null);
   }
 
   public static CodeChangeSettings weightedSetting(int days) {
-    return new CodeChangeSettings(SupportedCodeChangeProbabilityMethod.WEIGHTED.getId(), days);
+    return new CodeChangeSettings(SupportedCodeChangeProbabilityMethod.WEIGHTED, days, null);
+  }
+
+  public static CodeChangeSettings commitBasedSettings(int numberOfCommits) {
+    return new CodeChangeSettings(SupportedCodeChangeProbabilityMethod.COMMIT_BASED, null, numberOfCommits);
   }
 
   /**

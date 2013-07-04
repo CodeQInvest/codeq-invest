@@ -34,7 +34,6 @@ import org.codeqinvest.quality.QualityRequirement;
 import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -132,7 +131,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violationA, violationB)));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.2);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.2);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -157,7 +156,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violationA, violationB)));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -185,7 +184,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violation)));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -208,7 +207,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(violation)));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -275,7 +274,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -294,7 +293,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -311,7 +310,7 @@ public class DefaultQualityAnalyzerServiceTest {
     when(violationsCalculatorService.calculateAllViolation(any(Project.class))).thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(violations));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
 
@@ -325,7 +324,7 @@ public class DefaultQualityAnalyzerServiceTest {
         .thenReturn(ViolationsAnalysisResult.createSuccessfulAnalysis(Arrays.asList(new ViolationOccurence(firstRequirement, new Artefact("A", "A"), 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenThrow(exception);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenThrow(exception);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = createMockedCodeChangeProbabilityCalculatorFactory();
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);
     return new DefaultQualityAnalyzerService(violationsCalculatorService, scmAvailabilityCheckerServiceFactory,

@@ -30,7 +30,8 @@ import lombok.Getter;
 public enum SupportedCodeChangeProbabilityMethod {
 
   DEFAULT(0, "code.change.method.default"),
-  WEIGHTED(1, "code.change.method.weighted");
+  WEIGHTED(1, "code.change.method.weighted"),
+  COMMIT_BASED(2, "code.change.method.commitBased");
 
   private final int id;
   private final String messageSourceIdentifier;

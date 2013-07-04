@@ -21,7 +21,6 @@ package org.codeqinvest.codechanges;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
-import org.joda.time.LocalDate;
 
 /**
  * Describes a calculator for the probability that a given
@@ -37,11 +36,10 @@ public interface CodeChangeProbabilityCalculator {
    *
    * @param connectionSettings the connection setting for the scm system where the {@code file} can be found
    * @param file               the file for which the change probability will be calculated
-   * @param startDay           the day to start the calculation of the change probability
    * @return the calculated probability that the {@code file} will be changed
    * @throws CodeChurnCalculationException  if an error with scm server communication or calculation happens
    * @throws ScmConnectionEncodingException if an error with the supplied encoding of the {@code connectionSettings} happens
    */
-  double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file, LocalDate startDay)
+  double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file)
       throws CodeChurnCalculationException, ScmConnectionEncodingException;
 }

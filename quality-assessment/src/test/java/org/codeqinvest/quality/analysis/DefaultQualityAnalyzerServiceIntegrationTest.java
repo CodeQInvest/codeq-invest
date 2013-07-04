@@ -114,7 +114,7 @@ public class DefaultQualityAnalyzerServiceIntegrationTest {
             new ViolationOccurence(secondRequirement, artefactC, 0))));
 
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = mock(CodeChangeProbabilityCalculator.class);
-    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString(), any(LocalDate.class))).thenReturn(1.0);
+    when(codeChangeProbabilityCalculator.calculateCodeChangeProbability(any(ScmConnectionSettings.class), anyString())).thenReturn(1.0);
     CodeChangeProbabilityCalculatorFactory codeChangeProbabilityCalculatorFactory = mock(CodeChangeProbabilityCalculatorFactory.class);
     when(codeChangeProbabilityCalculatorFactory.getCodeChurnCalculatorFactory()).thenReturn(mock(CodeChurnCalculatorFactory.class));
     when(codeChangeProbabilityCalculatorFactory.create(any(CodeChangeSettings.class))).thenReturn(codeChangeProbabilityCalculator);

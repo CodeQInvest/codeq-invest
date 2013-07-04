@@ -16,26 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.codechanges.scm.svn;
+package org.codeqinvest.codechanges.scm;
 
-import com.google.common.collect.Multimap;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import org.joda.time.LocalDate;
+import lombok.Data;
+
+import java.util.List;
 
 /**
+ * This class encapsulates many code churn proportions
+ * as a whole code churn.
+ *
  * @author fmueller
  */
-@Getter
-@EqualsAndHashCode
-@ToString
-class DailyRevisions extends Revisions {
+@Data
+public class CodeChurn {
 
-  private final LocalDate day;
+  private final List<Double> codeChurnProportions;
 
-  DailyRevisions(LocalDate day, Multimap<String, SvnFileRevision> revisions) {
-    super(revisions);
-    this.day = day;
+  public void addCodeChurnProportions(List<Double> codeChurnProportions) {
+    this.codeChurnProportions.addAll(codeChurnProportions);
   }
 }

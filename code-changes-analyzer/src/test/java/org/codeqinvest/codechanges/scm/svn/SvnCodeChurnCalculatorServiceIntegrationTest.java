@@ -57,7 +57,7 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   }
 
   @Test
-  public void shouldHandleRenamedFilesProperlyForOneCommit() throws CodeChurnCalculationException, ScmConnectionEncodingException {
+  public void shouldHandleRenamedFilesProperlyForOneCommitByDay() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/configuration/trunk/src/main/java");
     Collection<DailyCodeChurn> codeChurns = codeChurnCalculator.calculateCodeChurn(connectionSettings,
         "org/apache/commons/configuration/reloading/ManagedReloadingDetector.java", new LocalDate(2013, 5, 5), 0);
@@ -72,7 +72,7 @@ public class SvnCodeChurnCalculatorServiceIntegrationTest {
   // because of that this test fails, should be improved with puppet and vagrant usage
   @Test
   @Ignore
-  public void shouldHandleRenamedFilesProperlyOverSeveralCommits() throws CodeChurnCalculationException, ScmConnectionEncodingException {
+  public void shouldHandleRenamedFilesProperlyOverSeveralCommitsByDay() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     ScmConnectionSettings connectionSettings = new ScmConnectionSettings("http://svn.apache.org/repos/asf/commons/proper/configuration/trunk/src/main/java");
     Collection<DailyCodeChurn> codeChurns = codeChurnCalculator.calculateCodeChurn(connectionSettings,
         "org/apache/commons/configuration/reloading/ManagedReloadingDetector.java", new LocalDate(2013, 5, 6), 36); // until 2013-04-01

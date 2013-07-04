@@ -39,8 +39,8 @@ import java.util.SortedSet;
  */
 public class WeightedCodeChangeProbabilityCalculator extends AbstractCodeChangeProbabilityCalculator {
 
-  public WeightedCodeChangeProbabilityCalculator(CodeChurnCalculatorFactory codeChurnCalculatorFactory, int days) {
-    super(codeChurnCalculatorFactory, days);
+  public WeightedCodeChangeProbabilityCalculator(CodeChurnCalculatorFactory codeChurnCalculatorFactory, LocalDate startDay, int days) {
+    super(codeChurnCalculatorFactory, startDay, days);
   }
 
   /**

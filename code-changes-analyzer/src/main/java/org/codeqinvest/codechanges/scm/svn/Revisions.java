@@ -19,23 +19,27 @@
 package org.codeqinvest.codechanges.scm.svn;
 
 import com.google.common.collect.Multimap;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import org.joda.time.LocalDate;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author fmueller
  */
-@Getter
-@EqualsAndHashCode
-@ToString
-class DailyRevisions extends Revisions {
+@Data
+class Revisions {
 
-  private final LocalDate day;
+  private static final Collection<SvnFileRevision> NO_REVISIONS = new ArrayList<SvnFileRevision>();
 
-  DailyRevisions(LocalDate day, Multimap<String, SvnFileRevision> revisions) {
-    super(revisions);
-    this.day = day;
+  private final Multimap<String, SvnFileRevision> revisions;
+
+  Collection<SvnFileRevision> getRevisions(String file) {
+    for (String currentFile : revisions.keySet()) {
+      if (currentFile.endsWith(file)) {
+        return revisions.get(currentFile);
+      }
+    }
+    return NO_REVISIONS;
   }
 }

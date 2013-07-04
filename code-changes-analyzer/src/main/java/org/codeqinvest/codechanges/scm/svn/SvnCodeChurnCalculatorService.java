@@ -20,6 +20,7 @@ package org.codeqinvest.codechanges.scm.svn;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.codeqinvest.codechanges.scm.CodeChurn;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
@@ -86,14 +87,7 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
             continue;
           }
 
-          long codeChurn = retrieveCodeChurn(connectionSettings, revision);
-          try {
-            long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
-            codeChurnProportions.add(codeChurn / (double) linesPreviousCommit);
-          } catch (SVNException e) {
-            // file could not be found for revision - 1 which means it was created and that means a code churn proportion of 1.0
-            codeChurnProportions.add(1.0);
-          }
+          codeChurnProportions.add(calculateCodeChurnProportion(connectionSettings, revision));
 
           if (!revision.getOldPath().equalsIgnoreCase(revision.getNewPath())) {
             // file was moved or renamed => change the currentFilePath for next revision retrieving requests
@@ -122,6 +116,50 @@ public class SvnCodeChurnCalculatorService implements CodeChurnCalculator {
       }
     }
     return codeChurns.values();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public CodeChurn calculateCodeChurnForLastCommits(ScmConnectionSettings connectionSettings, String file, int numberOfCommits)
+      throws CodeChurnCalculationException, ScmConnectionEncodingException {
+
+    String currentFilePath = file;
+    try {
+      final Collection<SvnFileRevision> revisions = revisionsRetrieverService.retrieveRevisions(connectionSettings, numberOfCommits).getRevisions(currentFilePath);
+      List<Double> codeChurnProportions = new ArrayList<Double>(revisions.size());
+      for (SvnFileRevision revision : revisions) {
+
+        codeChurnProportions.add(calculateCodeChurnProportion(connectionSettings, revision));
+
+        if (!revision.getOldPath().equalsIgnoreCase(revision.getNewPath())) {
+          // file was moved or renamed => change the currentFilePath for next revision retrieving requests
+          String renamedFile = revision.getFilePartOfOldPath(connectionSettings);
+          CodeChurn codeChurnOfRenamedFile = calculateCodeChurnForLastCommits(connectionSettings, renamedFile, numberOfCommits);
+          codeChurnProportions.addAll(codeChurnOfRenamedFile.getCodeChurnProportions());
+        }
+      }
+
+      return new CodeChurn(codeChurnProportions);
+    } catch (SVNException e) {
+      log.error("Error with svn server communication occurred!", e);
+      throw new CodeChurnCalculationException(e);
+    } catch (UnsupportedEncodingException e) {
+      log.error("An error with encoding settings of scm connection occurred! (settings: " + connectionSettings.toString() + ")", e);
+      throw new ScmConnectionEncodingException(e);
+    }
+  }
+
+  private double calculateCodeChurnProportion(ScmConnectionSettings connectionSettings, SvnFileRevision revision) throws SVNException, UnsupportedEncodingException {
+    long codeChurn = retrieveCodeChurn(connectionSettings, revision);
+    try {
+      long linesPreviousCommit = fileRetrieverService.getFile(connectionSettings, revision.getOldPath(), revision.getRevision() - 1).countLines();
+      return codeChurn / (double) linesPreviousCommit;
+    } catch (SVNException e) {
+      // file could not be found for revision - 1 which means it was created and that means a code churn proportion of 1.0
+      return 1.0;
+    }
   }
 
   private boolean existRevisionsForFileOnDay(ScmConnectionSettings connectionSettings, String file, LocalDate day) {

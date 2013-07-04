@@ -18,7 +18,9 @@
  */
 package org.codeqinvest.codechanges.scm;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.joda.time.LocalDate;
 
 import java.util.List;
@@ -28,13 +30,15 @@ import java.util.List;
  *
  * @author fmueller
  */
-@Data
-public class DailyCodeChurn {
+@Getter
+@EqualsAndHashCode
+@ToString
+public class DailyCodeChurn extends CodeChurn {
 
   private final LocalDate day;
-  private final List<Double> codeChurnProportions;
 
-  public void addCodeChurnProportions(List<Double> codeChurnProportions) {
-    this.codeChurnProportions.addAll(codeChurnProportions);
+  public DailyCodeChurn(LocalDate day, List<Double> codeChurnProportions) {
+    super(codeChurnProportions);
+    this.day = day;
   }
 }

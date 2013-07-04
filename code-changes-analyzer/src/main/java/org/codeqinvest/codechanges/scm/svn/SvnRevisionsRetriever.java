@@ -23,12 +23,11 @@ import org.joda.time.LocalDate;
 import org.tmatesoft.svn.core.SVNException;
 
 /**
- * This component retrieves all revisions of a subversion repository for a certain day.
+ * This component retrieves revisions from a subversion repository.
  *
  * @author fmueller
  */
 interface SvnRevisionsRetriever {
-
 
   /**
    * Retrieves all revisions of a subversion repository for one specified day.
@@ -37,4 +36,13 @@ interface SvnRevisionsRetriever {
    *          if an error occurred during communication with the subversion server
    */
   DailyRevisions retrieveRevisions(ScmConnectionSettings connectionSettings, LocalDate day) throws SVNException;
+
+  /**
+   * Retrieves the last revisions of a subversion repository. The number of commits to retrieve is
+   * specified.
+   *
+   * @throws org.tmatesoft.svn.core.SVNException
+   *          if an error occurred during communication with the subversion server
+   */
+  Revisions retrieveRevisions(ScmConnectionSettings connectionSettings, int numberOfCommits) throws SVNException;
 }

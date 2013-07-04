@@ -20,11 +20,13 @@ package org.codeqinvest.quality.analysis;
 
 import lombok.Getter;
 import org.codeqinvest.codechanges.CodeChangeProbabilityCalculator;
+import org.codeqinvest.codechanges.CommitBasedCodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.DefaultCodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.WeightedCodeChangeProbabilityCalculator;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
 import org.codeqinvest.quality.CodeChangeSettings;
 import org.codeqinvest.quality.SupportedCodeChangeProbabilityMethod;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,8 +46,11 @@ class CodeChangeProbabilityCalculatorFactory {
 
   CodeChangeProbabilityCalculator create(CodeChangeSettings codeChangeSettings) {
     if (codeChangeSettings.getMethod() == SupportedCodeChangeProbabilityMethod.WEIGHTED.getId()) {
-      return new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, codeChangeSettings.getDays());
+      return new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, LocalDate.now(), codeChangeSettings.getDays());
+    } else if (codeChangeSettings.getMethod() == SupportedCodeChangeProbabilityMethod.COMMIT_BASED.getId()) {
+      return new CommitBasedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, codeChangeSettings.getNumberOfCommits());
+    } else {
+      return new DefaultCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, LocalDate.now(), codeChangeSettings.getDays());
     }
-    return new DefaultCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, codeChangeSettings.getDays());
   }
 }

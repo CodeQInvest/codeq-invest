@@ -106,6 +106,13 @@ class CreateProjectController {
       return new ModelAndView("createProject");
     }
 
+    // this little hack is necessary until a better way for binding the value from the form is found
+    CodeChangeSettings codeChangeSettings = project.getCodeChangeSettings();
+    if (codeChangeSettings.getMethod() == SupportedCodeChangeProbabilityMethod.COMMIT_BASED.getId()) {
+      codeChangeSettings.setNumberOfCommits(codeChangeSettings.getDays());
+      codeChangeSettings.setDays(null);
+    }
+
     Project addedProject = projectRepository.save(project);
     analyzerScheduler.scheduleAnalyzer(addedProject);
     log.info("Created project {} and scheduled its quality analysis", project.getName());

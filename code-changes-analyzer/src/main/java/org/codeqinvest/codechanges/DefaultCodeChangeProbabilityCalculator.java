@@ -20,6 +20,7 @@ package org.codeqinvest.codechanges;
 
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
+import org.joda.time.LocalDate;
 
 import java.util.Collection;
 
@@ -33,8 +34,8 @@ import java.util.Collection;
  */
 public class DefaultCodeChangeProbabilityCalculator extends AbstractCodeChangeProbabilityCalculator {
 
-  public DefaultCodeChangeProbabilityCalculator(CodeChurnCalculatorFactory codeChurnCalculatorFactory, int days) {
-    super(codeChurnCalculatorFactory, days);
+  public DefaultCodeChangeProbabilityCalculator(CodeChurnCalculatorFactory codeChurnCalculatorFactory, LocalDate startDay, int days) {
+    super(codeChurnCalculatorFactory, startDay, days);
   }
 
   /**

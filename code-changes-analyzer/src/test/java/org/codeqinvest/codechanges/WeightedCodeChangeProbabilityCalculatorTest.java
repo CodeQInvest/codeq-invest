@@ -43,8 +43,8 @@ public class WeightedCodeChangeProbabilityCalculatorTest extends AbstractCodeCha
   public void codeChurnForOneDayPeriod() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     fakeCodeChurnCalculator.addCodeChurn("A", new DailyCodeChurn(startDay, Arrays.asList(0.8)));
     // no data for yesterday, so only 'today' values count
-    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, 1);
-    assertThat(codeChangeProbabilityCalculator.calculateCodeChangeProbability(dummyConnectionSettings, "A", startDay))
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, startDay, 1);
+    assertThat(codeChangeProbabilityCalculator.calculateCodeChangeProbability(dummyConnectionSettings, "A"))
         .isEqualTo(0.6595, Delta.delta(0.0001));
   }
 
@@ -63,8 +63,8 @@ public class WeightedCodeChangeProbabilityCalculatorTest extends AbstractCodeCha
         + 0.03837934168987 + 0.000465
         + 0.027777;
 
-    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, 5);
-    assertThat(codeChangeProbabilityCalculator.calculateCodeChangeProbability(dummyConnectionSettings, "A", startDay))
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, startDay, 5);
+    assertThat(codeChangeProbabilityCalculator.calculateCodeChangeProbability(dummyConnectionSettings, "A"))
         .isEqualTo(expectedSumOfCodeChurnProportions, Delta.delta(0.001));
   }
 
@@ -72,7 +72,7 @@ public class WeightedCodeChangeProbabilityCalculatorTest extends AbstractCodeCha
   public void maxPossibleProbabilityShouldBeOne() throws CodeChurnCalculationException, ScmConnectionEncodingException {
     fakeCodeChurnCalculator.addCodeChurn("A", new DailyCodeChurn(startDay, Arrays.asList(20.0, 30.0, 40.0)));
     fakeCodeChurnCalculator.addCodeChurn("A", new DailyCodeChurn(startDay.minusDays(1), Arrays.asList(20.0, 10.0)));
-    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, 1);
-    assertThat(codeChangeProbabilityCalculator.calculateCodeChangeProbability(dummyConnectionSettings, "A", startDay)).isEqualTo(1.0);
+    CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = new WeightedCodeChangeProbabilityCalculator(codeChurnCalculatorFactory, startDay, 1);
+    assertThat(codeChangeProbabilityCalculator.calculateCodeChangeProbability(dummyConnectionSettings, "A")).isEqualTo(1.0);
   }
 }

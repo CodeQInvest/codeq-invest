@@ -109,7 +109,6 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
   private QualityAnalysis addChangeProbabilityToEachArtifact(Project project, ViolationsAnalysisResult violationsAnalysisResult) {
     log.info("Starting calculation of change probability for each artefact of project {}", project.getName());
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = codeChangeProbabilityCalculatorFactory.create(project.getCodeChangeSettings());
-    LocalDate startDay = LocalDate.now();
     Set<String> computedArtefacts = Sets.newHashSet();
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
       Artefact artefact = violation.getArtefact();
@@ -119,7 +118,7 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
 
       final double changeProbability;
       try {
-        changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename(), startDay);
+        changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename());
         artefact.setChangeProbability(changeProbability);
         computedArtefacts.add(artefact.getSonarIdentifier());
       } catch (CodeChurnCalculationException e) {

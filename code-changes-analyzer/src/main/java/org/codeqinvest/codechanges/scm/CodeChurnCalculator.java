@@ -41,4 +41,7 @@ public interface CodeChurnCalculator {
    */
   Collection<DailyCodeChurn> calculateCodeChurn(ScmConnectionSettings connectionSettings, String file, LocalDate startDay, int numberOfDays)
       throws CodeChurnCalculationException, ScmConnectionEncodingException;
+
+  CodeChurn calculateCodeChurnForLastCommits(ScmConnectionSettings connectionSettings, String file, int numberOfCommits)
+      throws CodeChurnCalculationException, ScmConnectionEncodingException;
 }

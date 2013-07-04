@@ -53,13 +53,6 @@ public class CodeChangeSettingsValidatorTest {
   }
 
   @Test
-  public void methodShouldBeSupported() {
-    CodeChangeSettings settings = new CodeChangeSettings(-1, 1);
-    Errors errors = validateSettings(settings);
-    assertThat(errors.hasFieldErrors("method")).isTrue();
-  }
-
-  @Test
   public void daysMustNotBeNegative() {
     CodeChangeSettings settings = CodeChangeSettings.defaultSetting(-1);
     Errors errors = validateSettings(settings);

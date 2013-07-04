@@ -19,54 +19,43 @@
 package org.codeqinvest.codechanges;
 
 import lombok.extern.slf4j.Slf4j;
+import org.codeqinvest.codechanges.scm.CodeChurn;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
-import org.codeqinvest.codechanges.scm.DailyCodeChurn;
 import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.codeqinvest.codechanges.scm.factory.CodeChurnCalculatorFactory;
-import org.joda.time.LocalDate;
-
-import java.util.Collection;
 
 /**
- * Helper base class for {@code CodeChangeProbabilityCalculator} implementations
- * that uses historical data from the scm system.
+ * This code change probability calculator uses a fixed number of
+ * the last commits to estimate the change probability of a file.
  *
  * @author fmueller
  */
 @Slf4j
-abstract class AbstractCodeChangeProbabilityCalculator implements CodeChangeProbabilityCalculator {
+public class CommitBasedCodeChangeProbabilityCalculator implements CodeChangeProbabilityCalculator {
 
   private final CodeChurnCalculatorFactory codeChurnCalculatorFactory;
-  private final LocalDate startDay;
-  private final int days;
+  private final int numberOfCommits;
 
-  protected AbstractCodeChangeProbabilityCalculator(CodeChurnCalculatorFactory codeChurnCalculatorFactory, LocalDate startDay, int days) {
+  public CommitBasedCodeChangeProbabilityCalculator(CodeChurnCalculatorFactory codeChurnCalculatorFactory, int numberOfCommits) {
     this.codeChurnCalculatorFactory = codeChurnCalculatorFactory;
-    this.startDay = startDay;
-    this.days = days;
-  }
-
-  public final int getDays() {
-    return days;
+    this.numberOfCommits = numberOfCommits;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public final double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file)
+  public double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file)
       throws CodeChurnCalculationException, ScmConnectionEncodingException {
 
-    log.info("Calculate code change probability for file {}", file);
-
     final CodeChurnCalculator codeChurnCalculator = codeChurnCalculatorFactory.create(connectionSettings);
-    final double computedChangeProbability = computeChangeProbability(days,
-        codeChurnCalculator.calculateCodeChurn(connectionSettings, file, startDay, days));
-
-    return Math.min(1.0, computedChangeProbability);
+    CodeChurn codeChurn = codeChurnCalculator.calculateCodeChurnForLastCommits(connectionSettings, file, numberOfCommits);
+    double changeProbability = 0.0;
+    for (Double codeChurnProportion : codeChurn.getCodeChurnProportions()) {
+      changeProbability += codeChurnProportion * (1 / (double) numberOfCommits);
+    }
+    return Math.min(1.0, changeProbability);
   }
-
-  protected abstract double computeChangeProbability(int days, Collection<DailyCodeChurn> codeChurns);
 }

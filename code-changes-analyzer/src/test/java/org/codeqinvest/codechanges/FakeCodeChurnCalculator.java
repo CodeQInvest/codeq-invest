@@ -20,6 +20,7 @@ package org.codeqinvest.codechanges;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.codeqinvest.codechanges.scm.CodeChurn;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculationException;
 import org.codeqinvest.codechanges.scm.CodeChurnCalculator;
 import org.codeqinvest.codechanges.scm.DailyCodeChurn;
@@ -27,20 +28,30 @@ import org.codeqinvest.codechanges.scm.ScmConnectionEncodingException;
 import org.codeqinvest.codechanges.scm.ScmConnectionSettings;
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 class FakeCodeChurnCalculator implements CodeChurnCalculator {
 
   private final Map<String, Map<LocalDate, DailyCodeChurn>> codeChurnByFileAndDay = Maps.newHashMap();
+  private final Map<String, List<CodeChurn>> codeChurnByFile = Maps.newHashMap();
 
   void addCodeChurn(String file, DailyCodeChurn codeChurn) {
     if (!codeChurnByFileAndDay.containsKey(file)) {
       codeChurnByFileAndDay.put(file, new HashMap<LocalDate, DailyCodeChurn>());
     }
     codeChurnByFileAndDay.get(file).put(codeChurn.getDay(), codeChurn);
+  }
+
+  void addCodeChurnWithoutDay(String file, CodeChurn codeChurn) {
+    if (!codeChurnByFile.containsKey(file)) {
+      codeChurnByFile.put(file, new ArrayList<CodeChurn>());
+    }
+    codeChurnByFile.get(file).add(codeChurn);
   }
 
   @Override
@@ -56,6 +67,30 @@ class FakeCodeChurnCalculator implements CodeChurnCalculator {
       if (currentCodeChurn != null) {
         codeChurns.add(currentCodeChurn);
       }
+    }
+    return codeChurns;
+  }
+
+  @Override
+  public CodeChurn calculateCodeChurnForLastCommits(ScmConnectionSettings connectionSettings, String file, int numberOfCommits)
+      throws CodeChurnCalculationException, ScmConnectionEncodingException {
+    if (!codeChurnByFile.containsKey(file)) {
+      throw new CodeChurnCalculationException();
+    }
+
+    List<CodeChurn> codeChurnOfCommits = new ArrayList<CodeChurn>();
+    int i = 0;
+    for (CodeChurn codeChurn : codeChurnByFile.get(file)) {
+      if (i >= numberOfCommits) {
+        break;
+      }
+      codeChurnOfCommits.add(codeChurn);
+      i++;
+    }
+
+    CodeChurn codeChurns = new CodeChurn(new ArrayList<Double>());
+    for (CodeChurn codeChurnOfCommit : codeChurnOfCommits) {
+      codeChurns.addCodeChurnProportions(codeChurnOfCommit.getCodeChurnProportions());
     }
     return codeChurns;
   }
