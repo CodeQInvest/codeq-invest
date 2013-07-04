@@ -52,7 +52,7 @@ import java.util.TreeSet;
 class RoiDistributionController {
 
   private static final String[] DEFAULT_INVESTMENTS = new String[]{"1h", "2h", "4h", "8h", "16h"};
-  private static final int ROI_THRESHOLD = 20;
+  private static final int ROI_THRESHOLD = 0;
 
   private final ProjectRepository projectRepository;
   private final LastQualityAnalysisService lastQualityAnalysisService;
