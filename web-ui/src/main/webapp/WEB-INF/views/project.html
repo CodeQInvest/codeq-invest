@@ -645,6 +645,9 @@
                     var chart = nv.models.multiBarChart();
                     chart.showControls(false);
                     chart.tooltips(false);
+                    if (data.length > 8) {
+                        chart.showLegend(false);
+                    }
 
                     d3.select('#roiDistribution svg')
                             .datum(data)
