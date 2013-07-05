@@ -18,6 +18,7 @@
  */
 package org.codeqinvest.investment.roi;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.codeqinvest.investment.QualityInvestmentPlan;
@@ -56,7 +57,7 @@ public class RoiDistributionCalculator {
   private Set<String> mergeToPackageLevel(String basePackage, Set<Artefact> allArtefacts) {
     Set<String> mergedPackageLevels = Sets.newHashSet();
     for (Artefact artefact : allArtefacts) {
-      if (artefact.getName().startsWith(basePackage)) {
+      if (Strings.isNullOrEmpty(basePackage) || artefact.getName().startsWith(basePackage)) {
         mergedPackageLevels.add(getPackageLevel(basePackage, artefact.getName()));
       }
     }
