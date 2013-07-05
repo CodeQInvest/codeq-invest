@@ -58,16 +58,19 @@ class RoiDistributionController {
   private final LastQualityAnalysisService lastQualityAnalysisService;
   private final RoiDistributionCalculator roiDistributionCalculator;
   private final InvestmentAmountParser investmentAmountParser;
+  private final RoiDistributionFilter roiDistributionFilter;
 
   @Autowired
   RoiDistributionController(ProjectRepository projectRepository,
                             LastQualityAnalysisService lastQualityAnalysisService,
                             RoiDistributionCalculator roiDistributionCalculator,
-                            InvestmentAmountParser investmentAmountParser) {
+                            InvestmentAmountParser investmentAmountParser,
+                            RoiDistributionFilter roiDistributionFilter) {
     this.projectRepository = projectRepository;
     this.lastQualityAnalysisService = lastQualityAnalysisService;
     this.roiDistributionCalculator = roiDistributionCalculator;
     this.investmentAmountParser = investmentAmountParser;
+    this.roiDistributionFilter = roiDistributionFilter;
   }
 
   @RequestMapping(value = "/projects/{projectId}/roidistribution", method = RequestMethod.GET)
@@ -76,21 +79,33 @@ class RoiDistributionController {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project);
 
-    Map<String, RoiDistributionChartRepresentation> chartData = Maps.newHashMap();
+    Set<RoiDistribution> roiDistributions = Sets.newHashSet();
     for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
       int investment = investmentAmountParser.parseMinutes(DEFAULT_INVESTMENTS[i]);
-      RoiDistribution roiDistribution = roiDistributionCalculator.calculateRoiDistribution(lastAnalysis, basePackage, investment);
-      for (Map.Entry<String, Integer> roiOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
+      roiDistributions.add(roiDistributionCalculator.calculateRoiDistribution(lastAnalysis, basePackage, investment));
+    }
 
-        ValueTuple value = new ValueTuple(DEFAULT_INVESTMENTS[i], roiOfArtefact.getValue());
+    Map<String, RoiDistributionChartRepresentation> chartData = Maps.newHashMap();
+    for (RoiDistribution roiDistribution : roiDistributionFilter.filterHighestRoi(roiDistributions, DEFAULT_INVESTMENTS.length + 1)) {
+      for (Map.Entry<String, Integer> roiOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
         String artefact = getLastPackageName(roiOfArtefact.getKey());
         if (!chartData.containsKey(artefact)) {
           chartData.put(artefact, new RoiDistributionChartRepresentation(artefact));
         }
-        chartData.get(artefact).setValue(i, value);
+        final int i = findInvestmentIndex(roiDistribution);
+        chartData.get(artefact).setValue(i, new ValueTuple(DEFAULT_INVESTMENTS[i], roiOfArtefact.getValue()));
       }
     }
     return new TreeSet<RoiDistributionChartRepresentation>(filterChartDataByThreshold(chartData.values()));
+  }
+
+  private int findInvestmentIndex(RoiDistribution roiDistribution) throws InvestmentParsingException {
+    for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
+      if (investmentAmountParser.parseMinutes(DEFAULT_INVESTMENTS[i]) == roiDistribution.getInvestInMinutes()) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   private Collection<RoiDistributionChartRepresentation> filterChartDataByThreshold(Collection<RoiDistributionChartRepresentation> chartData) {
