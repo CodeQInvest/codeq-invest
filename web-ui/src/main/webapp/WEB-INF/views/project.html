@@ -176,6 +176,57 @@
                                 <div id="roiDistributionErrorLabel" class="alert alert-error text-center" th:text="#{roi.distribution.error}">
                                     Error while trying to generate generate roi distribution chart.
                                 </div>
+                                <div class="accordion">
+                                  <div class="accordion-group">
+                                    <div class="accordion-heading">
+                                        <a class="accordion-toggle" data-toggle="collapse" href="#collapsableRoiDistribution" th:text="#{detailed.roi.distribution}">
+                                            Detailed ROI Distribution
+                                        </a>
+                                    </div>
+                                    <div id="collapsableRoiDistribution" class="accordion-body collapse">
+                                        <div class="accordion-inner">
+                                            <table class="table table-condensed table-striped table-borders">
+                                                <thead>
+                                                <tr>
+                                                    <th th:text="#{table.header.artefact}">Artefact</th>
+                                                    <th>1h</th>
+                                                    <th>2h</th>
+                                                    <th>4h</th>
+                                                    <th>8h</th>
+                                                    <th>16h</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="detailedRoiDistribution" th:remove="body">
+                                                <tr>
+                                                    <td>FunctionSequence</td>
+                                                    <td>160%</td>
+                                                    <td>150%</td>
+                                                    <td>190%</td>
+                                                    <td>210%</td>
+                                                    <td>180%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>NumberInterpolator</td>
+                                                    <td>70%</td>
+                                                    <td>60%</td>
+                                                    <td>90%</td>
+                                                    <td>120%</td>
+                                                    <td>105%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Scheduler</td>
+                                                    <td>60%</td>
+                                                    <td>50%</td>
+                                                    <td>45%</td>
+                                                    <td>80%</td>
+                                                    <td>130%</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row-fluid">
@@ -639,37 +690,55 @@
             }).done(function (data) {
                 $('#roiDistributionErrorLabel').hide();
                 $('#roiDistribution svg').empty();
+                $('#detailedRoiDistribution').empty();
                 $('#roiDistribution').show();
+                $('#detailedRoiDistribution').parent().show();
 
                 nv.addGraph(function() {
                     var chart = nv.models.multiBarChart();
                     chart.showControls(false);
                     chart.tooltips(false);
-                    if (data.length > 8) {
-                        chart.showLegend(false);
-                    }
 
                     d3.select('#roiDistribution svg')
-                            .datum(data)
+                            .datum(data.bestArtefacts)
                             .transition().duration(500).call(chart);
 
                     chart.multibar.dispatch.on('elementClick', function(e) {
-                        var packageName = getBasePackageName();
-                        if (packageName.length > 0) {
-                            packageName += '.' + e.series.key;
-                        }
-
-                        executeInvestmentPlanRequest(packageName, e.point.x);
+                        executeInvestmentPlanRequest(getFullPackageName(e.series.key), e.point.x);
                     });
 
                     nv.utils.windowResize(chart.update);
 
                     return chart;
                 });
+
+                var distributionsTableContent = '';
+                $.each(data.allArtefacts, function(index, element) {
+                    distributionsTableContent += '<tr><td>' + element.key + '</td>';
+                    $.each(element.values, function(index, value) {
+                        distributionsTableContent += '<td class="clickable">' + value.y + '%<span class="hide">' + value.x + '</span></td>';
+                    });
+                    distributionsTableContent += '</tr>';
+                });
+
+                $('#detailedRoiDistribution').append(distributionsTableContent);
+                $('#detailedRoiDistribution td').click(function(event) {
+                    var investment = $('span', event.target).text();
+                    executeInvestmentPlanRequest(getFullPackageName($('td:first', $(event.target).parent()).text()), investment);
+                });
             }).fail(function() {
                 $('#roiDistribution').hide();
+                // $('#detailedRoiDistribution').parent().hide();
                 $('#roiDistributionErrorLabel').show();
             });
+        }
+
+        function getFullPackageName(packageName) {
+            var fullPackageName = getBasePackageName();
+            if (fullPackageName.length > 0) {
+                fullPackageName += '.' + packageName;
+            }
+            return fullPackageName;
         }
 
         function updateManualEstimatesTable(data) {

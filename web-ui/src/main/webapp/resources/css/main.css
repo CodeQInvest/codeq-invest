@@ -102,3 +102,7 @@ svg {
 .colorscale-legend-right {
     margin-left: 2px;
 }
+
+.clickable:hover {
+    cursor: pointer;
+}

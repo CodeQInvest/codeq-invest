@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with CodeQ Invest.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.codeqinvest.web.investment;
+package org.codeqinvest.web.investment.roi;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.codeqinvest.investment.InvestmentAmountParser;
 import org.codeqinvest.investment.InvestmentParsingException;
@@ -41,7 +40,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -51,7 +49,6 @@ import java.util.TreeSet;
 @Controller
 class RoiDistributionController {
 
-  private static final String[] DEFAULT_INVESTMENTS = new String[]{"1h", "2h", "4h", "8h", "16h"};
   private static final int ROI_THRESHOLD = 0;
 
   private final ProjectRepository projectRepository;
@@ -75,33 +72,42 @@ class RoiDistributionController {
 
   @RequestMapping(value = "/projects/{projectId}/roidistribution", method = RequestMethod.GET)
   @ResponseBody
-  SortedSet<RoiDistributionChartRepresentation> retrieveRoiDistribution(@PathVariable long projectId, @RequestParam(required = false) String basePackage) throws InvestmentParsingException {
+  EnhancedRoiDistribution retrieveRoiDistribution(@PathVariable long projectId, @RequestParam(required = false) String basePackage) throws InvestmentParsingException {
     Project project = projectRepository.findOne(projectId);
     QualityAnalysis lastAnalysis = lastQualityAnalysisService.retrieveLastSuccessfulAnalysis(project);
 
     Set<RoiDistribution> roiDistributions = Sets.newHashSet();
-    for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
-      int investment = investmentAmountParser.parseMinutes(DEFAULT_INVESTMENTS[i]);
+    for (int i = 0; i < RoiDistributionChartRepresentation.DEFAULT_INVESTMENTS.length; i++) {
+      int investment = investmentAmountParser.parseMinutes(RoiDistributionChartRepresentation.DEFAULT_INVESTMENTS[i]);
       roiDistributions.add(roiDistributionCalculator.calculateRoiDistribution(lastAnalysis, basePackage, investment));
     }
 
+    Collection<RoiDistributionChartRepresentation> bestRois = convertToChartRepresentations(roiDistributionFilter.filterHighestRoi(
+        roiDistributions, RoiDistributionChartRepresentation.DEFAULT_INVESTMENTS.length + 1));
+
+    return new EnhancedRoiDistribution(
+        new TreeSet<RoiDistributionChartRepresentation>(filterChartDataByThreshold(convertToChartRepresentations(roiDistributions))),
+        new TreeSet<RoiDistributionChartRepresentation>(filterChartDataByThreshold(bestRois)));
+  }
+
+  private Collection<RoiDistributionChartRepresentation> convertToChartRepresentations(Collection<RoiDistribution> roiDistributions) throws InvestmentParsingException {
     Map<String, RoiDistributionChartRepresentation> chartData = Maps.newHashMap();
-    for (RoiDistribution roiDistribution : roiDistributionFilter.filterHighestRoi(roiDistributions, DEFAULT_INVESTMENTS.length + 1)) {
+    for (RoiDistribution roiDistribution : roiDistributions) {
       for (Map.Entry<String, Integer> roiOfArtefact : roiDistribution.getRoiByArtefact().entrySet()) {
         String artefact = getLastPackageName(roiOfArtefact.getKey());
         if (!chartData.containsKey(artefact)) {
           chartData.put(artefact, new RoiDistributionChartRepresentation(artefact));
         }
         final int i = findInvestmentIndex(roiDistribution);
-        chartData.get(artefact).setValue(i, new ValueTuple(DEFAULT_INVESTMENTS[i], roiOfArtefact.getValue()));
+        chartData.get(artefact).setValue(i, new ValueTuple(RoiDistributionChartRepresentation.DEFAULT_INVESTMENTS[i], roiOfArtefact.getValue()));
       }
     }
-    return new TreeSet<RoiDistributionChartRepresentation>(filterChartDataByThreshold(chartData.values()));
+    return chartData.values();
   }
 
   private int findInvestmentIndex(RoiDistribution roiDistribution) throws InvestmentParsingException {
-    for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
-      if (investmentAmountParser.parseMinutes(DEFAULT_INVESTMENTS[i]) == roiDistribution.getInvestInMinutes()) {
+    for (int i = 0; i < RoiDistributionChartRepresentation.DEFAULT_INVESTMENTS.length; i++) {
+      if (investmentAmountParser.parseMinutes(RoiDistributionChartRepresentation.DEFAULT_INVESTMENTS[i]) == roiDistribution.getInvestInMinutes()) {
         return i;
       }
     }
@@ -111,8 +117,8 @@ class RoiDistributionController {
   private Collection<RoiDistributionChartRepresentation> filterChartDataByThreshold(Collection<RoiDistributionChartRepresentation> chartData) {
     Set<RoiDistributionChartRepresentation> filteredChartData = Sets.newHashSet();
     for (RoiDistributionChartRepresentation roiDistribution : chartData) {
-      for (ValueTuple value : roiDistribution.values) {
-        if (value.y > ROI_THRESHOLD) {
+      for (ValueTuple value : roiDistribution.getValues()) {
+        if (value.getY() > ROI_THRESHOLD) {
           filteredChartData.add(roiDistribution);
           break;
         }
@@ -126,35 +132,5 @@ class RoiDistributionController {
     return indexOfLastPackageStart != -1
         ? artefactName.substring(indexOfLastPackageStart + 1)
         : artefactName;
-  }
-
-  @Data
-  private static class RoiDistributionChartRepresentation implements Comparable<RoiDistributionChartRepresentation> {
-
-    private final String key;
-    private final ValueTuple[] values = new ValueTuple[DEFAULT_INVESTMENTS.length];
-
-    RoiDistributionChartRepresentation(String key) {
-      this.key = key;
-      for (int i = 0; i < DEFAULT_INVESTMENTS.length; i++) {
-        values[i] = new ValueTuple(DEFAULT_INVESTMENTS[i], 0);
-      }
-    }
-
-    void setValue(int index, ValueTuple value) {
-      values[index] = value;
-    }
-
-    @Override
-    public int compareTo(RoiDistributionChartRepresentation roiDistributionChartRepresentation) {
-      return key.compareToIgnoreCase(roiDistributionChartRepresentation.key);
-    }
-  }
-
-  @Data
-  private static class ValueTuple {
-
-    private final String x;
-    private final int y;
   }
 }
