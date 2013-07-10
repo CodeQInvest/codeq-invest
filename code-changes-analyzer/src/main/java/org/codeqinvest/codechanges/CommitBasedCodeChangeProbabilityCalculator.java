@@ -50,6 +50,8 @@ public class CommitBasedCodeChangeProbabilityCalculator implements CodeChangePro
   public double calculateCodeChangeProbability(ScmConnectionSettings connectionSettings, String file)
       throws CodeChurnCalculationException, ScmConnectionEncodingException {
 
+    log.info("Calculate code change probability for file {}", file);
+
     final CodeChurnCalculator codeChurnCalculator = codeChurnCalculatorFactory.create(connectionSettings);
     CodeChurn codeChurn = codeChurnCalculator.calculateCodeChurnForLastCommits(connectionSettings, file, numberOfCommits);
     double changeProbability = 0.0;

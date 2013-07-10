@@ -63,7 +63,7 @@ class DefaultSvnRevisionsRetriever implements SvnRevisionsRetriever {
       }
     });
 
-    log.debug("Found {} changes for day {} with connection {}", revisions.values().size(), day, connectionSettings);
+    log.info("Found {} changes for day {} with connection {}", revisions.values().size(), day, connectionSettings);
     return new DailyRevisions(day, revisions);
   }
 
@@ -75,14 +75,13 @@ class DefaultSvnRevisionsRetriever implements SvnRevisionsRetriever {
   public Revisions retrieveRevisions(ScmConnectionSettings connectionSettings, int numberOfCommits) throws SVNException {
     log.info("Retrieve revisions on last {} commits for {}", numberOfCommits, connectionSettings);
     final SVNRepository repository = SvnRepositoryFactory.create(connectionSettings);
-    final long startRevision = repository.getLatestRevision();
-    final long endRevision = startRevision - numberOfCommits;
 
     final Multimap<String, SvnFileRevision> revisions = ArrayListMultimap.create();
-    repository.log(null, startRevision, endRevision, true, true, new ISVNLogEntryHandler() {
+    repository.log(null, repository.getLatestRevision(), 0L, true, true, numberOfCommits, new ISVNLogEntryHandler() {
 
       @Override
       public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
+        log.debug("Process revision {}", logEntry.getRevision());
         for (SVNLogEntryPath logEntryPath : logEntry.getChangedPaths().values()) {
           if (logEntryPath.getCopyPath() != null) {
             revisions.put(logEntryPath.getPath(), new SvnFileRevision(logEntry.getRevision(), logEntryPath.getCopyPath(), logEntryPath.getPath()));
@@ -93,7 +92,7 @@ class DefaultSvnRevisionsRetriever implements SvnRevisionsRetriever {
       }
     });
 
-    log.debug("Found {} changes for last {} commits with connection {}", revisions.values().size(), numberOfCommits, connectionSettings);
+    log.info("Found {} changes for last {} commits with connection {}", revisions.values().size(), numberOfCommits, connectionSettings);
     return new Revisions(revisions);
   }
 }
