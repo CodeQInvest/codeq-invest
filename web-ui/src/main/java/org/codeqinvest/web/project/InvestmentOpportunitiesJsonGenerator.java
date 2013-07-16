@@ -41,7 +41,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -150,8 +149,8 @@ public class InvestmentOpportunitiesJsonGenerator {
     private final String name;
     private final String longName;
 
-    private final SortedSet<PackageNode> allChildren = new TreeSet<PackageNode>(new ByNameComparator());
-    private final SortedSet<PackageNode> children = new TreeSet<PackageNode>(new ByNameComparator());
+    private final Set<PackageNode> allChildren = new TreeSet<PackageNode>(new ByNameComparator());
+    private final Set<PackageNode> children = new TreeSet<PackageNode>(new ByNameComparator());
 
     @Setter
     private int changeProbability;

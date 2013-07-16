@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * @author fmueller
@@ -68,9 +67,9 @@ public class QualityInvestmentPlanService {
         allProfits.add(profit);
       }
     }
-    Collections.sort(allProfits, new DoubleDescendingComparator());
+    Collections.sort(allProfits, new DescendingComparator<Double>());
 
-    SortedSet<QualityInvestmentPlanEntry> investmentPlanEntries = Sets.newTreeSet();
+    Set<QualityInvestmentPlanEntry> investmentPlanEntries = Sets.newTreeSet();
     int toInvest = investmentInMinutes;
     int invested = 0;
 
@@ -97,7 +96,7 @@ public class QualityInvestmentPlanService {
       }
     }
 
-    int overallProfit = calculateOverallProfit(investmentPlanEntries);
+    final int overallProfit = calculateOverallProfit(investmentPlanEntries);
     return new QualityInvestmentPlan(basePackage,
         invested,
         overallProfit,
@@ -105,7 +104,7 @@ public class QualityInvestmentPlanService {
         investmentPlanEntries);
   }
 
-  private int calculateOverallProfit(SortedSet<QualityInvestmentPlanEntry> investmentPlanEntries) {
+  private int calculateOverallProfit(Set<QualityInvestmentPlanEntry> investmentPlanEntries) {
     int overallProfit = 0;
     for (QualityInvestmentPlanEntry investmentPlanEntry : investmentPlanEntries) {
       overallProfit += investmentPlanEntry.getProfitInMinutes();
@@ -141,10 +140,10 @@ public class QualityInvestmentPlanService {
     return Math.round(overallProfit / (float) overallRemediationCosts * 100);
   }
 
-  private static class DoubleDescendingComparator implements Comparator<Double> {
+  private static class DescendingComparator<T extends Comparable<T>> implements Comparator<T> {
 
     @Override
-    public int compare(Double thisValue, Double other) {
+    public int compare(T thisValue, T other) {
       return -1 * thisValue.compareTo(other);
     }
   }

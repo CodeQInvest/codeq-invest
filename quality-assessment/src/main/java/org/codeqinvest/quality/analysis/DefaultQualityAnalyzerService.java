@@ -111,26 +111,26 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
     CodeChangeProbabilityCalculator codeChangeProbabilityCalculator = codeChangeProbabilityCalculatorFactory.create(project.getCodeChangeSettings());
     Set<String> computedArtefacts = Sets.newHashSet();
     for (ViolationOccurence violation : violationsAnalysisResult.getViolations()) {
-      Artefact artefact = violation.getArtefact();
-      if (computedArtefacts.contains(violation.getArtefact().getSonarIdentifier())) {
-        continue;
-      }
 
-      final double changeProbability;
-      try {
-        changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename());
-        artefact.setChangeProbability(changeProbability);
-        computedArtefacts.add(artefact.getSonarIdentifier());
-      } catch (CodeChurnCalculationException e) {
-        logFailedAnalysis(project, e);
-        return QualityAnalysis.failed(project,
-            zeroCostsForEachViolation(violationsAnalysisResult),
-            "Error during calculating the code churn for " + violation.getArtefact().getName());
-      } catch (ScmConnectionEncodingException e) {
-        logFailedAnalysis(project, e);
-        return QualityAnalysis.failed(project,
-            zeroCostsForEachViolation(violationsAnalysisResult),
-            "Error with supplied scm connection encoding.");
+      Artefact artefact = violation.getArtefact();
+      if (!computedArtefacts.contains(artefact.getSonarIdentifier())) {
+
+        final double changeProbability;
+        try {
+          changeProbability = codeChangeProbabilityCalculator.calculateCodeChangeProbability(project.getScmSettings(), artefact.getFilename());
+          artefact.setChangeProbability(changeProbability);
+          computedArtefacts.add(artefact.getSonarIdentifier());
+        } catch (CodeChurnCalculationException e) {
+          logFailedAnalysis(project, e);
+          return QualityAnalysis.failed(project,
+              zeroCostsForEachViolation(violationsAnalysisResult),
+              "Error during calculating the code churn for " + violation.getArtefact().getName());
+        } catch (ScmConnectionEncodingException e) {
+          logFailedAnalysis(project, e);
+          return QualityAnalysis.failed(project,
+              zeroCostsForEachViolation(violationsAnalysisResult),
+              "Error with supplied scm connection encoding.");
+        }
       }
     }
 
@@ -146,19 +146,19 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
     log.info("Starting calculation of secure change probability for each artefact of project {}", project.getName());
     Set<String> computedArtefacts = Sets.newHashSet();
     for (QualityViolation violation : qualityAnalysis.getViolations()) {
-      if (computedArtefacts.contains(violation.getArtefact().getSonarIdentifier())) {
-        continue;
-      }
 
-      try {
-        Artefact artefact = violation.getArtefact();
-        double secureChangeProbability = secureChangeProbabilityCalculator.calculateSecureChangeProbability(project.getProfile(),
-            project.getSonarConnectionSettings(), artefact);
-        artefact.setSecureChangeProbability(secureChangeProbability);
-        computedArtefacts.add(artefact.getSonarIdentifier());
-      } catch (ResourceNotFoundException e) {
-        logFailedAnalysis(project, e);
-        return QualityAnalysis.failed(project, qualityAnalysis.getViolations(), "Resource not found during secure change calculation");
+      Artefact artefact = violation.getArtefact();
+      if (!computedArtefacts.contains(artefact.getSonarIdentifier())) {
+
+        try {
+          double secureChangeProbability = secureChangeProbabilityCalculator.calculateSecureChangeProbability(project.getProfile(),
+              project.getSonarConnectionSettings(), artefact);
+          artefact.setSecureChangeProbability(secureChangeProbability);
+          computedArtefacts.add(artefact.getSonarIdentifier());
+        } catch (ResourceNotFoundException e) {
+          logFailedAnalysis(project, e);
+          return QualityAnalysis.failed(project, qualityAnalysis.getViolations(), "Resource not found during secure change calculation");
+        }
       }
     }
     log.info("Finished calculation of secure change probability for each artefact of project {}", project.getName());

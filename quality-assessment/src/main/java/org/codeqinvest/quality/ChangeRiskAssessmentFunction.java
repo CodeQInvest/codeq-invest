@@ -38,7 +38,7 @@ import java.util.Set;
  * @author fmueller
  */
 @Getter
-@EqualsAndHashCode(exclude = { "profile", "riskCharges" })
+@EqualsAndHashCode(exclude = {"profile", "riskCharges"})
 @ToString(exclude = "profile")
 @Entity
 @Table(name = "CHANGE_RISK_FUNCTION")
@@ -99,7 +99,7 @@ public class ChangeRiskAssessmentFunction implements Serializable {
   public double getRiskChargeAmount(double metricValue) {
     RiskCharge currentRiskCharge = null;
     for (RiskCharge riskCharge : sortByThreshold(riskCharges)) {
-      if ((currentRiskCharge == null && riskCharge.isPayable(metricValue)) || riskCharge.isPayable(metricValue)) {
+      if (riskCharge.isPayable(metricValue)) {
         currentRiskCharge = riskCharge;
       } else {
         break;

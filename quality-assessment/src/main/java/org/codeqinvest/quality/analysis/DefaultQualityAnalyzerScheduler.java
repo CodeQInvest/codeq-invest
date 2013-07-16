@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -41,7 +40,6 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-@Transactional
 public class DefaultQualityAnalyzerScheduler implements QualityAnalyzerScheduler {
 
   // TODO make this configurable

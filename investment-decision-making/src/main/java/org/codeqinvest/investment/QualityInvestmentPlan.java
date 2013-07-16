@@ -20,7 +20,7 @@ package org.codeqinvest.investment;
 
 import lombok.Data;
 
-import java.util.SortedSet;
+import java.util.Set;
 
 /**
  * @author fmueller
@@ -32,5 +32,5 @@ public class QualityInvestmentPlan {
   private final int investmentInMinutes;
   private final int profitInMinutes;
   private final int roi;
-  private final SortedSet<QualityInvestmentPlanEntry> entries;
+  private final Set<QualityInvestmentPlanEntry> entries;
 }
