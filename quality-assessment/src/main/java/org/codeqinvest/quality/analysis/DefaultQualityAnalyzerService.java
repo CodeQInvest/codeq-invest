@@ -29,7 +29,6 @@ import org.codeqinvest.quality.Project;
 import org.codeqinvest.quality.QualityViolation;
 import org.codeqinvest.sonar.ResourceNotFoundException;
 import org.codeqinvest.sonar.SonarConnectionSettings;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,14 +80,15 @@ class DefaultQualityAnalyzerService implements QualityAnalyzerService {
       ViolationsAnalysisResult violationsAnalysisResult = violationsCalculatorService.calculateAllViolation(project);
       if (!violationsAnalysisResult.isSuccessful()) {
         log.error("Quality analysis for project {} failed due '{}'", project.getName(), violationsAnalysisResult.getFailureReason().get());
-        return QualityAnalysis.failed(project,
+        return qualityAnalysisRepository.save(QualityAnalysis.failed(project,
             zeroCostsForEachViolation(violationsAnalysisResult),
-            violationsAnalysisResult.getFailureReason().get());
+            violationsAnalysisResult.getFailureReason().get()));
       }
 
       log.info("Checking the availability of the SCM system {} for project {}", project.getScmSettings(), project.getName());
       if (!scmAvailabilityCheckerServiceFactory.create(project.getScmSettings()).isAvailable(project.getScmSettings())) {
-        return QualityAnalysis.failed(project, zeroCostsForEachViolation(violationsAnalysisResult), "The scm system is not available.");
+        return qualityAnalysisRepository.save(QualityAnalysis.failed(project,
+            zeroCostsForEachViolation(violationsAnalysisResult), "The scm system is not available."));
       }
 
       QualityAnalysis qualityAnalysis = addChangeProbabilityToEachArtifact(project, violationsAnalysisResult);
