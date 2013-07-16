@@ -81,11 +81,10 @@ public class InvestmentOpportunitiesJsonGenerator {
 
   private void addArtefact(QualityViolation violation, RootNode root, Set<String> alreadyAddedArtefacts, Map<String, PackageNode> nodeLookupTable) {
     Artefact artefact = violation.getArtefact();
-    double weightedProfit = weightedProfitCalculator.calculateWeightedProfit(violation);
-
     if (!alreadyAddedArtefacts.contains(artefact.getName())) {
 
       alreadyAddedArtefacts.add(artefact.getName());
+      double weightedProfit = weightedProfitCalculator.calculateWeightedProfit(violation);
       ArtefactNode artefactNode = new ArtefactNode(artefact, weightedProfit);
 
       PackageNode currentPackageNode = null;
