@@ -75,7 +75,7 @@ public class QualityInvestmentPlanService {
 
     for (double profit : allProfits) {
       List<QualityViolation> violations = new ArrayList<QualityViolation>(violationsByProfit.get(profit));
-      Collections.sort(violations, new ViolationByProfitAndRemediationCostsComparator(profitCalculator));
+      Collections.sort(violations, new ViolationByRemediationCostsComparator());
 
       for (QualityViolation violation : violations) {
         int remediationCost = violation.getRemediationCosts();
@@ -140,7 +140,7 @@ public class QualityInvestmentPlanService {
     return Math.round(overallProfit / (float) overallRemediationCosts * 100);
   }
 
-  private static class DescendingComparator<T extends Comparable<T>> implements Comparator<T> {
+  private static final class DescendingComparator<T extends Comparable<T>> implements Comparator<T> {
 
     @Override
     public int compare(T thisValue, T other) {
@@ -148,23 +148,11 @@ public class QualityInvestmentPlanService {
     }
   }
 
-  private static final class ViolationByProfitAndRemediationCostsComparator implements Comparator<QualityViolation> {
-
-    private final ProfitCalculator profitCalculator;
-
-    private ViolationByProfitAndRemediationCostsComparator(ProfitCalculator profitCalculator) {
-      this.profitCalculator = profitCalculator;
-    }
+  private static final class ViolationByRemediationCostsComparator implements Comparator<QualityViolation> {
 
     @Override
     public int compare(QualityViolation violation, QualityViolation otherViolation) {
-      double profit = profitCalculator.calculateProfit(violation);
-      double otherProfit = profitCalculator.calculateProfit(otherViolation);
-      if (profit < otherProfit) {
-        return 1;
-      } else if (profit > otherProfit) {
-        return -1;
-      } else if (violation.getRemediationCosts() < otherViolation.getRemediationCosts()) {
+      if (violation.getRemediationCosts() < otherViolation.getRemediationCosts()) {
         return -1;
       } else if (violation.getRemediationCosts() > otherViolation.getRemediationCosts()) {
         return 1;
