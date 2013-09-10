@@ -20,7 +20,7 @@
     <header>
       <div class="inner">
         <h1>CodeQ Invest</h1>
-        <h2>A new way to deal with inner software quality.</h2>
+        <h2>New way to deal with internal software quality</h2>
         <a href="https://github.com/CodeQInvest/codeq-invest" class="button"><small>View project on</small>GitHub</a>
       </div>
     </header>
@@ -29,9 +29,52 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h2>
-<a name="what-is-it-all-about" class="anchor" href="#what-is-it-all-about"><span class="octicon octicon-link"></span></a>What is it all about?</h2>
+<a name="new-metaphor-quality-investment" class="anchor" href="#new-metaphor-quality-investment"><span class="octicon octicon-link"></span></a>New metaphor: Quality Investment</h2>
 
-<p>CodeQ Invest implements a new quality model for the management of internal software quality. For this, a new metaphor for dealing with internal software quality was invented: the quality investment. Quality investments are the reversal of technical debt. Instead of calculating the amount of remediation costs for paying off the technical debt, a return of investment is calculated which tells you how much time you save when investing in the internal software quality.</p>
+<p>CodeQ Invest implements a <strong>new quality model</strong> which extends the <a href="http://www.sqale.org">SQALE method</a>. You define your quality with quality requirements (e.g. code coverage should be greater than 80%) and estimate how long it would take to fix the violation of such a requirement and how expensive (in terms of time) it would be to leave the violation untouched. The first estimate are the <strong>remediation costs</strong> (RC) and the latter the <strong>non-remediation costs</strong> (NRC). From these two estimates a <strong>profit is derived</strong>: the time you save when you fix the violation, NRC - RC. This is the <strong>basic idea of the quality investment</strong>.</p>
+
+<p>The quality investment makes a proper management of internal software quality possible. This metaphor enables you to report the internal software quality in a useful way to business people. As a team you think in terms of <strong>return on investment</strong> and profit when discussing internal software quality.</p>
+
+<p>The estimated costs are additionally weighted by other factors, e.g. the non-remediation costs are weighted by the the change probability of the code.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<p>CodeQ Invest supports the following features:</p>
+
+<ul>
+<li>Defining your own projects which will be analyzed by a cron job</li>
+<li>Visualization of investment opportunities with a tree map</li>
+<li>Calculation of the best possible investment plan</li>
+<li>ROI calculation and visualization</li>
+<li>Manual estimates for code change probabilities</li>
+<li>Subversion support for automatic calculation of code change probabilities</li>
+<li>3 different methods to weight code changes</li>
+</ul><p>Coming soon (these features will be included in the version 1.0.0):</p>
+
+<ul>
+<li>Support for PostgreSQL (should work but it's not tested yet)</li>
+<li>Multi-module project support</li>
+<li>Defining and managing quality profiles via the web-ui</li>
+<li>Git support</li>
+</ul><p>There are a lot more ideas for this tool. A detailed roadmap will be published when the first version was released.</p>
+
+<h2>
+<a name="for-early-adopters" class="anchor" href="#for-early-adopters"><span class="octicon octicon-link"></span></a>For early adopters</h2>
+
+<p>CodeQ Invest is in an early development phase. You can run the software from scratch with the following easy steps:</p>
+
+<ol>
+<li>Download one source archive which you can find on the right side.</li>
+<li>Run <code>mvn clean install -DskipITs</code> in the root directory of the project.</li>
+<li>Run <code>mvn org.codehaus.cargo:cargo-maven2-plugin:run -Pdebug-web-app</code> in the web-ui directory.</li>
+<li>Afterwards you can access the running application under localhost:8080.</li>
+</ol><p>Currently the application uses a simple in-memory database.</p>
+
+<h2>
+<a name="for-developers" class="anchor" href="#for-developers"><span class="octicon octicon-link"></span></a>For developers</h2>
+
+<p>Feel free to contribute. You can find more information in the <a href="https://github.com/CodeQInvest/codeq-invest">readme</a>.</p>
         </section>
 
         <aside id="sidebar">
