@@ -34,9 +34,9 @@
         <set>
           <value>testdata/project_without_analysis.sql</value>
           <value>testdata/project_with_first_analysis_in_progress.sql</value>
-          <value>testdata/project_with_many_analysis.sql</value>
+          <value>testdata/project_with_many_analyzes.sql</value>
           <value>testdata/project_without_positive_investment_potential.sql</value>
-          <value>testdata/project_with_only_failed_analysis.sql</value>
+          <value>testdata/project_with_only_failed_analyzes.sql</value>
         </set>
       </property>
     </bean>

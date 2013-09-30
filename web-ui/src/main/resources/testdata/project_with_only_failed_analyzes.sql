@@ -2,7 +2,7 @@ INSERT INTO PROJECT (ID, PROFILE_ID, NAME, LOWERCASENAME, CRONEXPRESSION, SONAR_
                      SONAR_PROJECT, SONAR_USERNAME, SONAR_PASSWORD,
                      SCM_TYPE, SCM_URL, SCM_USERNAME, SCM_PASSWORD,
                      SCM_FILE_ENCODING, CODE_CHANGE_METHOD, CODE_CHANGE_DAYS, HADANALYSIS)
-  VALUES (5, 1, 'Project With Only Failed Analysis', 'project with only failed analysis', '* * 3 * * *',
+  VALUES (5, 1, 'Project With Only Failed Analyzes', 'project with only failed analyzes', '* * 3 * * *',
           'http://localhost', 'sonarProject', NULL, NULL,
           0, 'http://svn.localhost', NULL, NULL, 'UTF-8',
           0, 21, FALSE);
