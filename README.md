@@ -6,6 +6,8 @@ CodeQ Invest is the new way to deal with internal software quality in your proje
 
 CodeQ Invest implements a new quality model for the management of internal software quality. For this, a new metaphor for dealing with internal software quality was invented: the quality investment. Quality investments are the reversal of technical debt. Instead of calculating the amount of remediation costs for paying off the technical debt, a return of investment is calculated which tells you how much time you save when investing in the internal software quality.
 
+**Important: The mindset is the game changer! Please see [this issue](https://github.com/CodeQInvest/codeq-invest/issues/7) for more information.**
+
 Please visit [codeq-invest.org](http://codeq-invest.org) for more information.
 
 ## Build Management
