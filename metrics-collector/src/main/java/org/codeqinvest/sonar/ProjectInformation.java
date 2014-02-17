@@ -24,7 +24,7 @@ import lombok.Data;
  * @author fmueller
  */
 @Data
-public class ProjectInformation {
+public class ProjectInformation implements Comparable {
 
   private String name;
   private String resourceKey;
@@ -37,4 +37,15 @@ public class ProjectInformation {
     this.name = name;
     this.resourceKey = resourceKey;
   }
+
+    @Override
+    public int compareTo(Object o) {
+      if (o != null) {
+        ProjectInformation otherProjectInformation = (ProjectInformation) o;
+          if (otherProjectInformation.getName() != null && this.getName() != null) {
+            return this.name.compareToIgnoreCase(otherProjectInformation.getName());
+          }
+      }
+      return 1;
+    }
 }
