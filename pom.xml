@@ -63,7 +63,7 @@
     <thymeleaf.extras.tiles.version>2.0.0</thymeleaf.extras.tiles.version>
     <jstl.version>1.2</jstl.version>
     <dbcp.version>1.4</dbcp.version>
-    <httpclient.version>4.2.5</httpclient.version>
+    <httpclient.version>4.3.2</httpclient.version>
     <svnkit.version>1.7.8</svnkit.version>
     <joda.version>2.2</joda.version>
     <usertype.version>3.0.0.GA</usertype.version>
@@ -72,10 +72,11 @@
     <junit.version>4.11</junit.version>
     <mockito.version>1.9.5</mockito.version>
     <fest.assert.version>1.4</fest.assert.version>
-    <fluentlenium.version>0.7.8</fluentlenium.version>
-    <thucydides.version>0.9.116</thucydides.version>
+    <fluentlenium.version>0.9.2</fluentlenium.version>
+    <selenium.version>2.37.1</selenium.version>
+    <thucydides.version>0.9.233</thucydides.version>
     <rest.assured.version>1.8.1</rest.assured.version>
-    <json.path.version>0.8.1</json.path.version>
+    <json.path.version>0.9.1</json.path.version>
     <hsql.version>2.2.9</hsql.version>
   </properties>
 
@@ -298,8 +299,20 @@
         <artifactId>fluentlenium-festassert</artifactId>
         <version>${fluentlenium.version}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+        <dependency>
         <groupId>net.thucydides</groupId>
         <artifactId>thucydides-core</artifactId>
         <version>${thucydides.version}</version>
