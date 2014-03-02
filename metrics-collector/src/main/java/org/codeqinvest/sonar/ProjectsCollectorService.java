@@ -18,7 +18,6 @@
  */
 package org.codeqinvest.sonar;
 
-import com.google.common.collect.Sets;
 import org.sonar.wsclient.Sonar;
 import org.sonar.wsclient.connectors.HttpClient4Connector;
 import org.sonar.wsclient.services.Resource;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This service collects all projects that are
@@ -43,7 +43,7 @@ public class ProjectsCollectorService {
   public Set<ProjectInformation> collectAllProjects(SonarConnectionSettings connectionSettings) {
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
     List<Resource> projectResources = sonar.findAll(new ResourceQuery().setLanguages("java"));
-    Set<ProjectInformation> projects = Sets.newHashSet();
+    Set<ProjectInformation> projects = new TreeSet<ProjectInformation>();
     for (Resource resource : projectResources) {
       projects.add(new ProjectInformation(resource.getName(), resource.getKey()));
     }
