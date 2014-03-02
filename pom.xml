@@ -500,7 +500,7 @@
           <encoding>${project.build.sourceEncoding}</encoding>
           <properties>
             <owner>Felix Müller</owner>
-            <year>${project.inceptionYear}</year>
+            <year>${project.inceptionYear} - 2014</year>
           </properties>
           <includes>
             <include>src/main/java/**</include>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Felix Müller
+ * Copyright 2013 - 2014 Felix Müller
  *
  * This file is part of CodeQ Invest.
  *
