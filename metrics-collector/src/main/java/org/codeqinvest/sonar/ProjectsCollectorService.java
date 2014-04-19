@@ -42,7 +42,7 @@ public class ProjectsCollectorService {
    */
   public Set<ProjectInformation> collectAllProjects(SonarConnectionSettings connectionSettings) {
     Sonar sonar = new Sonar(new HttpClient4Connector(connectionSettings.asHostObject()));
-    List<Resource> projectResources = sonar.findAll(new ResourceQuery().setLanguages("java"));
+    List<Resource> projectResources = sonar.findAll(new ResourceQuery());
     Set<ProjectInformation> projects = new TreeSet<ProjectInformation>();
     for (Resource resource : projectResources) {
       projects.add(new ProjectInformation(resource.getName(), resource.getKey()));

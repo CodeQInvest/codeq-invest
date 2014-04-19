@@ -47,7 +47,7 @@ public class ResourcesCollectorService {
     List<Resource> resources = sonar.findAll(ResourceQuery.create(connectionSettings.getProject())
         .setAllDepths()
         .setScopes("FIL")
-        .setQualifiers("CLA"));
+        .setQualifiers("FIL"));
     log.info("Found {} classes for project {}", resources.size(), connectionSettings.getProject());
     return resources;
   }

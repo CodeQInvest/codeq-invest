@@ -33,8 +33,8 @@ public class MetricCollectorServiceIntegrationTest {
   @Autowired
   private MetricCollectorService metricCollectorService;
 
-  private final String defaultResourceKey = "commons-logging:commons-logging:org.apache.commons.logging.impl.LogFactoryImpl";
-  private final String defaultSonarHost = "http://nemo.sonarsource.org";
+  private final String defaultResourceKey = "commons-logging:commons-logging";
+  private final String defaultSonarHost = "http://nemo.sonarqube.org";
 
   @Test
   public void shouldLoadCorrectMetricValueForResourceOfCommonsLoggingProjectOnNemoDemoServer() throws ResourceNotFoundException {
@@ -43,7 +43,7 @@ public class MetricCollectorServiceIntegrationTest {
      * => replace this by usage of own sonar server for int test (puppet script + vagrant)
      */
     SonarConnectionSettings connectionSettings = new SonarConnectionSettings(defaultSonarHost, defaultResourceKey);
-    assertThat(metricCollectorService.collectMetricForResource(connectionSettings, defaultResourceKey, "ncloc")).isEqualTo(631.0);
+    assertThat(metricCollectorService.collectMetricForResource(connectionSettings, defaultResourceKey, "ncloc")).isEqualTo(2618.0);
   }
 
   @Test
